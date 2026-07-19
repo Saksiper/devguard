@@ -78,17 +78,33 @@ const MARKER_RE = /\[DG-NOTE\s+([^\]\s]+)\s*\]\s*([^\n]*?)(?=\s*\[DG-NOTE|\n|$)/
  * @param {string} text  Claude's reply containing a marker at the end.
  * @returns {{nodeId: string, text: string}|null}
  */
+// Notes are single-sentence by contract; anything longer is runaway capture.
+const NOTE_TEXT_MAX = 300;
+
+// Strip regions where a DG marker is QUOTED content, not an instruction ack:
+// fenced code blocks (closed or unclosed) and blockquoted lines. Repo text
+// echoed into a reply must never become a persistent head note — that would be
+// a prompt-injection surface (planted marker -> stored with confidence 3 ->
+// re-injected into every future session as a trusted prior decision).
+function maskQuotedRegions(text) {
+  return text
+    .replace(/```[\s\S]*?(?:```|$)/g, '')
+    .replace(/^[ \t]*>.*$/gm, '');
+}
+
 function parseMarker(text) {
   if (typeof text !== 'string') return null;
+  const clean = maskQuotedRegions(text);
   // Keep the last VALID marker (not the last token then validate) — so a valid
   // marker followed by an invalid [DG-NOTE] quote later in the text isn't lost.
   let last = null;
-  for (const m of text.matchAll(MARKER_RE)) {
+  for (const m of clean.matchAll(MARKER_RE)) {
     if (isValidNodeId(m[1])) last = m;
   }
   if (!last) return null;
-  const text2 = last[2].trim();
+  let text2 = last[2].trim();
   if (text2 === '') return null; // bare marker with no note text is not a usable note
+  if (text2.length > NOTE_TEXT_MAX) text2 = text2.slice(0, NOTE_TEXT_MAX);
   return { nodeId: last[1], text: text2 };
 }
 
@@ -107,7 +123,9 @@ const ACK_RE = /\[DG-(CONTINUE|PIVOT|PAUSE)(?:\s+([^\]\s]+))?\s*\]\s*([^\n]*?)(?
 function parseAckTags(text) {
   if (typeof text !== 'string') return [];
   const tags = [];
-  for (const m of text.matchAll(ACK_RE)) {
+  // Same quoted-content masking as parseMarker: a tag echoed inside a fence or
+  // blockquote must not fabricate compliance.
+  for (const m of maskQuotedRegions(text).matchAll(ACK_RE)) {
     tags.push({ outcome: 'dg_' + m[1].toLowerCase(), nodeToken: m[2] || null, reason: m[3].trim() });
   }
   return tags;

@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const { readInput, respond, context } = require('../engine/hook-io');
 const { debugLog, createTimer } = require('../engine/debug-log');
 const { getDb, closeDb } = require('../engine/db');
@@ -93,8 +94,20 @@ async function main() {
         // the node (measured live: 3 surfaces + 3 bookkeeping layers in one session).
         // Note-less bootstrap (head=null) is not gated: no event, no layer risk.
         const cooled = !!head && db.hasSurfacedNodeInSession(nodeId, sessionId);
-        if (cooled) {
-          debugLog('user-prompt-submit', 'Surface cooldown: node already surfaced this session', { nodeId });
+        // C6 retirement: a note whose SOURCE FILE no longer exists gets 3 more
+        // surfaces (flagged stale_missing) and then goes quiet — a feature
+        // deleted from the project must not inject its zombie note forever.
+        const staleMissing = !!(head && head.source_file && !fs.existsSync(head.source_file));
+        let retired = false;
+        if (staleMissing && !cooled) {
+          try {
+            retired = db.countStaleMissingSurfaces && db.countStaleMissingSurfaces(nodeId) >= 3;
+          } catch { /* non-fatal — surface as usual */ }
+        }
+        if (cooled || retired) {
+          debugLog('user-prompt-submit', retired
+            ? 'Note retired: source file missing after repeated surfaces'
+            : 'Surface cooldown: node already surfaced this session', { nodeId });
         } else {
           // Flag the note stale if its source file changed since capture (fail-safe:
           // isNoteStale is false for null/old/unattributable notes). Read-only IO here,
@@ -110,7 +123,11 @@ async function main() {
               event_type: 'surfaced',
               // evidence (F5b): source-tagged contributions of this resolution —
               // debugging trail now, re-ranker training features later.
-              payload: { node_id: nodeId, trigger: 'user_prompt', evidence: resolved.evidence },
+              // stale_missing feeds the C6 retirement counter.
+              payload: {
+                node_id: nodeId, trigger: 'user_prompt', evidence: resolved.evidence,
+                ...(staleMissing ? { stale_missing: true } : {}),
+              },
             });
           }
           debugLog('user-prompt-submit', 'Feature note resolved', { nodeId, hasHead: !!head });

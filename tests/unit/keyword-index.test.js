@@ -169,6 +169,24 @@ describe('keyword-index — resolveByProjectIndex (db-backed)', () => {
   });
 });
 
+describe('keyword-index — dev-word noise vs name asymmetry (C5)', () => {
+  it('two generic dev words alone no longer surface a note (small-index degeneracy)', () => {
+    const db = { getNotes: () => [
+      { node_id: 'logic/scoring', note_text: 'fix the test for negative marking' },
+      { node_id: 'docs/readme', note_text: 'update the code examples' },
+    ] };
+    // 'fix' + 'test' are prose noise: in a df=1 index they used to score 2.0 and surface
+    expect(resolveByProjectIndex(db, 'fix the test please', 0.75)).toBeNull();
+  });
+
+  it('a dev word used as a feature NAME still matches (name-grade tokens keep it)', () => {
+    const db = { getNotes: () => [
+      { node_id: 'logic/test-harness', note_text: 'runner isolates sandbox state' },
+    ] };
+    expect(resolveByProjectIndex(db, 'extend the test harness setup', 0.75)).toBe('logic/test-harness');
+  });
+});
+
 describe('keyword-index — F5a/F1a source-aware scoring (char-gram fuzzy source)', () => {
   // Panel verdict (2026-07-19): char-gram is a FUZZY source — it may reinforce an
   // anchored match but must NEVER satisfy the evidence gate alone. Every source is

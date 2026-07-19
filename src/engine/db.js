@@ -1081,6 +1081,16 @@ function getDb(projectPath) {
       ).get(pp, sessionId, nodeId);
     },
 
+    // C6 note retirement: how many times this node surfaced while its source
+    // file was already missing (payload flag written by user-prompt-submit).
+    countStaleMissingSurfaces(nodeId) {
+      return db.prepare(
+        `SELECT COUNT(*) AS cnt FROM note_events ne JOIN notes n ON n.id = ne.note_id
+         WHERE ne.project_path = ? AND ne.event_type = 'surfaced' AND n.node_id = ?
+           AND ne.payload LIKE '%"stale_missing":true%'`
+      ).get(pp, nodeId).cnt;
+    },
+
     // Sphere compliance, session+ack anchor: the Stop-hook harvest calls this with a
     // parsed [DG-CONTINUE/PIVOT/PAUSE] tag. Matching happens in the surfaced note's
     // OWN node namespace (the tag echoes it) — never against the edit's assignFeature

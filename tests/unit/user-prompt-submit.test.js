@@ -97,6 +97,18 @@ function seedNote(nodeId, noteText, extra = {}) {
   delete process.env.CLAUDE_PLUGIN_DATA;
 }
 
+// Run an arbitrary read/write against the same on-disk DB the hook uses.
+function withDb(fn) {
+  process.env.CLAUDE_PLUGIN_DATA = tmpDir;
+  const db = loadDb();
+  const proxy = db.getDb(projectDir);
+  const out = fn(proxy);
+  db.closeDb();
+  delete require.cache[require.resolve('../../src/engine/db')];
+  delete process.env.CLAUDE_PLUGIN_DATA;
+  return out;
+}
+
 // Learned bootstrap vocabulary: a features-table row born from the project's own
 // edits (upsertFeatureCentroid is what assignFeature calls at edit time).
 function seedFeature(nodeId) {
@@ -305,6 +317,29 @@ describe('user-prompt-submit.js', () => {
   // A concurrent headless `claude -p` can insert a NEWER 'sessions' row mid-turn.
   // The hook must attribute to the session that submitted THIS prompt
   // (input.session_id), NOT the newest row (getLatestSession).
+  it('C6: retires a note whose source file is gone after 3 missing-file surfaces', () => {
+    const ghost = path.join(projectDir, 'gone.js');
+    fs.writeFileSync(ghost, 'x');
+    ensureSession();
+    seedNote('ui_ux/filter', 'Made the filter case-insensitive.', {
+      source_file: ghost, code_fingerprint: 'deadbeef',
+    });
+    fs.rmSync(ghost);
+
+    for (let i = 1; i <= 3; i++) {
+      const sid = `retire-sess-${i}`;
+      withDb((proxy) => proxy.insertSession(sid));
+      const res = runHook({ cwd: projectDir, session_id: sid, prompt: 'tweak the filter behavior' });
+      const ctx = JSON.parse(res.stdout).hookSpecificOutput?.additionalContext || '';
+      expect(ctx, `surface ${i} of 3 should still happen`).toContain('filter case-insensitive');
+    }
+
+    withDb((proxy) => proxy.insertSession('retire-sess-4'));
+    const res4 = runHook({ cwd: projectDir, session_id: 'retire-sess-4', prompt: 'tweak the filter behavior' });
+    const ctx4 = JSON.parse(res4.stdout).hookSpecificOutput?.additionalContext || '';
+    expect(ctx4).not.toContain('filter case-insensitive'); // retired
+  });
+
   it('F5b: the surfaced event payload carries the resolution evidence (source-tagged)', () => {
     ensureSession();
     seedNote('ui_ux/filter', 'Made the filter case-insensitive.');

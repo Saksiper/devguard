@@ -23,11 +23,16 @@ const FUNC_WORDS_SRC =
 
 // Dev-prose noise — words that carry no signal in note PROSE ("export the function
 // that returns…") but are perfectly legitimate as feature NAMES ('ui_ux/export').
-// Only the prose index filters these; the name-matching bootstrap must not.
+// Only the prose index filters these; name matching must not (C5 asymmetry).
+// The second block: common EN dev verbs/nouns — in a small df=1 index any two of
+// them used to clear the floor together and draw a false surface.
 const PROSE_NOISE_SRC =
   'new file implement return export function questions question answer answers based check iterate ' +
   'until correct after implementing verify behavior writing running string number array map label each ' +
-  'given side both may combine every returns null record';
+  'given side both may combine every returns null record ' +
+  'test tests testing run runs fix fixes fixed add adds added use used using make makes need needs ' +
+  'error errors code update updates updated change changes changed create creates created ' +
+  'write read call calls set get';
 
 const FUNC_WORDS = new Set(FUNC_WORDS_SRC.split(/\s+/));
 const STOP = new Set((FUNC_WORDS_SRC + ' ' + PROSE_NOISE_SRC).split(/\s+/));
@@ -54,19 +59,23 @@ function nameTokens(s) {
 // tokens (the feature's own name — higher-signal than note prose).
 function buildIndex(docs) {
   const nodes = new Map();
-  const nameTokens = new Map();
+  const names = new Map();
   for (const d of docs || []) {
     if (!d || !d.node_id) continue;
     const set = nodes.get(d.node_id) || new Set();
-    for (const t of tokens(String(d.node_id).replace(/[/_-]/g, ' ') + ' ' + (d.text || ''))) set.add(t);
-    nodes.set(d.node_id, set);
-    if (!nameTokens.has(d.node_id)) {
-      nameTokens.set(d.node_id, new Set(tokens(String(d.node_id).replace(/[/_-]/g, ' '))));
+    // Prose tokens use the full STOP list; NAME tokens only drop function words
+    // (C5 asymmetry) — a feature legitimately named 'test' or 'export' must stay
+    // matchable even though those words are noise in note prose.
+    for (const t of tokens(d.text || '')) set.add(t);
+    if (!names.has(d.node_id)) {
+      names.set(d.node_id, new Set(nameTokens(String(d.node_id).replace(/[/_-]/g, ' '))));
     }
+    for (const t of names.get(d.node_id)) set.add(t);
+    nodes.set(d.node_id, set);
   }
   const df = {};
   for (const set of nodes.values()) for (const t of set) df[t] = (df[t] || 0) + 1;
-  return { nodes, df, nameTokens };
+  return { nodes, df, nameTokens: names };
 }
 
 // F1a: character n-grams for fuzzy (morphology-tolerant) matching — 'filtreleme'
@@ -115,7 +124,11 @@ function mergeWeights(weights) {
 // count toward that gate.
 function resolveIndexDetailed(index, promptText, marginThreshold = 0.75, floor = 0.3, weights) {
   const w = mergeWeights(weights);
-  const pt = new Set(tokens(promptText));
+  // Two-grade prompt tokens (C5): name-grade keeps dev words ('test', 'export')
+  // so they can match feature NAMES; prose-grade drops them so they can never
+  // count as prose evidence. FUNC_WORDS ⊂ STOP, so pt ⊇ ptProse.
+  const pt = new Set(nameTokens(promptText));
+  const ptProse = new Set(tokens(promptText));
   if (!index || !index.nodes || !index.nodes.size || !pt.size) return { nodeId: null, evidence: [] };
 
   // Precompute prompt-token grams once (fuzzy source only, non-CJK).
@@ -134,6 +147,7 @@ function resolveIndexDetailed(index, promptText, marginThreshold = 0.75, floor =
     for (const t of pt) {
       if (!set.has(t)) continue;
       const isName = !!(names && names.has(t));
+      if (!isName && !ptProse.has(t)) continue; // dev-noise word may only match as a NAME
       const weight = isName ? w.exact_name : w.exact_prose;
       if (weight <= 0) continue; // kill-switched source contributes nothing, gate included
       const contrib = weight / (index.df[t] || 1);
