@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Saksiper/devguard/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Saksiper/devguard/ci.yml?style=flat-square&label=CI&logo=github" alt="CI" /></a>
-  <img src="https://img.shields.io/badge/tests-1372-brightgreen?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-1389-brightgreen?style=flat-square" alt="Tests" />
   <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" />
   <img src="https://img.shields.io/badge/node-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node" />
   <img src="https://img.shields.io/badge/Claude_Code-plugin-7c3aed?style=flat-square" alt="Claude Code Plugin" />
@@ -43,15 +43,9 @@ The agent reads this in its own thinking and either changes course or explains w
 /plugin install devguard@devguard-marketplace
 ```
 
-Then install the plugin's dependencies once. The marketplace copies the code but does not run npm, and DevGuard needs its native SQLite module:
+Then start a new session. That's it. DevGuard needs one native module (SQLite) that the marketplace doesn't build, so on first launch it builds it itself: a one-time step (about 30 seconds) after which it is active in that same session. No manual `npm install`, no configuration.
 
-```bash
-# the installed plugin directory is shown under /plugin → Manage plugins
-cd <installed-plugin-directory>
-npm install
-```
-
-If the dependencies are missing, DevGuard tells you at session start instead of failing silently. Beyond this one step, no configuration is required.
+> If the automatic build can't run (no network, or `npm` isn't on your PATH), DevGuard says so at session start and tells you the one command to run by hand. It never fails silently.
 
 ## 🧠 Feature Memory
 
