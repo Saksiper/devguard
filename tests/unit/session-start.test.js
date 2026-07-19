@@ -224,3 +224,60 @@ describe('session-start.js', () => {
     delete process.env.CLAUDE_PLUGIN_DATA;
   });
 });
+
+describe('session-start.js — self-healing install', () => {
+  // Spawn the hook with extra env (to force the missing-native-dep branch and to
+  // stub the install command). CLAUDE_PLUGIN_DATA=tmpDir, so the attempt marker
+  // lands in tmpDir (dirname of getDbPath()).
+  function runWithEnv(extraEnv) {
+    try {
+      const stdout = execFileSync('node', [HOOK_PATH], {
+        input: JSON.stringify({ cwd: projectDir }),
+        encoding: 'utf-8', timeout: 20000, stdio: ['pipe', 'pipe', 'pipe'],
+        env: { ...process.env, CLAUDE_PLUGIN_DATA: tmpDir, DEVGUARD_DEBUG: '0', ...extraEnv },
+      });
+      return { stdout, exitCode: 0 };
+    } catch (err) {
+      return { stdout: err.stdout || '', stderr: err.stderr || '', exitCode: err.status };
+    }
+  }
+  const markerPath = () => path.join(tmpDir, '.devguard-autoinstall-attempted');
+  const ctxOf = (res) => JSON.parse(res.stdout).hookSpecificOutput?.additionalContext || '';
+  // File-based stub command avoids cross-platform inline-quote escaping.
+  function stubCmd(scriptBody) {
+    const f = path.join(tmpDir, `stub-${Math.random().toString(36).slice(2)}.js`);
+    fs.writeFileSync(f, scriptBody);
+    return `node "${f}"`;
+  }
+
+  it('auto-runs the install when the native dep is missing, then reports active', () => {
+    const ran = path.join(tmpDir, 'install-ran.txt');
+    const cmd = stubCmd(`require('fs').writeFileSync(${JSON.stringify(ran)}, 'ok');`);
+    const res = runWithEnv({ DEVGUARD_FORCE_NO_SQLITE: '1', DEVGUARD_AUTOINSTALL_CMD: cmd });
+    expect(res.exitCode).toBe(0);
+    expect(fs.existsSync(ran)).toBe(true);            // the install command actually ran
+    expect(fs.existsSync(markerPath())).toBe(true);   // attempt recorded
+    expect(ctxOf(res).toLowerCase()).toContain('active');
+  });
+
+  it('falls back to the manual npm warning when the install command fails', () => {
+    const cmd = stubCmd('process.exit(1);');
+    const res = runWithEnv({ DEVGUARD_FORCE_NO_SQLITE: '1', DEVGUARD_AUTOINSTALL_CMD: cmd });
+    expect(fs.existsSync(markerPath())).toBe(true);
+    expect(ctxOf(res)).toContain('npm install');
+  });
+
+  it('does NOT retry the install when the attempt marker already exists', () => {
+    fs.writeFileSync(markerPath(), 'prev-attempt');
+    const ran = path.join(tmpDir, 'should-not-run.txt');
+    const cmd = stubCmd(`require('fs').writeFileSync(${JSON.stringify(ran)}, 'ok');`);
+    const res = runWithEnv({ DEVGUARD_FORCE_NO_SQLITE: '1', DEVGUARD_AUTOINSTALL_CMD: cmd });
+    expect(fs.existsSync(ran)).toBe(false);           // skipped, no 30s block every session
+    expect(ctxOf(res)).toContain('npm install');
+  });
+
+  it('does not attempt any install on a normal healthy start (no marker)', () => {
+    runWithEnv({});
+    expect(fs.existsSync(markerPath())).toBe(false);
+  });
+});

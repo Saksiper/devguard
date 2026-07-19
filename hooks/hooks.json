@@ -55,7 +55,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/session-start.js\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/session-start.js\"",
+            "timeout": 120
           }
         ]
       }

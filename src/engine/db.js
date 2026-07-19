@@ -4,6 +4,9 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 let Database; try { Database = require('better-sqlite3'); } catch (_) { Database = null; }
+// Test hook: simulate a fresh install where the native module is not yet built,
+// so the self-healing SessionStart path can be exercised even though CI has it.
+if (process.env.DEVGUARD_FORCE_NO_SQLITE) Database = null;
 const { sanitize } = require('./sanitize');
 const { debugLog } = require('./debug-log');
 
