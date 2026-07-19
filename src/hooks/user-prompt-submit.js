@@ -18,21 +18,31 @@ const { loadConfig } = require('../engine/config');
 // embedding argmax is the only remaining path and loads MiniLM (~680ms cold), so it
 // stays behind sphere_read_resolver_enabled (DEFAULT-OFF).
 // `deps` injects a fake encoder in tests (no real model).
+// Returns { nodeId, evidence } — evidence is the source-tagged contribution list
+// (F5b): it lands in the surfaced note_event payload as both a debugging trail
+// ("which word triggered this?") and future re-ranker training features.
 async function resolveFeatureNodeId(db, promptText, config, deps) {
   if (config.keyword_index_enabled !== false) {
-    const { resolveByProjectIndex, resolveBootstrapFeature } = require('../engine/keyword-index');
-    const indexNode = resolveByProjectIndex(db, promptText, config.keyword_index_margin);
-    if (indexNode) return indexNode;
+    const { resolveByProjectIndexDetailed, resolveBootstrapFeature } = require('../engine/keyword-index');
+    const det = resolveByProjectIndexDetailed(db, promptText, config.keyword_index_margin, undefined, {
+      exact_name: config.resolver_w_exact_name,
+      exact_prose: config.resolver_w_exact_prose,
+      char_gram: config.resolver_w_char_gram,
+    });
+    if (det.nodeId) return det;
     try {
       const bs = resolveBootstrapFeature(db, promptText);
-      if (bs && db.getHeadNoteByNode && !db.getHeadNoteByNode(bs)) return bs;
+      if (bs && db.getHeadNoteByNode && !db.getHeadNoteByNode(bs)) {
+        return { nodeId: bs, evidence: [{ source: 'bootstrap_name' }] };
+      }
     } catch { /* db mock without getHeadNoteByNode — skip the bootstrap path */ }
   }
   if (config.sphere_read_resolver_enabled) {
     const { resolveNodeIdByEmbedding } = require('../engine/embedding-node-resolver');
-    return resolveNodeIdByEmbedding(db, promptText, config.feature_cluster_threshold, deps);
+    const nodeId = await resolveNodeIdByEmbedding(db, promptText, config.feature_cluster_threshold, deps);
+    return { nodeId, evidence: nodeId ? [{ source: 'embedding' }] : [] };
   }
-  return null;
+  return { nodeId: null, evidence: [] };
 }
 
 async function main() {
@@ -74,7 +84,8 @@ async function main() {
       // Keyword map (model-free, default) OR embedding argmax. The embedding path
       // (sphere_read_resolver_enabled) is DEFAULT-OFF because it loads MiniLM
       // synchronously on every prompt turn — see resolveFeatureNodeId above.
-      const nodeId = await resolveFeatureNodeId(db, promptText, config);
+      const resolved = await resolveFeatureNodeId(db, promptText, config);
+      const nodeId = resolved && resolved.nodeId;
       if (nodeId) {
         const head = db.getHeadNoteByNode(nodeId);
         // Per-session cooldown: a node's note surfaces once per session — Claude
@@ -97,7 +108,9 @@ async function main() {
               note_id: head.id,
               session_id: sessionId,
               event_type: 'surfaced',
-              payload: { node_id: nodeId, trigger: 'user_prompt' },
+              // evidence (F5b): source-tagged contributions of this resolution —
+              // debugging trail now, re-ranker training features later.
+              payload: { node_id: nodeId, trigger: 'user_prompt', evidence: resolved.evidence },
             });
           }
           debugLog('user-prompt-submit', 'Feature note resolved', { nodeId, hasHead: !!head });

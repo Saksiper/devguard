@@ -33,6 +33,12 @@ const DEFAULTS = {
   // (measured clean gap 0.58..1.0 on the ALES sphere, so 0.75 is well inside it).
   keyword_index_enabled: true,
   keyword_index_margin: 0.75,
+  // F5a resolver source weights. 0 = kill-switch: that evidence source's
+  // contributions vanish without a code revert. char_gram is the fuzzy
+  // (morphology-tolerant) source — reinforcement only, never surfaces alone.
+  resolver_w_exact_name: 1.0,
+  resolver_w_exact_prose: 1.0,
+  resolver_w_char_gram: 0.3,
   // A/B effectiveness toggle. true (default) = active: measure AND inject (current
   // behavior, byte-identical). false = passive: still MEASURE everything (detections,
   // node_ids, notes are recorded by post-edit and detection_log) but inject NOTHING to
@@ -82,6 +88,9 @@ const VALIDATORS = {
   sphere_read_resolver_enabled: (v) => typeof v === 'boolean',
   keyword_index_enabled: (v) => typeof v === 'boolean',
   keyword_index_margin: (v) => typeof v === 'number' && v > 0 && v <= 1,
+  resolver_w_exact_name: (v) => typeof v === 'number' && v >= 0 && v <= 5,
+  resolver_w_exact_prose: (v) => typeof v === 'number' && v >= 0 && v <= 5,
+  resolver_w_char_gram: (v) => typeof v === 'number' && v >= 0 && v <= 5,
   intervention_enabled: (v) => typeof v === 'boolean',
   context_summary_enabled: (v) => typeof v === 'boolean',
   context_summary_confidence_threshold: (v) => typeof v === 'number' && v >= 0.0 && v <= 1.0,

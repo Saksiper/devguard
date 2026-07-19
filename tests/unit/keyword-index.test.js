@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const { tokens, buildIndex, resolveIndex, resolveByProjectIndex, resolveBootstrapFeature } = require('../../src/engine/keyword-index');
+const { tokens, buildIndex, resolveIndex, resolveIndexDetailed, resolveByProjectIndex, resolveBootstrapFeature } = require('../../src/engine/keyword-index');
 
 describe('keyword-index — tokens', () => {
   it('lowercases, drops <3-char and stopwords', () => {
@@ -166,6 +166,39 @@ describe('keyword-index — resolveByProjectIndex (db-backed)', () => {
 
   it('returns null when the project has no notes', () => {
     expect(resolveByProjectIndex(fakeDb([]), 'anything', 0.75)).toBeNull();
+  });
+});
+
+describe('keyword-index — F5a/F1a source-aware scoring (char-gram fuzzy source)', () => {
+  // Panel verdict (2026-07-19): char-gram is a FUZZY source — it may reinforce an
+  // anchored match but must NEVER satisfy the evidence gate alone. Every source is
+  // kill-switchable via its weight.
+
+  it('a pure morphological (char-gram-only) match NEVER surfaces — fuzzy cannot pass the gate', () => {
+    const one = buildIndex([{ node_id: 'ui_ux/filtre', text: 'başlık eşleşmesi' }]);
+    // 'filtreleme' is only a char-gram neighbour of the name token 'filtre'; no exact hit
+    expect(resolveIndex(one, 'filtreleme davranışını değiştir', 0.75)).toBeNull();
+  });
+
+  it('char-gram reinforces an anchored match and evidence records every source', () => {
+    const idx = buildIndex([{ node_id: 'ui_ux/filtre', text: 'liste görünümü' }]);
+    const det = resolveIndexDetailed(idx, 'filtre ayarı ve filtreleme', 0.75);
+    expect(det.nodeId).toBe('ui_ux/filtre');
+    expect(det.evidence.some((e) => e.source === 'exact_name')).toBe(true);
+    expect(det.evidence.some((e) => e.source === 'char_gram')).toBe(true);
+  });
+
+  it('kill-switch: char_gram weight 0 removes fuzzy contributions entirely', () => {
+    const idx = buildIndex([{ node_id: 'ui_ux/filtre', text: 'liste görünümü' }]);
+    const det = resolveIndexDetailed(idx, 'filtre ayarı ve filtreleme', 0.75, 0.3, { char_gram: 0 });
+    expect(det.nodeId).toBe('ui_ux/filtre'); // exact path untouched
+    expect(det.evidence.some((e) => e.source === 'char_gram')).toBe(false);
+  });
+
+  it('CJK tokens are excluded from char-gram (F1b is default-off, measured-before-shipped)', () => {
+    const idx = buildIndex([{ node_id: 'logic/架构设计模块', text: '模块说明' }]);
+    const det = resolveIndexDetailed(idx, '架构设计模块相关提示词内容', 0.75);
+    expect(det.evidence.some((e) => e.source === 'char_gram')).toBe(false);
   });
 });
 

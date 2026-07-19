@@ -305,6 +305,19 @@ describe('user-prompt-submit.js', () => {
   // A concurrent headless `claude -p` can insert a NEWER 'sessions' row mid-turn.
   // The hook must attribute to the session that submitted THIS prompt
   // (input.session_id), NOT the newest row (getLatestSession).
+  it('F5b: the surfaced event payload carries the resolution evidence (source-tagged)', () => {
+    ensureSession();
+    seedNote('ui_ux/filter', 'Made the filter case-insensitive.');
+
+    runHook({ cwd: projectDir, session_id: 'test-session', prompt: 'tweak the filter behavior' });
+    const events = surfacedEvents();
+    expect(events).toHaveLength(1);
+    const payload = JSON.parse(events[0].payload);
+    expect(Array.isArray(payload.evidence)).toBe(true);
+    expect(payload.evidence.length).toBeGreaterThan(0);
+    expect(payload.evidence.some((e) => e.source === 'exact_name')).toBe(true);
+  });
+
   it('attributes the surfaced note_event to the submitting session, not the newest session row', () => {
     ensureSession('submitter');
     seedNote('ui_ux/filter', 'prior');
@@ -410,19 +423,19 @@ describe('user-prompt-submit resolveFeatureNodeId (S2.B branch wiring)', () => {
   const deps = (v) => ({ loadModel: async () => ({}), encode: async () => v });
 
   it('ON: takes the embedding branch and returns the global argmax node', async () => {
-    const node = await resolveFeatureNodeId(embDb, 'log in please',
+    const { nodeId: node } = await resolveFeatureNodeId(embDb, 'log in please',
       { sphere_read_resolver_enabled: true, feature_cluster_threshold: 0.5 }, deps(vec([0.1, 1, 0, 0])));
     expect(node).toBe('security/auth');
   });
 
   it('ON: the threshold comes from config.feature_cluster_threshold (0.99 rejects a 0.707 match)', async () => {
-    const node = await resolveFeatureNodeId(embDb, 'x',
+    const { nodeId: node } = await resolveFeatureNodeId(embDb, 'x',
       { sphere_read_resolver_enabled: true, feature_cluster_threshold: 0.99 }, deps(vec([1, 1, 0, 0])));
     expect(node).toBeNull();
   });
 
   it('index disabled: no hardcoded fallback — resolution is null without the embedding branch', async () => {
-    const node = await resolveFeatureNodeId({}, 'tweak the filter behavior',
+    const { nodeId: node } = await resolveFeatureNodeId({}, 'tweak the filter behavior',
       { sphere_read_resolver_enabled: false, keyword_index_enabled: false }, undefined);
     expect(node).toBeNull();
   });
@@ -433,7 +446,7 @@ describe('user-prompt-submit resolveFeatureNodeId (S2.B branch wiring)', () => {
       getAllFeatures: () => [{ node_id: 'ui_ux/export', continent: 'ui_ux', country: 'export' }],
       getHeadNoteByNode: () => null,
     };
-    const node = await resolveFeatureNodeId(db, 'fix the export button',
+    const { nodeId: node } = await resolveFeatureNodeId(db, 'fix the export button',
       { sphere_read_resolver_enabled: false }, undefined);
     expect(node).toBe('ui_ux/export');
   });
@@ -444,7 +457,7 @@ describe('user-prompt-submit resolveFeatureNodeId (S2.B branch wiring)', () => {
       getAllFeatures: () => [{ node_id: 'ui_ux/export', continent: 'ui_ux', country: 'export' }],
       getHeadNoteByNode: () => ({ id: 1, note_text: 'existing' }),
     };
-    const node = await resolveFeatureNodeId(db, 'fix the export button',
+    const { nodeId: node } = await resolveFeatureNodeId(db, 'fix the export button',
       { sphere_read_resolver_enabled: false }, undefined);
     expect(node).toBeNull();
   });
@@ -454,7 +467,7 @@ describe('user-prompt-submit resolveFeatureNodeId (S2.B branch wiring)', () => {
       { node_id: 'ui_ux/filter', note_text: 'filter log entries by status; case-insensitive title match; half-open bounds' },
       { node_id: 'logic/compliance', note_text: 'finalize orphaned sessions as lapsed at session start; backstop surfaced notes' },
     ] };
-    const node = await resolveFeatureNodeId(notesDb, 'add a status filter to the entry list',
+    const { nodeId: node } = await resolveFeatureNodeId(notesDb, 'add a status filter to the entry list',
       { sphere_read_resolver_enabled: false }, undefined);
     expect(node).toBe('ui_ux/filter');
   });
@@ -466,7 +479,7 @@ describe('user-prompt-submit resolveFeatureNodeId (S2.B branch wiring)', () => {
       { node_id: 'ui_ux/filter', note_text: 'filter log entries by status; case-insensitive title match; half-open bounds' },
       { node_id: 'logic/compliance', note_text: 'finalize orphaned sessions as lapsed at session start; backstop surfaced notes' },
     ] };
-    const node = await resolveFeatureNodeId(notesDb,
+    const { nodeId: node } = await resolveFeatureNodeId(notesDb,
       'finalize the orphaned compliance sessions and filter out the stale ones',
       { sphere_read_resolver_enabled: false }, undefined);
     expect(node).not.toBe('ui_ux/filter');
@@ -474,13 +487,13 @@ describe('user-prompt-submit resolveFeatureNodeId (S2.B branch wiring)', () => {
   });
 
   it('ON + no keyword: falls back to the embedding argmax (hybrid)', async () => {
-    const node = await resolveFeatureNodeId(embDb, 'deneme sinavi puanlama ekrani yap',
+    const { nodeId: node } = await resolveFeatureNodeId(embDb, 'deneme sinavi puanlama ekrani yap',
       { sphere_read_resolver_enabled: true, feature_cluster_threshold: 0.5 }, deps(vec([0.1, 1, 0, 0])));
     expect(node).toBe('security/auth');
   });
 
   it('ON + no keyword + below threshold: resolves to null (no forced guess)', async () => {
-    const node = await resolveFeatureNodeId(embDb, 'deneme sinavi puanlama ekrani yap',
+    const { nodeId: node } = await resolveFeatureNodeId(embDb, 'deneme sinavi puanlama ekrani yap',
       { sphere_read_resolver_enabled: true, feature_cluster_threshold: 0.99 }, deps(vec([1, 1, 0, 0])));
     expect(node).toBeNull();
   });

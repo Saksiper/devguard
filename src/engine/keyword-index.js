@@ -69,54 +69,136 @@ function buildIndex(docs) {
   return { nodes, df, nameTokens };
 }
 
-// Pure: score prompt tokens by summed rarity (1/df) per node, then gate on
-// confidence. Returns node_id only when top >= floor AND runner-up/top < margin
-// AND the evidence is real: at least 2 distinct matched tokens, OR a single match
-// that NAMES the feature (node-id token). In a small index every token has df=1,
-// so without the evidence gate ONE stray prose word cleared the floor (measured
-// live: an unrelated prompt surfaced a note via a lone shared word).
-function resolveIndex(index, promptText, marginThreshold = 0.75, floor = 0.3) {
+// F1a: character n-grams for fuzzy (morphology-tolerant) matching — 'filtreleme'
+// reinforces the name token 'filtre'. Latin/Cyrillic only: CJK bigram collision
+// behavior is unmeasured, so CJK tokens are excluded by design (F1b, default-off).
+const CJK_RE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
+const CHAR_GRAM_N = 4;
+const CHAR_GRAM_MIN_JACCARD = 0.34;
+
+function charGrams(token) {
+  const g = new Set();
+  for (let i = 0; i + CHAR_GRAM_N <= token.length; i++) g.add(token.slice(i, i + CHAR_GRAM_N));
+  return g;
+}
+
+function gramJaccard(a, b) {
+  if (!a.size || !b.size) return 0;
+  let inter = 0;
+  for (const g of a) if (b.has(g)) inter++;
+  return inter / (a.size + b.size - inter);
+}
+
+// F5a source weights. exact_prose stays 1.0: the July noise-fix floor/margin were
+// calibrated with uniform weights — down-weighting prose is a measured recalibration,
+// not a default change. char_gram is a FUZZY source: it reinforces score only and can
+// NEVER satisfy the evidence gate (panel verdict — a fuzzy source alone must not
+// surface). Setting any weight to 0 is a kill-switch: that source's contributions
+// vanish without a code revert.
+const DEFAULT_WEIGHTS = Object.freeze({ exact_name: 1.0, exact_prose: 1.0, char_gram: 0.3 });
+
+function mergeWeights(weights) {
+  const w = { ...DEFAULT_WEIGHTS };
+  for (const k of Object.keys(weights || {})) {
+    if (typeof weights[k] === 'number') w[k] = weights[k];
+  }
+  return w;
+}
+
+// Pure: score prompt tokens by summed rarity (1/df) per node with source-aware
+// weights, then gate on confidence. Returns { nodeId, evidence } where evidence
+// lists every contribution of the winning node as { token, source, w, contrib } —
+// the raw material for the Faz-2 re-ranker (F5b) and for debugging any surface
+// ("which word triggered this?"). nodeId is null unless: top >= floor AND
+// runner-up/top < margin AND the EXACT evidence is real (>= 2 distinct exact
+// matches, OR one exact match that NAMES the feature). Fuzzy contributions never
+// count toward that gate.
+function resolveIndexDetailed(index, promptText, marginThreshold = 0.75, floor = 0.3, weights) {
+  const w = mergeWeights(weights);
   const pt = new Set(tokens(promptText));
-  if (!index || !index.nodes || !index.nodes.size || !pt.size) return null;
-  let topId = null, topScore = -1, secondScore = 0, topHits = 0, topNameHit = false;
+  if (!index || !index.nodes || !index.nodes.size || !pt.size) return { nodeId: null, evidence: [] };
+
+  // Precompute prompt-token grams once (fuzzy source only, non-CJK).
+  const promptGrams = new Map();
+  if (w.char_gram > 0) {
+    for (const t of pt) {
+      if (!CJK_RE.test(t)) promptGrams.set(t, charGrams(t));
+    }
+  }
+
+  let topId = null, topScore = -1, secondScore = 0, topHits = 0, topNameHit = false, topEvidence = [];
   for (const [nodeId, set] of index.nodes) {
     let s = 0, hits = 0, nameHit = false;
+    const evidence = [];
     const names = index.nameTokens && index.nameTokens.get(nodeId);
     for (const t of pt) {
       if (!set.has(t)) continue;
-      s += 1 / (index.df[t] || 1);
+      const isName = !!(names && names.has(t));
+      const weight = isName ? w.exact_name : w.exact_prose;
+      if (weight <= 0) continue; // kill-switched source contributes nothing, gate included
+      const contrib = weight / (index.df[t] || 1);
+      s += contrib;
       hits += 1;
-      if (names && names.has(t)) nameHit = true;
+      if (isName) nameHit = true;
+      evidence.push({ token: t, source: isName ? 'exact_name' : 'exact_prose', w: weight, contrib });
     }
-    if (s > topScore) { secondScore = topScore; topScore = s; topId = nodeId; topHits = hits; topNameHit = nameHit; }
-    else if (s > secondScore) { secondScore = s; }
+    // Fuzzy reinforcement: prompt tokens with no exact hit, compared against NAME
+    // tokens only (small, high-signal sets). Best jaccard per prompt token.
+    if (w.char_gram > 0 && names && names.size) {
+      for (const [t, grams] of promptGrams) {
+        if (set.has(t)) continue; // already exact
+        let bestJ = 0, bestName = null;
+        for (const n of names) {
+          if (CJK_RE.test(n)) continue;
+          const j = gramJaccard(grams, charGrams(n));
+          if (j > bestJ) { bestJ = j; bestName = n; }
+        }
+        if (bestJ >= CHAR_GRAM_MIN_JACCARD) {
+          const contrib = w.char_gram * bestJ / (index.df[bestName] || 1);
+          s += contrib;
+          evidence.push({ token: t, matched: bestName, source: 'char_gram', w: w.char_gram, contrib });
+        }
+      }
+    }
+    if (s > topScore) {
+      secondScore = topScore; topScore = s; topId = nodeId;
+      topHits = hits; topNameHit = nameHit; topEvidence = evidence;
+    } else if (s > secondScore) { secondScore = s; }
   }
-  if (topScore < floor) return null;                                  // weak signal
-  if (topHits < 2 && !topNameHit) return null;                        // one stray prose word -> defer
+  if (topScore < floor) return { nodeId: null, evidence: [] };           // weak signal
+  if (topHits < 2 && !topNameHit) return { nodeId: null, evidence: [] }; // fuzzy/stray alone -> defer
   const margin = topScore > 0 ? secondScore / topScore : 1;
-  if (margin >= marginThreshold) return null;                          // ambiguous -> defer
-  return topId;
+  if (margin >= marginThreshold) return { nodeId: null, evidence: [] };  // ambiguous -> defer
+  return { nodeId: topId, evidence: topEvidence };
+}
+
+function resolveIndex(index, promptText, marginThreshold = 0.75, floor = 0.3, weights) {
+  return resolveIndexDetailed(index, promptText, marginThreshold, floor, weights).nodeId;
 }
 
 // DB-backed convenience for the UserPromptSubmit hook. Builds the index from the
 // project's notes each call (all string ops; no model). Caller passes the margin.
-function resolveByProjectIndex(db, promptText, marginThreshold = 0.75, floor = 0.3) {
+function resolveByProjectIndexDetailed(db, promptText, marginThreshold = 0.75, floor = 0.3, weights) {
   // Optional layer: any failure (e.g. a db without getNotes) returns null so
   // resolution falls through to the embedding layer rather than breaking.
   try {
     const notes = db.getNotes({ limit: 5000 });
-    if (!notes || !notes.length) return null;
+    if (!notes || !notes.length) return { nodeId: null, evidence: [] };
     // Head layers only: the surface SHOWS the head note, so relevance must be judged
     // against what would be shown. Superseded layers accumulate weeks of dead
     // vocabulary (measured live: bookkeeping tokens in dead layers drew surfaces
     // for prompts unrelated to the head).
     const heads = notes.filter((n) => n.superseded_by === null || n.superseded_by === undefined);
-    if (!heads.length) return null;
+    if (!heads.length) return { nodeId: null, evidence: [] };
     const index = buildIndex(heads.map((n) => ({ node_id: n.node_id, text: n.note_text })));
-    return resolveIndex(index, promptText, marginThreshold, floor);
+    return resolveIndexDetailed(index, promptText, marginThreshold, floor, weights);
   } catch {
-    return null;
+    return { nodeId: null, evidence: [] };
   }
+}
+
+function resolveByProjectIndex(db, promptText, marginThreshold = 0.75, floor = 0.3, weights) {
+  return resolveByProjectIndexDetailed(db, promptText, marginThreshold, floor, weights).nodeId;
 }
 
 // Learned bootstrap vocabulary — replaces the old hardcoded demo keyword map.
@@ -147,4 +229,7 @@ function resolveBootstrapFeature(db, promptText) {
   }
 }
 
-module.exports = { tokens, buildIndex, resolveIndex, resolveByProjectIndex, resolveBootstrapFeature };
+module.exports = {
+  tokens, buildIndex, resolveIndex, resolveIndexDetailed,
+  resolveByProjectIndex, resolveByProjectIndexDetailed, resolveBootstrapFeature,
+};
