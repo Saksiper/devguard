@@ -1,0 +1,3 @@
+{"kind":"surface","node_id":"ui_ux/dropdown","note_text":"keyboard nav is required","expect":"ignored"}
+{"kind":"reply","text":"[DG-CONTINUE] preserved keyboard navigation"}
+{"kind":"finalize"}

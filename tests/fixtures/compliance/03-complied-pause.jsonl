@@ -1,0 +1,3 @@
+{"kind":"surface","node_id":"security/auth","note_text":"token expiry is load-bearing","expect":"complied"}
+{"kind":"reply","text":"[DG-PAUSE security/auth] investigating token expiry before touching auth"}
+{"kind":"finalize"}

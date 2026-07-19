@@ -1,0 +1,979 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "id": "rate-limiter-units",
+      "name": "Token-bucket rate limiter unit bug (ms vs s)",
+      "mode": "cycle",
+      "fixtureDir": "fixtures/rate-limiter-units",
+      "entryFiles": [
+        "rate-limiter.js"
+      ],
+      "prompt": "The file rate-limiter.js implements a token-bucket RateLimiter, but its refill is wrong by a large factor: it confuses milliseconds and seconds when computing how many tokens to add. Fix the refill so that exactly refillRatePerSec tokens are added per second of elapsed time (capped at capacity). Keep the public API unchanged: constructor(capacity, refillRatePerSec) and tryRemove(count=1) returning a boolean. After fixing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "judge": {
+        "rubric": "Correct ms->s unit conversion; edge cases (no time elapsed, capacity cap, fractional tokens); code clarity."
+      },
+      "timeoutMs": 300000
+    },
+    {
+      "id": "off-by-one-pagination",
+      "name": "Pagination off-by-one (offset + last page)",
+      "mode": "cycle",
+      "fixtureDir": "fixtures/off-by-one-pagination",
+      "entryFiles": [
+        "paginate.js"
+      ],
+      "prompt": "The file paginate.js has pagination bugs. Page numbers are 1-indexed (page 1 is the first page), but the slice offset is computed as if pages were 0-indexed, so page 1 skips the first page. Also totalPages drops the last partial page. Fix paginate(items, page, pageSize) so page 1 returns the first pageSize items and totalPages counts every page including a final partial one. Keep the return shape { page, pageSize, totalPages, items }. After fixing, verify by writing and running a small check; iterate until it is correct.",
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "judge": {
+        "rubric": "Correct 1-indexed offset; totalPages via ceil (last partial page kept); empty/edge inputs; clarity."
+      },
+      "timeoutMs": 300000
+    },
+    {
+      "id": "retry-backoff",
+      "name": "Retry max-attempts off-by-one",
+      "mode": "cycle",
+      "fixtureDir": "fixtures/retry-backoff",
+      "entryFiles": [
+        "retry.js"
+      ],
+      "prompt": "The file retry.js should call fn until it succeeds or a maximum of maxRetries TOTAL attempts have been made, re-throwing the last error if all fail. It currently makes one fewer attempt than requested (an off-by-one in the loop bound), so retry(fn, 3) only tries twice. Fix it so maxRetries counts total attempts. Keep the signature retry(fn, maxRetries). After fixing, verify by writing and running a small check; iterate until it is correct.",
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "judge": {
+        "rubric": "maxRetries counts total attempts; last error propagates on total failure; no extra calls; clarity."
+      },
+      "timeoutMs": 300000
+    },
+    {
+      "id": "sphere-filter",
+      "name": "Habit log: add filtering (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-filter",
+      "entryFiles": [
+        "filter.js",
+        "habits.js"
+      ],
+      "prompt": "This small habit-log module (habits.js) stores entries of shape { id, title, ts, status } where ts is an epoch-milliseconds timestamp and status is 'active' | 'done' | 'skipped'. Add a filter feature: implement filterEntries(entries, criteria) in a new file filter.js, where criteria may contain status (exact match), from and to (timestamp bounds on entry.ts), and title (substring match on entry.title). Criteria fields combine with AND; missing fields are ignored. Export filterEntries from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "habits.js",
+          "text": "Established filter decisions: title matching is CASE-INSENSITIVE (users type mixed case; exact matching missed entries and was fixed after complaints); results are returned sorted ascending by entry.ts (the CLI renders a chronological view and callers rely on that order); the from/to bounds are half-open [from, to) — 'to' is EXCLUSIVE (matches the reporting module's day-paging and avoids double-counting boundary entries)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) title matching is case-insensitive, (2) results are returned sorted ascending by entry.ts (chronological view), (3) the from/to bounds are half-open [from, to), i.e. 'to' is exclusive and 'from' is inclusive. Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested filter semantics, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-search",
+      "name": "Notes module: add search (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-search",
+      "entryFiles": [
+        "search.js",
+        "notes.js"
+      ],
+      "prompt": "This small notes module (notes.js) stores notes of shape { id, title, body, ts } where ts is an epoch-milliseconds timestamp. Add a search feature: implement searchNotes(notes, query) in a new file search.js, returning the notes that match the query. Export searchNotes from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "notes.js",
+          "text": "Established search decisions: matching is CASE-INSENSITIVE (mixed-case queries missed notes before this was fixed); the query is split on whitespace and EVERY word must appear in the note title — AND semantics, order/adjacency not required (adjacent-substring matching was replaced after users could not find notes with reordered words); an empty or whitespace-only query returns an empty array, not all notes (the CLI treats empty as 'no search')."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) matching is case-insensitive, (2) the query is split on whitespace and every word must appear in the note title (AND semantics; order/adjacency not required), (3) an empty or whitespace-only query returns an empty array, not all notes. Consistency with these established decisions is a primary quality criterion, alongside correctness of the search behavior, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-auth",
+      "name": "User store: add login (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-auth",
+      "entryFiles": [
+        "auth.js",
+        "users.js"
+      ],
+      "prompt": "This project has an existing user store: users.js loads users.json and exposes findUser(username) and hashPassword(password) (sha256 hex). Add a login feature: implement login(username, password) in a new file auth.js, verifying the password against the stored hash and returning a session token on success. Export login from auth.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "security/auth",
+          "file": "users.js",
+          "text": "Established auth decisions: usernames are matched CASE-INSENSITIVELY (support tickets showed users typing capitalized names); session tokens are the string 'sess_' followed by 48 hex chars from crypto.randomBytes(24) — the CLI token parser expects this exact shape, and JWT was rejected to stay dependency-free; each successful login records lastLoginTs (epoch ms) in-memory on the user object and it is NEVER persisted back to users.json (a persisting version corrupted the file under concurrent CLI runs)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) usernames are matched case-insensitively, (2) session tokens are the string 'sess_' followed by 48 hex characters from crypto.randomBytes(24) (no JWT; dependency-free), (3) each successful login records lastLoginTs (epoch ms) in-memory on the user object, never persisted back to users.json. Consistency with these established decisions is a primary quality criterion, alongside correctness of the login flow, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-auth-pin",
+      "name": "Device PIN store: add login with lockout (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-auth-pin",
+      "entryFiles": [
+        "auth.js",
+        "devices.js"
+      ],
+      "prompt": "Add a login feature: implement login(deviceId, pin) in a new file auth.js, returning true on success and false on failure. This project has an existing device PIN store: devices.js loads devices.json and exposes getDevices(), findDevice(deviceId), and hashPin(pin) (sha256 hex of the PIN string) -- verify the given pin against the stored device's hash using hashPin. Export login from auth.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "security/auth",
+          "file": "devices.js",
+          "text": "Established login decisions: the 3rd consecutive failed attempt for a device itself returns the string 'locked' (not false) -- and so does every attempt after it -- overriding the general true/false contract for a locked device; an earlier version allowed unlimited retries and was replaced with this in-memory counter after a brute-force incident against a shared kiosk; a successful login RESETS the device's failure counter -- a version that kept counting failures across successful logins was fixed after legitimate users who mistyped the PIN twice, then entered it correctly, were still getting locked out on their next visit; once a device is locked it STAYS locked even for the correct PIN, until the process restarts -- an auto-unlock-on-correct-PIN version was reverted because it let an attacker who eventually guessed the right PIN slip straight past the lockout, defeating the guard."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the 3rd consecutive failed attempt for a device itself returns the string 'locked' (not false), and every attempt after it also returns 'locked', overriding the general true/false contract, (2) a successful login resets the device's failure counter, (3) once a device is locked it stays locked even for the correct PIN, until the process restarts. Consistency with these established decisions is a primary quality criterion, alongside correctness, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-filter-todos",
+      "name": "Todo list: add filtering (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-filter-todos",
+      "entryFiles": [
+        "filter.js",
+        "todos.js"
+      ],
+      "prompt": "Add a filter feature to this small todo-list module (todos.js), which stores todos of shape { id, title, done, priority, due } where done is a boolean, priority is an integer from 1 (highest) to 3 (lowest), and due is either an epoch-milliseconds timestamp or null when no due date is set. Implement filterTodos(todos, criteria) in a new file filter.js, where criteria may contain done (boolean exact match), dueBefore (a timestamp bound), and title (a partial text match against entry.title). Criteria fields combine with AND; missing fields are ignored. Export filterTodos from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "todos.js",
+          "text": "Established filter decisions: todos with due === null are ALWAYS included when dueBefore is set — no due date means the todo can never be overdue (an earlier version dropped null-due todos and users lost tasks, so this was fixed); the title criterion is a PREFIX match on entry.title, not a substring match (this was changed after substring matching produced too-broad, confusing results, and was replaced with prefix/autocomplete semantics); results are returned with not-done todos first, then done todos, preserving each group's original relative order (a version that re-sorted within groups broke the board view's card order and was reverted)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) todos with due === null are always included when dueBefore is set (no due date means never overdue), (2) the title criterion is a prefix match on entry.title, not substring (autocomplete semantics), (3) results are returned with not-done todos first, then done todos, stable (original relative order preserved) within each group. Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested filter semantics, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-filter-contacts",
+      "name": "Contact book: add filtering (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-filter-contacts",
+      "entryFiles": [
+        "filter.js",
+        "contacts.js"
+      ],
+      "prompt": "Add a filter feature for this small contact-book module (contacts.js), which stores contacts of shape { id, name, email, favorite } where favorite is a boolean. Implement filterContacts(contacts, criteria) in a new file filter.js, where criteria may contain name (substring match on contact.name) and domain (the domain part of contact.email). Criteria fields combine with AND; missing fields are ignored. Export filterContacts from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "contacts.js",
+          "text": "Established filter decisions: the domain criterion matches the part of the email after '@' EXACTLY, not as a substring (a substring/suffix version once matched 'mail.com' against 'gmail.com' and was fixed after it leaked wrong contacts into a mailout); a leading '@' in the domain criterion is normalized away before comparing, so '@gmail.com' and 'gmail.com' match the same contacts (this was added after a saved-search preset started passing domains with a leading '@' and silently returned zero results); favorite contacts are ALWAYS pinned to the front of the results ahead of any other ordering (a version without pinning was replaced after the picker buried favorites at the bottom); an empty criteria object ({}) returns an empty array rather than the full contact list (a version that returned everything for {} was reverted because it overwhelmed the picker before any filter was chosen)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the domain criterion matches the part of the email after '@' exactly, not as a substring or suffix, and a leading '@' in the criterion value is normalized away so '@gmail.com' and 'gmail.com' match identically, (2) favorite contacts are always pinned to the front of the results regardless of other ordering, (3) an empty criteria object ({}) returns an empty array rather than the full contact list. Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested filter semantics, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-search-snippets",
+      "name": "Code snippets: add search (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-search-snippets",
+      "entryFiles": [
+        "search.js",
+        "snippets.js"
+      ],
+      "prompt": "Add a search feature to this small code-snippets module (snippets.js, whose comments document the snippet fields): snippets have shape { id, title, code, lang }. Implement searchSnippets(snippets, query) in a new file search.js, returning the snippets that match the query; export searchSnippets from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "snippets.js",
+          "text": "Established search decisions: a 'lang:x' token in the query filters results to snippets whose lang field exactly matches x, with any remaining words matched normally (a version without this token was replaced after users could not narrow noisy cross-language results); matching inside code is case-sensitive since identifiers matter — 'myVar' must not match 'myvar' — because a case-insensitive version was reverted after it surfaced unrelated identifiers; title matching stays case-insensitive because a case-sensitive version was fixed after mixed-case titles were missed; results are returned sorted ascending by title because an insertion-order version was fixed after it was hard to scan."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) a 'lang:x' token in the query filters results by exact language, with remaining words matched normally, (2) matching inside code is case-sensitive (identifiers matter) while title matching is case-insensitive, (3) results are returned sorted ascending by title. Consistency with these established decisions is a primary quality criterion, alongside correctness of the search behavior, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-search-movies",
+      "name": "Movie catalog: add search (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-search-movies",
+      "entryFiles": [
+        "search.js",
+        "movies.js"
+      ],
+      "prompt": "Add a search feature to this small movie catalog app: implement searchMovies(movies, query) in a new file search.js, where movies.js stores movies of shape { id, title, year, genres } (year is the release year, genres is an array of genre-name strings) and query is a plain string typed by a user. Export searchMovies from search.js so it returns the movies that match the query. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "movies.js",
+          "text": "Established search decisions: a standalone 4-digit token in the query is treated as a year filter and any remaining words are matched against the title (a plain full-string match against the whole query was replaced after users typed 'Gladiator 2024' and got no results); title matching is case-insensitive and ignores a leading 'The ' article ('matrix' finds 'The Matrix' and 'The Matrix' finds 'Matrix') (exact-case, article-sensitive matching was reverted after users searched 'matrix' and never found 'The Matrix'); results are sorted by year descending, newest first (an insertion-order result list was fixed after users complained the newest release did not surface at the top)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) a standalone 4-digit token in the query is treated as a year filter and any remaining words are matched against the title, (2) title matching is case-insensitive and ignores a leading 'The ' article ('matrix' finds 'The Matrix' and 'The Matrix' finds 'Matrix'), (3) results are sorted by year descending (newest first). Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested search behavior, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-search-recipes",
+      "name": "Recipes module: add search (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-search-recipes",
+      "entryFiles": [
+        "search.js",
+        "recipes.js"
+      ],
+      "prompt": "Add a search feature to this small recipes module (recipes.js), which stores recipes of shape { id, title, ingredients }. Implement searchRecipes(recipes, query) in a new file search.js, returning the recipes that match query. Export searchRecipes from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "recipes.js",
+          "text": "Established search decisions: the query is matched against the title (substring) AND against ingredients — but ingredient matching requires an EXACT match against an ingredient-name string, not a substring (title-only matching was replaced after users asked to search by what's in their fridge, and substring-matching ingredients was reverted after 'banana' started matching unrelated pantry items like 'banana bread mix'); results are returned ordered by the number of matching ingredients descending, ties keeping insertion order (an unordered ranking was fixed so the best-stocked recipe surfaces first); queries shorter than 3 characters after trimming return an empty array (1-2 letter queries were reverted after they hung the recipe picker on huge result sets)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the query is matched against the recipe title via substring, and separately against each ingredient via exact string equality (not substring) — not just the title, (2) results are ordered by the number of exact ingredient matches descending (ties keep insertion order), (3) queries shorter than 3 characters after trimming return an empty array. Consistency with these established decisions is a primary quality criterion, alongside correctness of the search behavior, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-search-docs",
+      "name": "Docs module: add search (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-search-docs",
+      "entryFiles": [
+        "search.js",
+        "docs.js"
+      ],
+      "prompt": "Add a search feature to this project's existing docs module: docs.js stores markdown docs of shape { id, title, headings }, where headings is an array of heading-text strings. Implement searchDocs(docs, query) in a new file search.js, returning the docs that match the query. Export searchDocs from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "docs.js",
+          "text": "Established search decisions: a query starting with '#' searches HEADINGS ONLY — e.g. '#setup' matches docs with a 'setup' heading (this was fixed after '#tag'-style queries wrongly matched on the title too); a plain query with multiple words uses OR-ACROSS-WORDS semantics — it matches a doc if ANY word in the query matches the title or a heading, not only when EVERY word matches (an earlier AND-across-words version made users miss docs whenever they added one extra, more specific word alongside a word that did not appear verbatim); an empty or whitespace-only query returns an empty array, not all docs — a version that fell through to 'return all' was reverted because the doc browser rendered every doc as a false 'match'."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) a query starting with '#' searches headings only, not the title, (2) a plain query with multiple words uses OR-across-words semantics — it matches if any word in the query matches the title or a heading, not requiring every word to match, (3) an empty or whitespace-only query returns an empty array, not all docs. Consistency with these established decisions is a primary quality criterion, alongside correctness, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-search-bookmarks",
+      "name": "Bookmarks module: add search (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-search-bookmarks",
+      "entryFiles": [
+        "search.js",
+        "bookmarks.js"
+      ],
+      "prompt": "Add a search feature to this small bookmarks module (bookmarks.js), which stores bookmarks of shape { id, title, url, tags } where tags is an array of strings. Implement searchBookmarks(bookmarks, query) in a new file search.js, returning the bookmarks that match the query. Export searchBookmarks from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "bookmarks.js",
+          "text": "Established search decisions: a query of the form 'tag:x' searches ONLY tags with an exact match — plain substring matching on 'tag:' queries was replaced because it also matched unrelated titles and urls; a URL-ish query matches url after BOTH the query and the stored url are normalized by stripping the http(s):// scheme and a leading 'www.' — 'http://example.com/docs' matches 'https://www.example.com/docs' — a strict full-string url comparison was reverted because it missed bookmarks whose scheme or 'www.' prefix differed from the query's; results are deduped by normalized url (scheme and 'www.' stripped), keeping the first occurrence — deduping was fixed to run on every search because an import job had been creating duplicate entries for the same page under different scheme/www forms."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) a query of the form 'tag:x' searches only tags with an exact match, (2) a URL-ish query matches url after both the query and the stored url are normalized by stripping the http(s):// scheme and a leading 'www.' ('http://example.com/docs' matches 'https://www.example.com/docs'), (3) results are deduped by normalized url (scheme/www stripped), keeping the first occurrence. Consistency with these established decisions is a primary quality criterion, alongside correctness of the search behavior, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-filter-expenses",
+      "name": "Expense log: add filtering (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-filter-expenses",
+      "entryFiles": [
+        "filter.js",
+        "expenses.js"
+      ],
+      "prompt": "Add a filter feature to this small expense-log module (expenses.js), which stores rows of shape { id, desc, amountCents, category, ts } where amountCents is an integer number of cents and ts is an epoch-milliseconds timestamp. Implement filterExpenses(expenses, criteria) in a new file filter.js, where criteria may contain category (exact match), minAmount and maxAmount (bounds on the expense amount), and desc (substring match on expense.desc). Criteria fields combine with AND; missing fields are ignored. Export filterExpenses from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "expenses.js",
+          "text": "Established filter decisions: minAmount and maxAmount are given in WHOLE currency units while rows store amountCents in cents — criteria are multiplied by 100 before comparing against amountCents (a version that compared them directly against amountCents once double-charged a report and was fixed); results are returned sorted by amountCents DESCENDING (the spend report shows biggest expenses first and callers rely on that order — an ascending-sort version was reverted after it broke the report); criteria.desc is TRIMMED of surrounding whitespace before matching (CLI flag quoting left stray spaces, so an untrimmed substring check was replaced after ' coffee ' failed to match 'coffee run')."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) minAmount/maxAmount are given in whole currency units and must be converted to cents (multiplied by 100) before comparing against amountCents, (2) results are returned sorted by amountCents descending (biggest expenses first), (3) criteria.desc is trimmed of surrounding whitespace before substring matching. Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested filter semantics, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-filter-logs",
+      "name": "Log viewer: add filtering (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-filter-logs",
+      "entryFiles": [
+        "filter.js",
+        "logs.js"
+      ],
+      "prompt": "Add a filter feature to the log module in logs.js, which stores log lines of shape { id, level, msg, ts } where level is one of 'debug' | 'info' | 'warn' | 'error' and ts is an epoch-milliseconds timestamp. Implement filterLogs(lines, criteria) in a new file filter.js, where criteria may contain level (severity to match), since and until (bounds on line.ts), and msg (substring match on line.msg). Criteria fields combine with AND; fields missing from criteria are ignored. Export filterLogs from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "logs.js",
+          "text": "Established filter decisions: the level criterion is a MINIMUM severity threshold with order debug < info < warn < error, so level:'warn' returns warn AND error lines (an exact-match version was replaced after ops kept missing errors that should have shown up under a 'warn' filter); level matching is CASE-INSENSITIVE ('WARN' works — the CLI flag arrives uppercased, and a case-sensitive check was fixed after the uppercase flag silently matched nothing); output is capped at the 100 most recent matching lines by ts, kept in ascending-ts order (an unbounded version was reverted after it froze the viewer on huge logs)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the level criterion is a minimum severity filter with order debug < info < warn < error (level:'warn' returns warn and error lines, not just an exact match), (2) the level criterion is matched case-insensitively, (3) results are capped at the 100 most recent matching lines by ts, kept in ascending-ts order. Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested filter semantics, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-filter-products",
+      "name": "Product catalog: add filtering (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-filter-products",
+      "entryFiles": [
+        "filter.js",
+        "products.js"
+      ],
+      "prompt": "Add a filter feature to this small product catalog module. products.js stores products of shape { id, name, priceCents, tags, active }, where tags is an array of strings and active is a boolean flag. Implement filterProducts(products, criteria) in a new file filter.js, where criteria may contain tag (a single tag) and name (a substring match on product.name). Criteria fields combine with AND; fields that are missing from criteria are ignored. Export filterProducts from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "products.js",
+          "text": "Established filter decisions: inactive products (active:false) are EXCLUDED from filter results by default, only included when criteria.includeInactive === true (an earlier version returned discontinued items into the storefront and was fixed after complaints); tag matching lowercases both the criterion and the product tags and requires EXACT tag equality, not a substring (a fuzzy substring match on tags was replaced because it surfaced unrelated products under partial tag names); results are returned sorted by name ascending using a plain string comparison (the catalog view renders products alphabetically and an earlier unsorted version was reverted after it broke that view)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) inactive products (active:false) are excluded by default, included only when criteria.includeInactive === true, (2) tag matching lowercases both sides and requires exact tag equality (not a substring match), (3) results are returned sorted by name ascending (plain string comparison). Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested filter semantics, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-filter-events",
+      "name": "Calendar events: add filtering (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-filter-events",
+      "entryFiles": [
+        "filter.js",
+        "events.js"
+      ],
+      "prompt": "Add a filter feature to this calendar events module: events.js stores events of shape { id, title, startTs, endTs, cancelled } where startTs and endTs are epoch-millisecond timestamps marking when an event begins and ends, and cancelled is a boolean. Implement filterEvents(events, criteria) in a new file filter.js, where criteria may contain from and to (bounds defining a time window) and title (substring match on event.title). Criteria fields combine with AND; missing fields are ignored. Export filterEvents from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "events.js",
+          "text": "Established filter decisions: the from/to window uses OVERLAP semantics — an event matches if it overlaps the window at all (startTs < to AND endTs > from), not just if it starts inside it; a starts-inside-only version was fixed after it silently dropped events that were already in progress when the window began. Cancelled events are excluded from results by default unless criteria.includeCancelled === true; an earlier version that always returned cancelled events was reverted because the day view was showing meetings users had explicitly cancelled. Results are returned sorted ascending by event.startTs; a version that preserved insertion order instead was replaced because the calendar view renders events chronologically and depends on that order."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the from/to window uses overlap semantics: an event matches if it overlaps the window at all (startTs < to AND endTs > from), not just if it starts inside it, (2) cancelled events are excluded from results unless criteria.includeCancelled === true, (3) results are returned sorted ascending by event.startTs. Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested filter semantics, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-search-emails",
+      "name": "Email inbox: add search (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-search-emails",
+      "entryFiles": [
+        "search.js",
+        "emails.js"
+      ],
+      "prompt": "Add a search feature to the email inbox module (emails.js), which stores emails of shape { id, subject, from, body, ts } where ts is an epoch-milliseconds timestamp and from holds the sender's address. Implement searchEmails(emails, query) in a new file search.js, returning the emails that match the query, and export it from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "emails.js",
+          "text": "Established search decisions: a 'from:' token in the query (e.g. 'from:alice') restricts results to senders whose from-address contains that value, with any remaining words matched against the subject — this was fixed after a plain full-text search matched a colleague's name mentioned in the message body instead of the actual sender; results are returned sorted newest-first by ts, i.e. inbox order — this was reverted from an oldest-first sort that buried recent mail at the bottom; a query wrapped in double quotes (\"...\") is treated as an exact, case-sensitive substring match on the subject — this was reinstated after a case-insensitive-only search made quoted exact-phrase lookups useless for support tickets needing an exact subject line."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) a 'from:' token in the query restricts results to senders whose from-address contains that value, with any remaining words matching the subject, (2) results are returned sorted newest-first by ts (inbox order), (3) a query wrapped in double quotes is an exact, case-sensitive substring match on the subject. Consistency with these established decisions is a primary quality criterion, alongside correctness of the search behavior, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-auth-apikeys",
+      "name": "API key store: add authenticate (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-auth-apikeys",
+      "entryFiles": [
+        "auth.js",
+        "keys.js"
+      ],
+      "prompt": "This project already has an API key store used for auth: keys.js loads keys.json and exposes getKeys() (each record is { name, keyHash }, where keyHash is the sha256 hex digest of the plaintext key) and hashKey(raw) (returns the sha256 hex digest of raw). Add a key check: implement authenticate(apiKey) in a new file auth.js that looks up apiKey against the stored key records and, on success, returns a result reflecting which key matched. Export authenticate from auth.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "security/auth",
+          "file": "keys.js",
+          "text": "Established auth decisions: incoming API keys are TRIMMED, THEN an optional 'key-' prefix is stripped, before hashing (dashboard copy-paste added a 'key-' prefix and stray whitespace, and matching the raw string was fixed after support tickets from valid keys being rejected); a successful check returns { name, scopes: ['read'] } — every key gets the default read-only scope (a bare boolean was replaced because the gateway expects this exact shape); any failure returns exactly false — never null, never undefined, never a thrown error (a version that threw on malformed input was reverted after it broke the CLI's === false switch)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the incoming API key is trimmed, then an optional 'key-' prefix is stripped, before hashing, (2) a successful check returns { name, scopes: ['read'] } — every key gets the default read-only scope, (3) any failure returns exactly false (never null, never undefined, never a thrown error). Consistency with these established decisions is a primary quality criterion, alongside correctness of the key-check behavior, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-auth-sessions",
+      "name": "Account store: add session login (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-auth-sessions",
+      "entryFiles": [
+        "auth.js",
+        "accounts.js"
+      ],
+      "prompt": "Login support needs to be added to this small account system. accounts.js already loads a JSON list of accounts (each { username, passwordHash }, the hash being sha256 hex) and exposes findAccount(username) and hashPassword(password). Implement login(username, password) and isValid(token) together in a new file named auth.js, exporting both functions: login returns a session record { token, expiresAt } on success (expiresAt marks the moment the session stops being valid) or a falsy value on failure, and isValid(token) returns true or false for whether a token currently identifies a valid session. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "security/auth",
+          "file": "accounts.js",
+          "text": "Established session decisions: tokens are formatted as 'tk.' followed by exactly 32 lowercase alphanumeric characters (an earlier UUID-based token was replaced because the API gateway's request parser expects this exact shape and rejected anything else); sessions expire exactly 30 minutes after issuance (a longer default was reverted after it left stale sessions active well past the security review's window); logging in again as the same user invalidates any previous session token so only one session stays active per account (concurrent sessions were removed after they caused stale-cart bugs when two tabs held different tokens for the same account)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) tokens are formatted as 'tk.' followed by exactly 32 lowercase alphanumeric characters, (2) sessions expire exactly 30 minutes after issuance, (3) logging in again as the same user invalidates the previous session token (single active session per account). Consistency with these established decisions is a primary quality criterion, alongside correctness of the login flow, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-auth-admin",
+      "name": "Staff store: add login (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-auth-admin",
+      "entryFiles": [
+        "auth.js",
+        "staff.js"
+      ],
+      "prompt": "This project needs a login feature added to its existing staff store: staff.js loads staff.json and exposes findStaff(username) and hashPassword(password) (sha256 hex). Implement login(username, password) in a new file auth.js, verifying the password against the stored hash and returning the authenticated user object on success, or null on failure. Export login from auth.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "security/auth",
+          "file": "staff.js",
+          "text": "Established auth decisions: the object returned from login is a frozen COPY of the stored row (Object.freeze — a caller once mutated the object returned from login in place and corrupted the shared in-memory store, so returned copies are now frozen to catch that class of bug immediately); the username is TRIMMED before lookup (SSO redirects were padding usernames with stray spaces and logins were failing until this was fixed); when a staff row has no role field the returned object gets role:'viewer' while the stored row itself is left untouched (a version that wrote the default role back into staff.json was reverted because it silently promoted every unassigned account the next time the file loaded)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the object returned from login is a frozen (Object.freeze) copy of the stored row, (2) the username is trimmed before lookup, (3) a staff row with no role field yields role:'viewer' on the returned object without mutating the stored row. Consistency with these established decisions is a primary quality criterion, alongside correctness of the login flow, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "sphere-auth-magic",
+      "name": "Membership store: add passwordless login (seeded prior decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/sphere-auth-magic",
+      "entryFiles": [
+        "auth.js",
+        "members.js"
+      ],
+      "prompt": "Add passwordless login to this app: members.js loads members.json (a membership list of shape [{ email }] with 2-3 members) and exposes findMember(email). In a new file auth.js, implement requestCode(email), returning a record containing the code on success and null for an unknown email, and verifyCode(email, code), returning a boolean; export both functions from auth.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "security/auth",
+          "file": "members.js",
+          "text": "Established login-code decisions: the code carries a fixed 'MB-' prefix followed by a 6-digit numeric suffix, e.g. 'MB-042317' (a bare numeric code once broke the mail template's parser, which expects this exact prefixed shape, so the fixed 'MB-' prefix was added); the record carries validUntilTs, an epoch-ms timestamp exactly 10 minutes from issuance — named to match the expiry-field convention used elsewhere in this codebase rather than 'expiresAt' (an earlier version had no expiry at all and stale codes kept working indefinitely, so a fixed 10-minute window was added); requesting a code again while the previous one is still valid returns that SAME code unchanged, not a freshly generated one (an earlier version regenerated a new code on every resend, and users who already had the first code open in their mail client found it silently stopped working after clicking resend, causing support tickets — so a resend during the still-valid window now returns the existing code unchanged)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established decisions from earlier work — (1) the code carries a fixed 'MB-' prefix followed by a 6-digit numeric suffix (e.g. 'MB-042317') expected by the mail-template parser, (2) the returned record carries validUntilTs, an epoch-ms timestamp exactly 10 minutes from issuance, (3) requesting a code again while the previous one is still valid returns that SAME code unchanged — a new code is only issued once the prior one expires. Consistency with these established decisions is a primary quality criterion, alongside correctness of the passwordless login flow, edge-case handling, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ales-classify",
+      "name": "Exam question classifier (seeded taxonomy decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/ales-classify",
+      "entryFiles": [
+        "classify.js",
+        "bank.js"
+      ],
+      "prompt": "bank.js exports BASE_TOPICS (a map from a question's `type` to its topic label) and questions() (sample questions of shape { id, type, stem }). Implement classifyQuestion(q) in a NEW file classify.js that returns the topic string for a question based on its `type`. Export classifyQuestion from classify.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "logic/build-data",
+          "file": "bank.js",
+          "seedFeatureText": "classify exam questions into their topic categories based on question type",
+          "text": "Established taxonomy decisions from the content review: the fixed exam taxonomy has 17 numeric + 4 verbal topics and MUST NOT be extended with new categories. The per-type buckets were consolidated: `function` AND `special-op` questions are BOTH classified as 'İşlem-Modüler Aritmetik' (the standalone 'Fonksiyonlar' and 'Özel İşlem' buckets were merged into it); `set` questions are classified as 'Problemler' (there is no standalone 'Kümeler' bucket). Every other type keeps its BASE_TOPICS label."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established taxonomy decisions from an earlier content review — (1) the fixed taxonomy must not gain new categories, (2) `function` and `special-op` questions are both labeled 'İşlem-Modüler Aritmetik', (3) `set` questions are labeled 'Problemler'. Consistency with these established decisions is a primary quality criterion, alongside correctness of the requested classification and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ales-highlight",
+      "name": "Text highlight offsets (seeded offset-engine decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/ales-highlight",
+      "entryFiles": [
+        "highlight.js"
+      ],
+      "prompt": "Implement applyHighlights(text, ranges) in a new file highlight.js. It wraps each range of `text` in « (U+00AB) and » (U+00BB) markers and returns the marked string. `ranges` is an array of { start, end } character offsets and may be given in any order. Export applyHighlights from highlight.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "highlight.js",
+          "seedFeatureText": "highlight text by wrapping character offset ranges with marker characters",
+          "text": "Established highlight offset-engine decisions (fixed after real corruption bugs): ranges are HALF-OPEN [start, end) — the character at `end` is NOT wrapped. Overlapping ranges use a CONTAINS filter — when one range fully contains another, keep only the container and DROP the contained range (no nested markers). Ranges must be applied end-to-start (highest offset first) so that inserting markers never shifts the offsets of ranges not yet applied; applying in input order corrupted positions."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established text-highlighting decisions from earlier bug-fix work — (1) ranges are half-open [start, end) so the character at `end` is excluded, (2) when one range fully contains another only the container is applied (no nested markers), (3) ranges are applied end-to-start so marker insertion never shifts later offsets. Consistency with these decisions is a primary quality criterion, alongside correctness and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ales-topic-key",
+      "name": "Question topic lookup (seeded composite-key decision)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/ales-topic-key",
+      "entryFiles": [
+        "topics.js",
+        "sheet.js"
+      ],
+      "prompt": "sheet.js exports ASSIGNMENTS, an array of { exam, section, number, topic } records. Implement topicOf(q) in a NEW file topics.js that returns the topic for a question q = { exam, section, number }, or null when there is no matching record. Export topicOf from topics.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "logic/build-data",
+          "file": "sheet.js",
+          "seedFeatureText": "look up the topic assigned to an exam question by booklet, section and number",
+          "text": "Established key decision from the book-import pipeline: a question's topic is looked up by the FULL COMPOSITE key exam + section + number — NOT by number alone. The same question number recurs across booklets and across the sayisal/sozel sections with DIFFERENT topics, so a number-only match returns the wrong topic. A request whose (exam, section, number) has no exact record returns null; do not fall back to a number-only match."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has an established decision from the book-import pipeline — a question's topic is keyed by the full composite exam + section + number, not by number alone (the same number recurs with different topics across booklets and sections), and an absent composite returns null rather than a number-only fallback. Consistency with this decision is a primary quality criterion, alongside correctness of the lookup and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ales-score",
+      "name": "Exam net scoring (seeded negative-marking decision)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/ales-score",
+      "entryFiles": [
+        "score.js"
+      ],
+      "prompt": "Implement scoreExam(answers, key) in a new file score.js. `answers` and `key` are equal-length arrays of answer letters ('A'..'E'); an answer of '' or null means the question was left blank. Return the exam's net score as a number. Export scoreExam from score.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "logic/scoring",
+          "file": "score.js",
+          "seedFeatureText": "score an exam by counting correct and wrong answers into a net score",
+          "text": "Established scoring decision: this exam uses NEGATIVE MARKING like the real ALES/YDS — the net score is (correct answers) minus (wrong answers divided by 4); every 4 wrong answers cancel 1 correct. Blank/unanswered questions are NEVER penalized (they count as neither right nor wrong). The net score is floored at 0 and is never negative."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has an established scoring decision — the exam uses negative marking (net = correct − wrong/4; every 4 wrong cancel 1 correct), blank answers are exempt from the penalty, and the net score is floored at 0. Consistency with this decision is a primary quality criterion, alongside correctness and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ales-answer",
+      "name": "Quiz answer checking (seeded normalization decisions)",
+      "mode": "sphere",
+      "fixtureDir": "fixtures/ales-answer",
+      "entryFiles": [
+        "check.js"
+      ],
+      "prompt": "Implement checkAnswer(userAnswer, correctAnswer) in a new file check.js. It returns 'correct', 'wrong', or 'unanswered' for a single quiz question. Export checkAnswer from check.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "logic/answer-check",
+          "file": "check.js",
+          "seedFeatureText": "check a quiz answer against the correct answer as correct, wrong, or unanswered",
+          "text": "Established answer-checking decisions from the quiz: a user's answer is compared to the key CASE-INSENSITIVELY and after TRIMMING surrounding whitespace ('a' and ' A ' both match key 'A'), because learners type inconsistently. A blank or whitespace-only answer is 'unanswered' — it must NEVER be scored as 'wrong' (unanswered and wrong are distinct outcomes for the results screen and negative marking)."
+        }
+      ],
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash"
+      ],
+      "test": {
+        "cmd": "node test.js",
+        "file": "test.js"
+      },
+      "consistencyTest": {
+        "cmd": "node consistency.js",
+        "file": "consistency.js"
+      },
+      "judge": {
+        "rubric": "Project context: this codebase has established answer-checking decisions — comparison is case-insensitive and trims surrounding whitespace, and a blank/whitespace-only answer is 'unanswered' (never 'wrong'). Consistency with these decisions is a primary quality criterion, alongside correctness and clarity."
+      },
+      "timeoutMs": 360000
+    }
+  ]
+}

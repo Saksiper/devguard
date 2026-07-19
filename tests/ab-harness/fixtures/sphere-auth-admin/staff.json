@@ -1,0 +1,4 @@
+[
+  { "username": "admin", "passwordHash": "223f16ce5400bc700b927a34845a7f384347322f18a0981462c106c6c5c4368b", "role": "admin" },
+  { "username": "helpdesk", "passwordHash": "f3cfeaadd7c7942d4ce7415c0c6486945d2eae4e651589988c73304ac7fd2f1b" }
+]

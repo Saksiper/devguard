@@ -1,0 +1,3 @@
+{"kind":"surface","node_id":"ui_ux/filter","note_text":"keep the 300ms debounce","expect":"complied"}
+{"kind":"reply","text":"[DG-CONTINUE ui_ux/filter] kept the debounce as noted"}
+{"kind":"finalize"}

@@ -1,0 +1,4 @@
+{"kind":"surface","node_id":"ui_ux/aA","note_text":"note A on feature A","expect":"complied"}
+{"kind":"surface","node_id":"data/bB","note_text":"note B on feature B","expect":"ignored"}
+{"kind":"reply","text":"[DG-CONTINUE ui_ux/aA] handled feature A as noted"}
+{"kind":"finalize"}

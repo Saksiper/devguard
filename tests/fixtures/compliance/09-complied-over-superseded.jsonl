@@ -1,0 +1,4 @@
+{"kind":"surface","node_id":"ui_ux/table","note_text":"row virtualization must stay","expect":"complied"}
+{"kind":"supersede","node_id":"ui_ux/table","note_text":"row virtualization v2 layered after complying"}
+{"kind":"reply","text":"[DG-CONTINUE ui_ux/table] kept virtualization as noted and extended it"}
+{"kind":"finalize"}

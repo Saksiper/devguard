@@ -1,0 +1,8 @@
+[
+  {
+    "name": "devguard-session-watcher",
+    "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/monitors/session-watcher.js\"",
+    "description": "DevGuard session-level cycle pattern monitor",
+    "when": "always"
+  }
+]

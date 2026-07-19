@@ -1,0 +1,3 @@
+{"kind":"surface","node_id":"ui_ux/toast","note_text":"toast timeout is deliberate","expect":"ignored"}
+{"kind":"reply","text":"changed the toast color"}
+{"kind":"finalize"}

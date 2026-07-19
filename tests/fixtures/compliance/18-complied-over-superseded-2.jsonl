@@ -1,0 +1,4 @@
+{"kind":"surface","node_id":"data/schema","note_text":"migration order matters","expect":"complied"}
+{"kind":"supersede","node_id":"data/schema","note_text":"migration order v2"}
+{"kind":"reply","text":"[DG-PAUSE data/schema] validating the migration order as noted"}
+{"kind":"finalize"}

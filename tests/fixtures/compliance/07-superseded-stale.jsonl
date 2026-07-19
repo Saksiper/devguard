@@ -1,0 +1,4 @@
+{"kind":"surface","node_id":"ui_ux/filter2","note_text":"v1 filter guidance","expect":"superseded"}
+{"kind":"supersede","node_id":"ui_ux/filter2","note_text":"v2 filter guidance"}
+{"kind":"reply","text":"refactored unrelated internals"}
+{"kind":"finalize"}

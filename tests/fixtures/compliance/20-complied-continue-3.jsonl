@@ -1,0 +1,3 @@
+{"kind":"surface","node_id":"ui_ux/tabs","note_text":"active tab state must persist","expect":"complied"}
+{"kind":"reply","text":"[DG-CONTINUE ui_ux/tabs] preserved active tab state across renders"}
+{"kind":"finalize"}

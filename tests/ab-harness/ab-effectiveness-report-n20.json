@@ -1,0 +1,1557 @@
+{
+  "meta": {
+    "product": "DevGuard",
+    "experiment_type": "A/B live claude -p (passive vs active intervention)",
+    "honesty_note": "Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.",
+    "measurable_components_note": "Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.",
+    "sphere_mode_note": "Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality.",
+    "run_model": "opus",
+    "judge_model": "opus",
+    "permission_mode": "acceptEdits",
+    "bias_mitigation": [
+      "blind-judge",
+      "position-swap",
+      "code-only+strip"
+    ],
+    "isolation": "strategy-B: unique project_path per run + per-pair cleanup",
+    "run_note": "N=20 sphere bank, 4 parallel groups merged, opus run + opus judge, 2026-07-07"
+  },
+  "generated_at_note": "merged offline",
+  "n_pairs": 20,
+  "pairs": [
+    {
+      "task": "sphere-filter",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.9239729999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.7345045000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches all three established project decisions (case-insensitive title, ascending ts sort, half-open [from,to) bounds) while A violates all three (case-sensitive, unsorted, inclusive 'to').",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A matches all three established project decisions (case-insensitive title match, ascending ts sort, half-open [from,to) bounds) while B violates all three by being case-sensitive, unsorted, and using an inclusive 'to' bound.",
+          "confidence": 0.99,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.6103945000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 2,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": false,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 FAIL\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.6524439999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches all three established project decisions (case-insensitive, whitespace-split AND-matching on title only, empty-query returns []), whereas A does OR substring matching over both title and body, contradicting the title-only AND semantics.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A matches all three established decisions (case-insensitive, whitespace-split AND-match on title, empty query returns []), whereas B treats the query as a single substring and also searches the body, violating the whitespace-split AND semantics and the title-only scope.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-auth",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.7952479999999998,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 11,
+          "costUsd": 0.9664299999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B matches all three established project decisions (case-insensitive lookup, 'sess_'+48-hex token from randomBytes(24), in-memory lastLoginTs) while Solution A violates all three despite its constant-time-compare nicety.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A matches all three established decisions (case-insensitive matching, 'sess_'+48-hex token, in-memory lastLoginTs), whereas B violates every one—exact-match username, wrong 64-hex prefix-less token, and no lastLoginTs—despite its constant-time-compare nicety.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-auth-pin",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 10,
+          "costUsd": 0.8981895000000002,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 4,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 3,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 10,
+          "costUsd": 1.0571730000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B correctly implements all three established project decisions (3rd-failure 'locked' string, counter reset on success, and sticky lock even for correct PIN) that the rubric names as a primary quality criterion, while Solution A ignores them entirely.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "A correctly implements all three established project decisions (3rd-attempt 'locked' string, success resets the counter, stays locked for correct PIN) while B only does basic hash verification and ignores the lockout contract entirely.",
+          "confidence": 0.96,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-filter-todos",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 7,
+          "costUsd": 0.6869314999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.8032705,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B matches all three established project decisions (null-due always kept under dueBefore, prefix/autocomplete title match, not-done-first stable ordering) while Solution A violates all three (excludes null-due entries, uses substring match, and applies no ordering).",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A matches all three established project decisions—null-due entries kept under dueBefore, prefix (startsWith) title matching, and not-done-before-done stable ordering—while Solution B violates all three by dropping null-due todos, using substring matching, and never reordering.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-filter-contacts",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 5,
+          "costUsd": 0.8092545,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.729534,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B satisfies all three established project decisions—leading-'@' domain normalization, favorites pinned to the front, and empty criteria returning an empty array—whereas Solution A implements none of them (returns the full list on {}, never pins favorites, and doesn't normalize a leading '@').",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A honors all three established project decisions (leading-'@' domain normalization with exact match, favorites pinned to the front, and empty criteria returning an empty array), whereas B fails every one—no '@' normalization, no favorite pinning, and {} returns the full list.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search-snippets",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 7,
+          "costUsd": 0.6749404999999998,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 9,
+          "costUsd": 0.882567,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions (lang: exact filter, case-sensitive code vs case-insensitive title matching, sorted-by-title results) whereas Solution A ignores all of them by doing a uniform case-insensitive substring match with no lang token and no sorting.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A implements all three established decisions (lang: exact-match token, case-sensitive code / case-insensitive title matching, and ascending title sort) whereas B ignores the lang: syntax, matches code case-insensitively, treats lang as a plain searchable field, and never sorts results.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search-movies",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.688836,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.7666375,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions (4-digit year filter, case-insensitive title matching that strips a leading 'The ', and year-descending sort), while Solution A ignores every one of them in favor of a generic multi-field substring match.",
+          "confidence": 0.95,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A implements all three established project conventions (4-digit token as year filter with remaining words matched against title, case-insensitive title matching that ignores a leading 'The', and year-descending sort), whereas B is a generic multi-field substring search that honors none of them.",
+          "confidence": 0.95,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search-recipes",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.653876,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.7077295,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions (title substring + exact ingredient equality, ordering by exact-match count with stable ties, and empty result for sub-3-char trimmed queries) whereas A uses substring matching on ingredients, no ordering, and returns all recipes on blank query—contradicting every established decision.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A implements all three established decisions (substring title match, exact ingredient equality, ordering by exact-match count descending, and empty array for queries under 3 chars), whereas B uses substring matching for ingredients, lacks match-count ordering, and returns all recipes instead of an empty array for short/blank queries.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search-docs",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.6414219999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 1,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": true
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.7448400000000002,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions (#-prefix searches headings only, multi-word OR-across-words semantics, empty/whitespace returns []) plus null-safety and the lone-'#' edge case, whereas Solution A only handles the empty-query rule and ignores both #-heading-only and multi-word OR semantics by treating the whole query as one substring.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A implements all three established project decisions (# prefix = headings-only, OR-across-words for multi-word queries, empty/whitespace → []) plus null-safety, whereas B ignores the # rule and multi-word OR semantics by matching the whole query as one substring.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search-bookmarks",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.905648,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 8,
+          "costUsd": 0.9951629999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions (tag: exact-match, url scheme/www normalization, dedupe by normalized url) while A ignores all of them, making B far more consistent and correct against the rubric.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A implements all three established project decisions (exact tag:x matching, scheme/www URL normalization, dedup by normalized url) plus edge-case handling, whereas B is a generic multi-term substring search that ignores every one of them.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-filter-expenses",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.7498830000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.7184509999999998,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions (unit-to-cents conversion, descending sort by amountCents, trimmed desc) plus correct AND filter semantics, whereas A omits all three.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A honors all three established project decisions (multiply min/maxAmount by 100 to reach cents, sort results by amountCents descending, trim desc before substring match) while correctly implementing AND filter semantics, whereas B ignores all three (no unit conversion, no sorting, no trim), making it inconsistent and functionally wrong on amount bounds.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-filter-logs",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.670858,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 4,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.797099,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions—minimum-severity threshold (debug<info<warn<error), case-insensitive level matching, and capping to the 100 most-recent matches in ascending-ts order—while Solution A does an exact case-sensitive level match with no cap or sort, violating all three.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A implements all three established decisions (minimum-severity ordering, case-insensitive level match, and the 100-most-recent ascending-ts cap) plus correct AND/inclusive-bound/substring semantics, whereas B uses exact case-sensitive level matching and omits sorting and the cap entirely.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-filter-products",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 5,
+          "costUsd": 0.6031175,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "superseded": 1,
+            "surfaced": 1
+          },
+          "numTurns": 8,
+          "costUsd": 0.804204,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B satisfies all three established project decisions (default-exclude inactive with includeInactive opt-in, case-insensitive exact tag equality, sort by name ascending) plus correct AND/substring semantics, whereas Solution A implements none of them.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A honors all three established project decisions (default-exclude inactive with includeInactive opt-in, case-insensitive exact-tag matching, and name-ascending sort) while B ignores all of them—case-sensitive tag matching, no inactive filtering, and no sorting—despite both meeting the literal filter spec.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-filter-events",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 4,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 3,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.7931685,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 1,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 8,
+          "costUsd": 0.8418969999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches all three established project decisions—strict overlap semantics (startTs < to && endTs > from), excluding cancelled events unless includeCancelled===true, and ascending startTs sort—while A ignores cancelled handling and sorting entirely and uses inclusive rather than strict window bounds.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A implements all three established decisions (exclusive overlap semantics startTs<to && endTs>from, cancelled exclusion via includeCancelled, and ascending startTs sort), while B omits cancelled exclusion and sorting entirely and uses inclusive-boundary overlap that contradicts the established convention.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search-emails",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 7,
+          "costUsd": 0.900231,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.7431225000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B implements all three established project decisions (from: token scoping subject match, newest-first ts sort, quoted case-sensitive exact subject match) with sound edge-case handling and clear docs, whereas Solution A ignores every one of them by doing a flat case-insensitive substring match over subject/from/body with no sorting.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A correctly implements all three established decisions (from: sender restriction with remaining words on subject, newest-first ts sort, quoted exact case-sensitive subject match), while B ignores all of them—no sorting, no from:/quote handling, and matches body too.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-auth-apikeys",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.8391035,
+          "isError": false
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 1,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 1,
+          "distinctFilesEdited": 1,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "superseded": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.7337345000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches all three established decisions (trim+strip 'key-' before hashing, returns {name, scopes:['read']}, failures return exactly false) while A implements none of them and uses a divergent result shape.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A matches all three established codebase decisions (trim + strip 'key-' prefix before hashing, return { name, scopes: ['read'] } on success, return exactly false on any failure), whereas Solution B ignores the normalization step and returns a non-conforming object shape ({ authenticated, name }) instead of false/the read-scope result.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-auth-sessions",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 5,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 3,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 10,
+          "costUsd": 0.8792974999999998,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 8,
+          "costUsd": 0.955242,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches all three established project decisions (30-minute expiry, 'tk.'-prefixed 32-char lowercase-alphanumeric tokens, single-active-session invalidation) while A violates every one of them (1-hour TTL, 64-char hex token with no prefix, no previous-session invalidation), and both are otherwise correct on the login flow.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A matches all three established project decisions (tk.+32 lowercase-alphanumeric tokens, 30-minute expiry, single-active-session invalidation) while Solution B violates every one of them (64-char hex tokens with no prefix, 1-hour TTL, no previous-session invalidation), and its lone advantage of constant-time hash comparison does not offset those consistency failures.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-auth-admin",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 1,
+          "distinctFilesEdited": 1,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.8515585,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 5,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 3,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "layered": 1,
+            "superseded": 1,
+            "surfaced": 1
+          },
+          "numTurns": 10,
+          "costUsd": 0.9804539999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches all three established project decisions (frozen copy of the row, trimmed username lookup, non-mutating role:'viewer' default) plus string type-guards, while A returns the raw stored row with none of these.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A satisfies all three established project decisions (frozen copy via Object.freeze, username trimmed before lookup, role defaulting to 'viewer' on the copy only) plus type-guards inputs, while Solution B returns the raw stored row unfrozen, never trims, and omits the role default.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-auth-magic",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 7,
+          "costUsd": 0.6902315,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.7303375,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B honors all three established decisions (MB- prefixed 6-digit code, validUntilTs 10 minutes out, and returning the same code while still valid), whereas A omits the prefix, the timestamp, and the reuse-on-valid behavior.",
+          "confidence": 0.99,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A satisfies all three established decisions (MB- prefixed 6-digit code, validUntilTs 10 minutes out, and returning the same code while still valid), whereas B violates all three by emitting a bare numeric code, no validUntilTs field, and a fresh overwriting code on every request.",
+          "confidence": 0.98,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    }
+  ],
+  "summary": {
+    "total_pairs": 20,
+    "active_wins": 20,
+    "passive_wins": 0,
+    "ties": 0,
+    "inconsistent": 0,
+    "errored_pairs": 0,
+    "active_win_rate": 1,
+    "active_win_rate_ci_wilson": [
+      0.8389,
+      1
+    ],
+    "valid_pairs": 20,
+    "test_pass_rate": {
+      "active": 1,
+      "passive": 0.95
+    },
+    "proxy_means": {
+      "cycleWarn": {
+        "active": 0,
+        "passive": 0
+      },
+      "changeCount": {
+        "active": 2.55,
+        "passive": 2.4
+      },
+      "sameFileMax": {
+        "active": 1.5,
+        "passive": 1.4
+      },
+      "numTurns": {
+        "active": 7.5,
+        "passive": 7.1
+      }
+    },
+    "consistency": {
+      "active": 3,
+      "passive": 0.25
+    },
+    "surfaced": {
+      "active": 1,
+      "passive": 0
+    }
+  }
+}

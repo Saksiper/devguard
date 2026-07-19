@@ -1,0 +1,21 @@
+{
+  "name": "devguard-marketplace",
+  "owner": {
+    "name": "Umut Uygun"
+  },
+  "metadata": {
+    "description": "Vibe coding guardian — cycle detection & cross-concern protection for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "devguard",
+      "source": "./",
+      "description": "Vibe coding guardian — cycle detection & cross-concern protection for Claude Code",
+      "version": "0.3.3",
+      "author": {
+        "name": "Umut Uygun"
+      },
+      "license": "MIT"
+    }
+  ]
+}

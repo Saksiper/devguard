@@ -1,0 +1,296 @@
+{
+  "meta": {
+    "product": "DevGuard",
+    "experiment_type": "A/B live claude -p (passive vs active intervention)",
+    "honesty_note": "Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.",
+    "measurable_components_note": "Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.",
+    "sphere_mode_note": "Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality.",
+    "run_model": "opus",
+    "judge_model": "opus",
+    "permission_mode": "acceptEdits",
+    "bias_mitigation": [
+      "blind-judge",
+      "position-swap",
+      "code-only+strip"
+    ],
+    "isolation": "strategy-B: unique project_path per run + per-pair cleanup"
+  },
+  "generated_at": "2026-07-06T06:44:08.489Z",
+  "parameters": {
+    "tasks_file": "tests/ab-harness/tasks.json",
+    "n_replicas": 1,
+    "only": [
+      "sphere-filter",
+      "sphere-search",
+      "sphere-auth"
+    ]
+  },
+  "pairs": [
+    {
+      "task": "sphere-filter",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.737521,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.7001145000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Solution B satisfies all three established project decisions (case-insensitive title match, ascending sort by ts, half-open [from, to) bounds) while Solution A violates all three (case-sensitive includes, no sorting, and inclusive 'to' via entry.ts > to).",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A honors all three established decisions (case-insensitive title match, ascending sort by ts, half-open [from,to) bounds) and the filter semantics, whereas B is case-sensitive, unsorted, and treats 'to' as inclusive.",
+          "confidence": 0.99,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-search",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 7,
+          "costUsd": 0.6884345000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 2,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": false,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 FAIL\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 1,
+          "distinctFilesEdited": 1,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "surfaced": 1
+          },
+          "numTurns": 5,
+          "costUsd": 0.5852105,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches all three established project decisions (case-insensitive, whitespace-split AND over the title only, empty query returns []), whereas A does a single-substring match over title and body, violating decisions 1's word-split intent and the title-only AND semantics.",
+          "confidence": 0.97,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A matches all three established decisions (case-insensitive, whitespace-split AND-match on title, empty query returns []), whereas B treats the query as a single substring and searches both title and body, violating the title-only per-word AND semantics.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "sphere-auth",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 10,
+          "costUsd": 0.8514629999999999,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 10,
+          "costUsd": 0.9228825,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B honors all three established project decisions (case-insensitive username match, 'sess_'+48-hex token from randomBytes(24), in-memory lastLoginTs stamp) plus input-type guards, whereas A uses case-sensitive findUser, emits a 64-hex token with no 'sess_' prefix, and never records lastLoginTs.",
+          "confidence": 0.98,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "A matches all three established decisions (case-insensitive lookup, 'sess_'+48-hex token, in-memory lastLoginTs stamp) plus type-guards its inputs, whereas B is case-sensitive, emits a wrong 64-hex prefix-less token, and never records lastLoginTs.",
+          "confidence": 0.97,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    }
+  ],
+  "summary": {
+    "total_pairs": 3,
+    "active_wins": 3,
+    "passive_wins": 0,
+    "ties": 0,
+    "inconsistent": 0,
+    "errored_pairs": 0,
+    "active_win_rate": 1,
+    "active_win_rate_ci_wilson": [
+      0.4385,
+      1
+    ],
+    "valid_pairs": 3,
+    "test_pass_rate": {
+      "active": 1,
+      "passive": 1
+    },
+    "proxy_means": {
+      "cycleWarn": {
+        "active": 0,
+        "passive": 0
+      },
+      "changeCount": {
+        "active": 1.667,
+        "passive": 2.667
+      },
+      "sameFileMax": {
+        "active": 1,
+        "passive": 1.667
+      },
+      "numTurns": {
+        "active": 7.333,
+        "passive": 8.333
+      }
+    },
+    "consistency": {
+      "active": 3,
+      "passive": 0.667
+    },
+    "surfaced": {
+      "active": 1,
+      "passive": 0
+    }
+  }
+}

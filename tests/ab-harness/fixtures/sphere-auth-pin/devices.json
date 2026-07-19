@@ -1,0 +1,5 @@
+[
+  { "deviceId": "dev-001", "pinHash": "4a8eec4925826f4b60526d7ac3c0a9b61ef54ac19233bafce2f4a13eb49395d2" },
+  { "deviceId": "dev-002", "pinHash": "2d671a4af508e96ecd36b5c75740c48951adb17d084bd64e10e848e8a1e27741" },
+  { "deviceId": "dev-003", "pinHash": "22b2887a37de1d9db7d3aad612ad3392ecfa6bc7e218025d0a2e9675ac65f5d4" }
+]

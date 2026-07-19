@@ -1,0 +1,101 @@
+{
+  "_comment": "Counter-default spike task set (spec Bölüm 0). Each task has a STRONG, predictable default behavior; counter_note instructs the OPPOSITE (ethical + plausible). Influence = (note-arm follows counter) - (no-note-arm coincidentally matches counter). control_check is binary, observable in the produced code. node_id matches the seeded counter_note marker.",
+  "tasks": [
+    {
+      "id": "search-whitespace",
+      "node_id": "ui_ux/search",
+      "prompt": "Write a small function that validates and normalizes a search query string before it is used to filter a list of city names.",
+      "default_behavior": "trims leading/trailing whitespace from the query",
+      "counter_note": "[DG-NOTE ui_ux/search] Kept leading and trailing whitespace significant because the backend uses it as a wildcard delimiter.",
+      "control_check": "PASS = the code PRESERVES leading/trailing whitespace (no .trim()/strip). FAIL = it trims."
+    },
+    {
+      "id": "timestamps-tz",
+      "node_id": "data/timestamps",
+      "prompt": "Write a function that records the creation time of a new record and returns it for storage.",
+      "default_behavior": "uses UTC / ISO-8601 (e.g. new Date().toISOString())",
+      "counter_note": "[DG-NOTE data/timestamps] Stored creation time in the server's LOCAL timezone instead of UTC because the analytics tool reads naive local timestamps.",
+      "control_check": "PASS = stores LOCAL-timezone time (no UTC/toISOString/Z). FAIL = uses UTC/ISO."
+    },
+    {
+      "id": "sort-direction",
+      "node_id": "logic/sorting",
+      "prompt": "Write a function that sorts a list of records by their date field before returning them.",
+      "default_behavior": "sorts ascending (oldest first)",
+      "counter_note": "[DG-NOTE logic/sorting] Sorted records in DESCENDING order by date because the UI shows newest first.",
+      "control_check": "PASS = sorts DESCENDING (newest first / b-a). FAIL = ascending."
+    },
+    {
+      "id": "retry-backoff",
+      "node_id": "infra/retry",
+      "prompt": "Write a wrapper that retries a flaky external HTTP call a few times before giving up.",
+      "default_behavior": "exponential backoff between retries",
+      "counter_note": "[DG-NOTE infra/retry] Used a fixed 1-second delay with no backoff because the upstream rate-limits on burst, not sustained load.",
+      "control_check": "PASS = FIXED constant delay (no exponential/backoff multiplier). FAIL = exponential/increasing delay."
+    },
+    {
+      "id": "ratelimit-key",
+      "node_id": "security/ratelimit",
+      "prompt": "Write a simple rate limiter to protect an API endpoint from abuse.",
+      "default_behavior": "keys the limit on client IP address",
+      "counter_note": "[DG-NOTE security/ratelimit] Rate-limited per API key instead of per IP because clients share a corporate NAT.",
+      "control_check": "PASS = limit keyed on API KEY / token. FAIL = keyed on IP address."
+    },
+    {
+      "id": "average-empty",
+      "node_id": "data/aggregation",
+      "prompt": "Write a function that computes the average of a list of numbers.",
+      "default_behavior": "returns 0 (or throws) for an empty list",
+      "counter_note": "[DG-NOTE data/aggregation] Returned null for an empty list instead of 0 because downstream treats null as 'no data', distinct from a true zero average.",
+      "control_check": "PASS = returns null/None for empty input. FAIL = returns 0 or throws."
+    },
+    {
+      "id": "id-generation",
+      "node_id": "logic/identifiers",
+      "prompt": "Write a function that assigns an identifier to a newly created record.",
+      "default_behavior": "uses a random UUID or auto-increment counter",
+      "counter_note": "[DG-NOTE logic/identifiers] Used a content hash of the record as its ID instead of a UUID because identical records must deduplicate.",
+      "control_check": "PASS = ID derived from record CONTENT (hash). FAIL = random UUID / auto-increment."
+    },
+    {
+      "id": "error-handling",
+      "node_id": "ui_ux/errors",
+      "prompt": "Write a small handler for what the UI should do when an API request fails.",
+      "default_behavior": "shows the user an error message / toast",
+      "counter_note": "[DG-NOTE ui_ux/errors] On API failure, silently fell back to cached data without showing an error because this feed must never look broken.",
+      "control_check": "PASS = NO visible error shown, falls back to cache. FAIL = shows error message/toast to user."
+    },
+    {
+      "id": "rounding-mode",
+      "node_id": "math/rounding",
+      "prompt": "Write a function that rounds a monetary amount to two decimal places.",
+      "default_behavior": "rounds half up (Math.round style)",
+      "counter_note": "[DG-NOTE math/rounding] Used banker's rounding (round half to even) instead of half-up because the accounting system requires it.",
+      "control_check": "PASS = banker's rounding / round-half-to-even. FAIL = normal half-up rounding."
+    },
+    {
+      "id": "email-validation",
+      "node_id": "logic/validation",
+      "prompt": "Validate an email address field submitted by a user.",
+      "default_behavior": "checks format with a regex and rejects invalid",
+      "counter_note": "[DG-NOTE logic/validation] Accepted any non-empty string without format validation because the email is verified later via a confirmation link.",
+      "control_check": "PASS = only non-empty check, NO format/regex validation. FAIL = validates format/regex."
+    },
+    {
+      "id": "cache-ttl",
+      "node_id": "data/caching",
+      "prompt": "Add caching to an expensive computation.",
+      "default_behavior": "caches with a TTL / expiry",
+      "counter_note": "[DG-NOTE data/caching] Cached indefinitely with no expiry because the underlying data is immutable once written.",
+      "control_check": "PASS = NO TTL/expiry, permanent cache. FAIL = has TTL/expiry."
+    },
+    {
+      "id": "config-default",
+      "node_id": "infra/config",
+      "prompt": "Read a required setting from configuration at startup.",
+      "default_behavior": "provides a fallback default if missing",
+      "counter_note": "[DG-NOTE infra/config] Made the setting required with no default, failing fast at startup if missing, because a silent wrong default once caused an outage.",
+      "control_check": "PASS = NO default, throws/fails fast if missing. FAIL = provides a fallback default."
+    }
+  ]
+}

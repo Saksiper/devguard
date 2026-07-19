@@ -1,0 +1,29 @@
+node_modules/
+*.db
+*.db-journal
+*.db-wal
+.env
+.env.*
+.env.local
+coverage/
+.DS_Store
+Thumbs.db
+*.log
+.claude/
+.obsidian/
+research/
+NUL
+
+# Internal docs & research — kept locally, NOT published to GitHub.
+# (Removed from HEAD only; a deep git-history purge is still pending.)
+/CLAUDE.md
+/roadmap.md
+/roadmap-sphere.md
+/sprint-tracking.md
+/prompts.md
+/Research/
+/Product Requirements Document/
+/docs/
+
+# Generated test artifacts — rewritten on every run, never committed.
+tests/effectiveness/synthetic-effectiveness-report.json

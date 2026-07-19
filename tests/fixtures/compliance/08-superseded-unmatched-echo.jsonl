@@ -1,0 +1,4 @@
+{"kind":"surface","node_id":"ui_ux/grid","note_text":"grid gap is fixed by design","expect":"superseded"}
+{"kind":"supersede","node_id":"ui_ux/grid","note_text":"grid gap v2"}
+{"kind":"reply","text":"[DG-CONTINUE ui_ux/other] worked on a different widget"}
+{"kind":"finalize"}

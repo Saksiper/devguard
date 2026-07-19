@@ -1,0 +1,4 @@
+{"kind":"surface","node_id":"perf/memo","note_text":"v1 memo guidance","expect":"superseded"}
+{"kind":"supersede","node_id":"perf/memo","note_text":"v2 memo guidance"}
+{"kind":"reply","text":"did some other work"}
+{"kind":"finalize"}
