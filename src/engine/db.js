@@ -338,17 +338,35 @@ const MIGRATIONS = [
 
 // CLI/manual runs lack CLAUDE_PLUGIN_DATA; without this scan they'd read/write
 // a near-empty ~/.devguard DB while the real data lives in the plugin data dir.
+// Selection is DETERMINISTIC, not newest-mtime: two DBs can coexist (the canonical
+// marketplace install and Desktop's '-inline' DB, or a pre-merge '-inline-*'
+// rename), and picking by mtime made the CLI flip between them day to day, so data
+// scattered across both files. The canonical marketplace dir always wins over any
+// inline variant; backup dirs are never eligible.
 function findNewestPluginDb(baseDir) {
   try {
-    let newest = null;
+    const candidates = [];
     for (const entry of fs.readdirSync(baseDir)) {
+      if (/^backup/i.test(entry)) continue; // a backup dir is never the live DB
       const candidate = path.join(baseDir, entry, 'devguard.db');
       try {
         const mtime = fs.statSync(candidate).mtimeMs;
-        if (!newest || mtime > newest.mtime) newest = { path: candidate, mtime };
+        candidates.push({ path: candidate, mtime, name: entry });
       } catch { /* no devguard.db in this plugin dir */ }
     }
-    return newest ? newest.path : null;
+    if (candidates.length === 0) return null;
+    // Prefer canonical (non-inline) dirs; fall back to the full set only if none
+    // exist. Within the chosen pool, newest mtime is the last-resort tie-break.
+    const canonical = candidates.filter(c => !/inline/i.test(c.name));
+    const pool = canonical.length > 0 ? canonical : candidates;
+    pool.sort((a, b) => b.mtime - a.mtime);
+    const chosen = pool[0];
+    if (candidates.length > 1) {
+      debugLog('db', 'Multiple plugin-data DBs; deterministic selection', {
+        chosen: chosen.path, canonical: canonical.length, total: candidates.length,
+      });
+    }
+    return chosen.path;
   } catch {
     return null;
   }

@@ -460,20 +460,66 @@ describe('db.js — fallback path', () => {
     expect(dbPath).toContain('devguard.db');
   });
 
-  it('picks the newest plugin data DB when CLAUDE_PLUGIN_DATA is not set', () => {
+  it('prefers the canonical marketplace DB over an inline variant EVEN when inline is newer (no mtime roulette)', () => {
     delete process.env.CLAUDE_PLUGIN_DATA;
     const base = fs.mkdtempSync(path.join(os.tmpdir(), 'devguard-plugins-'));
     process.env.DEVGUARD_PLUGINS_DIR = base;
-    const oldDir = path.join(base, 'devguard-inline');
-    const newDir = path.join(base, 'devguard-marketplace');
-    fs.mkdirSync(oldDir);
-    fs.mkdirSync(newDir);
-    fs.writeFileSync(path.join(oldDir, 'devguard.db'), 'x');
-    fs.writeFileSync(path.join(newDir, 'devguard.db'), 'x');
-    fs.utimesSync(path.join(oldDir, 'devguard.db'), new Date(2020, 0, 1), new Date(2020, 0, 1));
-    fs.utimesSync(path.join(newDir, 'devguard.db'), new Date(2024, 0, 1), new Date(2024, 0, 1));
+    const inlineDir = path.join(base, 'devguard-inline');
+    const marketDir = path.join(base, 'devguard-devguard-marketplace');
+    fs.mkdirSync(inlineDir);
+    fs.mkdirSync(marketDir);
+    fs.writeFileSync(path.join(inlineDir, 'devguard.db'), 'x');
+    fs.writeFileSync(path.join(marketDir, 'devguard.db'), 'x');
+    // Inline is the NEWER file — the old mtime rule would pick it; deterministic wins.
+    fs.utimesSync(path.join(marketDir, 'devguard.db'), new Date(2020, 0, 1), new Date(2020, 0, 1));
+    fs.utimesSync(path.join(inlineDir, 'devguard.db'), new Date(2026, 0, 1), new Date(2026, 0, 1));
     const db = loadDb();
-    expect(db.getDbPath()).toBe(path.join(newDir, 'devguard.db'));
+    expect(db.getDbPath()).toBe(path.join(marketDir, 'devguard.db'));
+  });
+
+  it('ignores a pre-merge inline rename (still an inline variant) and a junction, picking marketplace', () => {
+    delete process.env.CLAUDE_PLUGIN_DATA;
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'devguard-plugins-'));
+    process.env.DEVGUARD_PLUGINS_DIR = base;
+    for (const [dir, when] of [
+      ['devguard-devguard-marketplace', new Date(2020, 0, 1)],
+      ['devguard-inline', new Date(2026, 0, 1)],
+      ['devguard-inline-premerge-20260719', new Date(2026, 5, 1)],
+    ]) {
+      const d = path.join(base, dir);
+      fs.mkdirSync(d);
+      fs.writeFileSync(path.join(d, 'devguard.db'), 'x');
+      fs.utimesSync(path.join(d, 'devguard.db'), when, when);
+    }
+    const db = loadDb();
+    expect(db.getDbPath()).toBe(path.join(base, 'devguard-devguard-marketplace', 'devguard.db'));
+  });
+
+  it('never selects a backup directory even if it holds a devguard.db', () => {
+    delete process.env.CLAUDE_PLUGIN_DATA;
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'devguard-plugins-'));
+    process.env.DEVGUARD_PLUGINS_DIR = base;
+    const backupDir = path.join(base, 'backup-20260719-dbmerge');
+    const marketDir = path.join(base, 'devguard-devguard-marketplace');
+    fs.mkdirSync(backupDir);
+    fs.mkdirSync(marketDir);
+    fs.writeFileSync(path.join(backupDir, 'devguard.db'), 'x');
+    fs.writeFileSync(path.join(marketDir, 'devguard.db'), 'x');
+    fs.utimesSync(path.join(backupDir, 'devguard.db'), new Date(2026, 6, 1), new Date(2026, 6, 1));
+    fs.utimesSync(path.join(marketDir, 'devguard.db'), new Date(2020, 0, 1), new Date(2020, 0, 1));
+    const db = loadDb();
+    expect(db.getDbPath()).toBe(path.join(marketDir, 'devguard.db'));
+  });
+
+  it('falls back to the single candidate when only an inline DB exists (no canonical)', () => {
+    delete process.env.CLAUDE_PLUGIN_DATA;
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'devguard-plugins-'));
+    process.env.DEVGUARD_PLUGINS_DIR = base;
+    const inlineDir = path.join(base, 'devguard-inline');
+    fs.mkdirSync(inlineDir);
+    fs.writeFileSync(path.join(inlineDir, 'devguard.db'), 'x');
+    const db = loadDb();
+    expect(db.getDbPath()).toBe(path.join(inlineDir, 'devguard.db'));
   });
 });
 
