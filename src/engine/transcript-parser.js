@@ -88,9 +88,11 @@ function parseTranscript(transcriptPath) {
 function posixToWindows(p) {
   if (!p || typeof p !== 'string') return p;
   let out = p;
-  const m = out.match(/^\/([a-z])\//i);
-  if (m) {
-    out = m[1].toUpperCase() + ':/' + out.slice(3);
+  // git-bash drive form (/c/repo -> C:/repo) only exists on Windows. On POSIX a
+  // one-letter first segment ('/w/repo') is a REAL path and must not be rewritten.
+  if (process.platform === 'win32') {
+    const m = out.match(/^\/([a-z])\//i);
+    if (m) out = m[1].toUpperCase() + ':/' + out.slice(3);
   }
   return out.replace(/\\/g, '/');
 }

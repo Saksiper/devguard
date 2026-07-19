@@ -605,14 +605,16 @@ function getDb(projectPath) {
     // --- issues ---
     insertIssue(data) {
       debugLog('db', 'insertIssue', { project: pp, title: data.title });
+      // Normalize first_seen to sqlite datetime format at this single write point
+      // (mirrors insertChange) so it compares/sorts consistently with CURRENT_TIMESTAMP.
       const stmt = db.prepare(`INSERT INTO issues
         (project_path, title, title_embedding, first_seen, status, fix_change_id)
-        VALUES (?, ?, ?, ?, ?, ?)`);
+        VALUES (?, ?, ?, COALESCE(datetime(?), CURRENT_TIMESTAMP), ?, ?)`);
       const info = stmt.run(
         pp,
         sanitize(data.title) || null,
         data.title_embedding || null,
-        data.first_seen || new Date().toISOString(),
+        data.first_seen ?? null,
         data.status || 'open',
         data.fix_change_id ?? null,
       );
@@ -1516,8 +1518,11 @@ function getDb(projectPath) {
 
     deleteOldBlameCacheEntries(days) {
       debugLog('db', 'deleteOldBlameCacheEntries', { project: pp, days });
-      const cutoff = new Date(Date.now() - days * 86400000).toISOString();
-      return db.prepare('DELETE FROM blame_cache WHERE project_path = ? AND created_at < ?').run(pp, cutoff).changes;
+      // sqlite-side cutoff so both sides share CURRENT_TIMESTAMP's format; a raw
+      // ISO string cutoff ('...T...Z') mis-compares against 'YYYY-MM-DD HH:MM:SS'
+      // at the boundary (space 0x20 < 'T' 0x54).
+      return db.prepare("DELETE FROM blame_cache WHERE project_path = ? AND created_at < datetime('now', ?)")
+        .run(pp, `-${days} days`).changes;
     },
 
     invalidateBlameCacheFile(filePath) {

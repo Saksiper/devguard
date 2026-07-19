@@ -69,8 +69,13 @@ describe('normalizePath', () => {
     expect(normalizePath('C:/project/file.txt:$DATA')).toBe('');
   });
 
-  // P1.3: DOS device names
-  it('rejects DOS device names (CON, PRN, AUX, NUL)', () => {
+  // P1.3: DOS device names — reservation only exists on Windows. On POSIX these
+  // are valid filenames, so the filter is platform-gated (CI runs ubuntu+windows).
+  const onWin = process.platform === 'win32';
+  const itWin = onWin ? it : it.skip;
+  const itPosix = onWin ? it.skip : it;
+
+  itWin('rejects DOS device names on Windows (CON, PRN, AUX, NUL)', () => {
     expect(normalizePath('CON')).toBe('');
     expect(normalizePath('PRN')).toBe('');
     expect(normalizePath('AUX')).toBe('');
@@ -79,9 +84,15 @@ describe('normalizePath', () => {
     expect(normalizePath('LPT1')).toBe('');
   });
 
-  it('rejects DOS device names with extension', () => {
+  itWin('rejects DOS device names with extension on Windows', () => {
     expect(normalizePath('CON.txt')).toBe('');
     expect(normalizePath('NUL.js')).toBe('');
+  });
+
+  itPosix('does NOT reject aux.js / con.py on POSIX (valid filenames there)', () => {
+    expect(normalizePath('aux.js')).not.toBe('');
+    expect(normalizePath('con.py')).not.toBe('');
+    expect(normalizePath('nul.txt')).not.toBe('');
   });
 
   it('does NOT reject normal files that start with device-like prefix', () => {
@@ -120,5 +131,15 @@ describe('normalizeProjectPath', () => {
     const a = normalizeProjectPath('C:\\Users\\test\\project');
     const b = normalizeProjectPath('C:/Users/test/project');
     expect(a).toBe(b);
+  });
+
+  const onWin2 = process.platform === 'win32';
+  (onWin2 ? it : it.skip)('canonicalizes drive-letter case so c:/ and C:/ collapse to one project_path', () => {
+    // path.resolve preserves drive-letter case; without folding, a lowercase-drive
+    // cwd split every DB lookup (case-sensitive =) from the uppercase one.
+    const lower = normalizeProjectPath('c:/Users/test/proj');
+    const upper = normalizeProjectPath('C:/Users/test/proj');
+    expect(lower).toBe(upper);
+    expect(lower.startsWith('C:/')).toBe(true);
   });
 });

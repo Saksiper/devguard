@@ -94,7 +94,7 @@ function runBackfill({ projectsDir, maxFiles = 40, maxEdits = 500, now } = {}) {
           if (!configCache.has(edit.project_path)) {
             configCache.set(edit.project_path, loadConfig(edit.project_path));
           }
-          if (isExcluded(edit.file, configCache.get(edit.project_path))) {
+          if (isExcluded(edit.file, configCache.get(edit.project_path), edit.project_path)) {
             stats.editsExcluded++;
             continue;
           }

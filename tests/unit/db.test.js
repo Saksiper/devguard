@@ -944,3 +944,28 @@ describe('FK-safe cleanup', () => {
     expect(proxy.getChangeCount()).toBe(2);
   });
 });
+
+describe('timestamp format consistency (V17 residuals)', () => {
+  it('insertIssue normalizes first_seen to sqlite datetime format (no ISO T/Z)', () => {
+    const proxy = freshDb('/proj/ts-issue');
+    proxy.insertIssue({ title: 'x', first_seen: '2026-07-16T22:08:51.744Z', status: 'open' });
+    const row = proxy.getIssues().find(i => i.title === 'x');
+    expect(row.first_seen).toBe('2026-07-16 22:08:51');
+  });
+
+  it('deleteOldBlameCacheEntries compares in sqlite format, not raw ISO (boundary-safe)', () => {
+    const Database = require('better-sqlite3');
+    const proxy = freshDb('/proj/ts-blame');
+    proxy.insertBlameCache('/proj/ts-blame/a.js', 'c'.repeat(40), 'blame-old');
+    proxy.insertBlameCache('/proj/ts-blame/b.js', 'd'.repeat(40), 'blame-fresh');
+    // Age the first row to 30 days old, in sqlite datetime format (as CURRENT_TIMESTAMP emits).
+    const raw = new Database(path.join(tmpDir, 'devguard.db'));
+    raw.prepare("UPDATE blame_cache SET created_at = datetime('now','-30 days') WHERE file_path = ?")
+      .run('/proj/ts-blame/a.js');
+    raw.close();
+    const deleted = proxy.deleteOldBlameCacheEntries(7);
+    expect(deleted).toBe(1);
+    expect(proxy.getBlameCache('/proj/ts-blame/a.js', 'c'.repeat(40))).toBeNull();
+    expect(proxy.getBlameCache('/proj/ts-blame/b.js', 'd'.repeat(40))).toBeTruthy();
+  });
+});

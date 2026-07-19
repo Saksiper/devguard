@@ -175,7 +175,7 @@ async function main() {
     const { loadConfig } = require('../engine/config');
     const config = loadConfig(projectPath);
     const { isExcluded } = require('../engine/path-matcher');
-    if (isExcluded(filePath, config)) {
+    if (isExcluded(filePath, config, projectPath)) {
       debugLog('post-edit', 'Path excluded, skipping insert', { file: filePath });
       timer.elapsed('Path excluded');
       respond({});

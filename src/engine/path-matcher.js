@@ -11,10 +11,20 @@
 //
 // No glob wildcards. Forward-slash only; caller normalizes backslashes.
 
-function isExcluded(filePath, config) {
+function isExcluded(filePath, config, projectPath) {
   if (!filePath || typeof filePath !== 'string') return false;
   const normalized = filePath.replace(/\\/g, '/');
-  const withTrailing = normalized + '/';
+  // Match segment patterns against the project-RELATIVE remainder when the project
+  // root is known, so an ancestor dir named 'build'/'dist'/'.cache' ABOVE the
+  // project doesn't exclude every file in it. Basename matching is unaffected.
+  let forSegments = normalized;
+  if (projectPath && typeof projectPath === 'string') {
+    const proj = projectPath.replace(/\\/g, '/').replace(/\/+$/, '');
+    const nl = normalized.toLowerCase();
+    const pl = proj.toLowerCase();
+    if (nl === pl || nl.startsWith(pl + '/')) forSegments = normalized.slice(proj.length);
+  }
+  const withTrailing = forSegments + '/';
   const lower = withTrailing.toLowerCase();
 
   const segments = (config && Array.isArray(config.excluded_path_segments))

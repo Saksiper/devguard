@@ -234,7 +234,7 @@ function main() {
     // Path exclusion — skip DB entirely for excluded paths (.claude/, node_modules/, etc.)
     const config = loadConfig(projectPath);
     const { isExcluded } = require('../engine/path-matcher');
-    if (isExcluded(filePath, config)) {
+    if (isExcluded(filePath, config, projectPath)) {
       debugLog('pre-edit', 'Path excluded', { file: filePath });
       timer.elapsed('Path excluded');
       respond({});

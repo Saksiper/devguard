@@ -63,6 +63,22 @@ describe('path-matcher', () => {
       // but if someone passes a dir path, trailing slash should still catch it.
       expect(isExcluded('/home/user/.claude', DEFAULT_CONFIG)).toBe(true);
     });
+
+    it('does NOT exclude every file when an ANCESTOR dir matches a segment', () => {
+      const { isExcluded } = loadFresh();
+      // A project living under a 'build/' ancestor must not have all its files
+      // excluded — segment matching runs against the project-relative remainder.
+      const proj = '/home/user/build/myapp';
+      expect(isExcluded('/home/user/build/myapp/src/index.js', DEFAULT_CONFIG, proj)).toBe(false);
+      // but a node_modules INSIDE the project is still excluded
+      expect(isExcluded('/home/user/build/myapp/node_modules/x/i.js', DEFAULT_CONFIG, proj)).toBe(true);
+    });
+
+    it('without projectPath, keeps the legacy full-path behavior (backward compatible)', () => {
+      const { isExcluded } = loadFresh();
+      expect(isExcluded('/home/user/proj/src/index.js', DEFAULT_CONFIG)).toBe(false);
+      expect(isExcluded('/home/user/proj/node_modules/x/i.js', DEFAULT_CONFIG)).toBe(true);
+    });
   });
 
   describe('isExcluded — basenames', () => {
