@@ -285,12 +285,38 @@ describe('post-command.js — live payload shapes', () => {
   });
 });
 
-describe('post-command.js — PostToolUseFailure event (measured: PostToolUse never fires on failure)', () => {
-  // Live measurement (instrumented hook, 3 trials): PostToolUse does NOT fire when
-  // a Bash command exits non-zero; PostToolUseFailure is the dedicated event (docs
-  // confirmed). The exact failure payload shape is unverified, so extraction is
-  // defensive: the EVENT NAME itself signals failure, and we read whichever of
-  // tool_response / tool_output is present, as a string or an object.
+describe('post-command.js — PostToolUseFailure event', () => {
+  // Live-MEASURED payload (instrumented hook on Desktop, 0.4.0): the failure output
+  // is a STRING under `input.error` ("Exit code N\n<output>"), with `is_interrupt`
+  // true for a user Ctrl-C. NO tool_response/tool_output on failure. The object
+  // variants below are kept as defensive fallbacks.
+  it('REAL SHAPE: captures the error from the input.error string ("Exit code N\\n...")', () => {
+    ensureSession();
+    runPostCommand({
+      cwd: projectDir,
+      hook_event_name: 'PostToolUseFailure',
+      tool_name: 'Bash',
+      tool_input: { command: 'node -e "process.exit(1)"' },
+      error: 'Exit code 1\nBOOM real failure text',
+    });
+    const errors = getErrors();
+    expect(errors).toHaveLength(1);
+    expect(errors[0].error_string).toContain('BOOM real failure text');
+  });
+
+  it('does NOT record a user interrupt (is_interrupt) as an error', () => {
+    ensureSession();
+    runPostCommand({
+      cwd: projectDir,
+      hook_event_name: 'PostToolUseFailure',
+      tool_name: 'Bash',
+      tool_input: { command: 'sleep 100' },
+      error: 'Exit code 130\ninterrupted by user',
+      is_interrupt: true,
+    });
+    expect(getErrors()).toHaveLength(0);
+  });
+
   it('captures error from a PostToolUseFailure object payload (stderr + exit_code)', () => {
     ensureSession();
     runPostCommand({

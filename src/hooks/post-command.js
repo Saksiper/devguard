@@ -73,27 +73,30 @@ function main() {
     const input = readInput();
     const { normalizeProjectPath } = require('../engine/normalize-path');
     const projectPath = normalizeProjectPath(input.cwd || process.cwd());
-    // MEASURED (instrumented hook, 3 trials): PostToolUse does NOT fire when a
-    // Bash command exits non-zero — the dedicated PostToolUseFailure event does.
-    // So the event NAME is the authoritative failure signal; the result payload
-    // shape is unverified, so read it defensively from either tool_response or
-    // tool_output, as a string ("Error: Exit code N\n…") or an object.
+    // MEASURED (live, instrumented hook on both terminal and Desktop):
+    //  - PostToolUse fires only on SUCCESS; payload is `input.tool_response`, an
+    //    object {stdout, stderr, interrupted, …} with NO exit-code field.
+    //  - PostToolUseFailure fires on a failed Bash command; the output is a STRING
+    //    under `input.error` ("Exit code N\n<output>"), with `input.is_interrupt`
+    //    true for a user Ctrl-C. There is NO tool_response/tool_output on failure.
+    // The object tool_response/tool_output reads stay as defensive fallbacks.
     const eventName = input.hook_event_name;
-    const rawResponse = input.tool_response ?? input.tool_output ?? {};
+    const raw = input.tool_response ?? input.tool_output ?? input.error ?? {};
     let exitCode; let stdout; let stderr;
-    if (typeof rawResponse === 'string') {
-      const m = /^Error: Exit code (\d+)\r?\n?([\s\S]*)$/.exec(rawResponse);
-      exitCode = m ? Number(m[1]) : (/^Error\b/.test(rawResponse) ? 1 : 0);
-      stdout = exitCode === 0 ? rawResponse : '';
-      stderr = exitCode === 0 ? '' : ((m && m[2]) || rawResponse);
+    if (typeof raw === 'string') {
+      const m = /^(?:Error:\s*)?Exit code (\d+)\r?\n?([\s\S]*)$/.exec(raw);
+      exitCode = m ? Number(m[1]) : (eventName === 'PostToolUseFailure' || /^Error\b/.test(raw) ? 1 : 0);
+      stdout = exitCode === 0 ? raw : '';
+      stderr = exitCode === 0 ? '' : ((m && m[2]) || raw);
     } else {
-      exitCode = rawResponse.exitCode ?? rawResponse.exit_code ?? 0;
-      stdout = rawResponse.stdout || '';
-      stderr = rawResponse.stderr || '';
+      exitCode = raw.exitCode ?? raw.exit_code ?? (eventName === 'PostToolUseFailure' ? 1 : 0);
+      stdout = raw.stdout || '';
+      stderr = raw.stderr || '';
     }
     // A PostToolUseFailure invocation is a failure by definition, even if its
-    // payload carries no parseable exit code.
-    const failed = eventName === 'PostToolUseFailure' || exitCode !== 0;
+    // payload carries no parseable exit code — but a user interrupt (Ctrl-C) is
+    // not a recurring error worth recording.
+    const failed = (eventName === 'PostToolUseFailure' || exitCode !== 0) && !input.is_interrupt;
 
     if (!failed && stdout && extractCommitHash(stdout)) {
       const db = getDb(projectPath);
