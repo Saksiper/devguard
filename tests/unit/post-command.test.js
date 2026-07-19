@@ -284,3 +284,64 @@ describe('post-command.js — live payload shapes', () => {
     expect(errors[0].session_id).toBe('test-session');
   });
 });
+
+describe('post-command.js — PostToolUseFailure event (measured: PostToolUse never fires on failure)', () => {
+  // Live measurement (instrumented hook, 3 trials): PostToolUse does NOT fire when
+  // a Bash command exits non-zero; PostToolUseFailure is the dedicated event (docs
+  // confirmed). The exact failure payload shape is unverified, so extraction is
+  // defensive: the EVENT NAME itself signals failure, and we read whichever of
+  // tool_response / tool_output is present, as a string or an object.
+  it('captures error from a PostToolUseFailure object payload (stderr + exit_code)', () => {
+    ensureSession();
+    runPostCommand({
+      cwd: projectDir,
+      hook_event_name: 'PostToolUseFailure',
+      tool_name: 'Bash',
+      tool_input: { command: 'npm test' },
+      tool_response: { stdout: '', stderr: 'AssertionError: expected 1 to be 2', exit_code: 1 },
+    });
+    const errors = getErrors();
+    expect(errors).toHaveLength(1);
+    expect(errors[0].error_string).toContain('AssertionError');
+  });
+
+  it('captures error even when the failure payload carries NO exit code (event name signals failure)', () => {
+    ensureSession();
+    runPostCommand({
+      cwd: projectDir,
+      hook_event_name: 'PostToolUseFailure',
+      tool_name: 'Bash',
+      tool_input: { command: 'false' },
+      tool_response: { stderr: 'boom, no exit field here' },
+    });
+    const errors = getErrors();
+    expect(errors).toHaveLength(1);
+    expect(errors[0].error_string).toContain('boom');
+  });
+
+  it('reads the tool_output field variant on failure', () => {
+    ensureSession();
+    runPostCommand({
+      cwd: projectDir,
+      hook_event_name: 'PostToolUseFailure',
+      tool_name: 'Bash',
+      tool_input: { command: 'x' },
+      tool_output: { stderr: 'tool_output-shape failure', exit_code: 2 },
+    });
+    const errors = getErrors();
+    expect(errors).toHaveLength(1);
+    expect(errors[0].error_string).toContain('tool_output-shape');
+  });
+
+  it('PostToolUse success event never records an error even if event name is set', () => {
+    ensureSession();
+    runPostCommand({
+      cwd: projectDir,
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Bash',
+      tool_input: { command: 'echo ok' },
+      tool_response: { stdout: 'ok', stderr: '', interrupted: false, isImage: false },
+    });
+    expect(getErrors()).toHaveLength(0);
+  });
+});

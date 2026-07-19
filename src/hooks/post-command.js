@@ -73,11 +73,13 @@ function main() {
     const input = readInput();
     const { normalizeProjectPath } = require('../engine/normalize-path');
     const projectPath = normalizeProjectPath(input.cwd || process.cwd());
-    // Live Claude Code Bash results: SUCCESS is an object with NO exit-code
-    // field ({stdout, stderr, interrupted, …}); FAILURE arrives as a plain
-    // string "Error: Exit code N\n<output>". The object exitCode/exit_code
-    // reads are kept for older clients.
-    const rawResponse = input.tool_response || {};
+    // MEASURED (instrumented hook, 3 trials): PostToolUse does NOT fire when a
+    // Bash command exits non-zero — the dedicated PostToolUseFailure event does.
+    // So the event NAME is the authoritative failure signal; the result payload
+    // shape is unverified, so read it defensively from either tool_response or
+    // tool_output, as a string ("Error: Exit code N\n…") or an object.
+    const eventName = input.hook_event_name;
+    const rawResponse = input.tool_response ?? input.tool_output ?? {};
     let exitCode; let stdout; let stderr;
     if (typeof rawResponse === 'string') {
       const m = /^Error: Exit code (\d+)\r?\n?([\s\S]*)$/.exec(rawResponse);
@@ -89,14 +91,17 @@ function main() {
       stdout = rawResponse.stdout || '';
       stderr = rawResponse.stderr || '';
     }
+    // A PostToolUseFailure invocation is a failure by definition, even if its
+    // payload carries no parseable exit code.
+    const failed = eventName === 'PostToolUseFailure' || exitCode !== 0;
 
-    if (exitCode === 0 && stdout && extractCommitHash(stdout)) {
+    if (!failed && stdout && extractCommitHash(stdout)) {
       const db = getDb(projectPath);
       handleCommit(db, stdout, projectPath);
       closeDb();
     }
 
-    if (exitCode !== 0) {
+    if (failed) {
       const combined = [stdout, stderr].join('\n').trim();
       if (combined) {
         const db = getDb(projectPath);
