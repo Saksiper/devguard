@@ -12,16 +12,18 @@ const Database = require('better-sqlite3');
 const { normalizeProjectPath } = require('../src/engine/normalize-path');
 const { sanitize } = require('../src/engine/sanitize');
 
-const { resolveNodeId } = require('../src/engine/keyword-node-map');
+const { buildIndex, resolveIndex } = require('../src/engine/keyword-index');
 
 // A sphere task needs the embedding read-resolver when its seeded node is NOT
-// reachable from the prompt by the frozen keyword map (which covers only a few
-// nodes). Keyword-reachable tasks (the original bank) resolve for free and keep
-// the resolver OFF — no MiniLM load, byte-identical to prior runs.
+// reachable from the prompt by the free per-project keyword index built from the
+// task's own seeded notes — exactly what the live resolver sees in the sandbox.
+// Index-reachable tasks resolve for free and keep the resolver OFF (no MiniLM
+// load). The old hardcoded keyword map is gone.
 function taskNeedsEmbeddingResolver(task) {
   if (!task || !task.seedNotes || !task.seedNotes.length) return false;
-  const kw = resolveNodeId(task.prompt || '');
-  return task.seedNotes.some((s) => kw !== s.nodeId);
+  const index = buildIndex(task.seedNotes.map((s) => ({ node_id: s.nodeId, text: s.text })));
+  const idx = resolveIndex(index, task.prompt || '', 0.75);
+  return task.seedNotes.some((s) => idx !== s.nodeId);
 }
 
 // DevGuard reads devguard.config.yaml via cwd-upward traversal (config.js:100).

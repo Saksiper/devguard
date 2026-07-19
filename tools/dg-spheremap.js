@@ -1,8 +1,8 @@
 'use strict';
 // DevGuard Sphere Map (S5) — feature-grain continent/country visual map.
 //
-// Reuses dg-ringmap.js's rendering pattern (3d-force-graph CDN, safeJsonForScript,
-// sticky tooltip, side panel) but the graph is built from the V15 `features` table:
+// Rendering pattern: 3d-force-graph CDN, safeJsonForScript, sticky tooltip, side
+// panel. The graph is built from the V15 `features` table:
 //   continent = domain (color/region), country = feature node (sized by edits),
 //   edge = semantic neighbor over centroid_embedding, tooltip = layered note chain.
 //
@@ -113,7 +113,7 @@ function buildNoteChain(db, nodeId) {
 }
 
 // JSON.stringify escapes quotes but not `</script>` or U+2028/2029, which break the
-// browser JS parser inside a <script> block. Patch those (same as dg-ringmap.js).
+// browser JS parser inside a <script> block. Patch those.
 function safeJsonForScript(obj) {
   const LS = String.fromCharCode(0x2028);
   const PS = String.fromCharCode(0x2029);

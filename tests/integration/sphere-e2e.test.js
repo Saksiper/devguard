@@ -86,6 +86,17 @@ describe('sphere e2e — two-touch read/write/layer chain', () => {
   it('touch1: no note → instruct; capture; touch2: surface prior → new marker supersedes, single head', () => {
     ensureSession('e2e-sess');
 
+    // Learned bootstrap vocabulary: the feature must exist in the project's own
+    // features table (as a real edit would create it) — no hardcoded keyword map.
+    process.env.CLAUDE_PLUGIN_DATA = dbDir;
+    const seedDb = loadDb();
+    seedDb.getDb(projectPath()).upsertFeatureCentroid({
+      continent: 'ui_ux', country: 'filter', node_id: 'ui_ux/filter', embedding: null,
+    });
+    seedDb.closeDb();
+    delete require.cache[require.resolve('../../src/engine/db')];
+    delete process.env.CLAUDE_PLUGIN_DATA;
+
     // --- Touch 1: prompt names the feature, no note yet → read gate instructs ---
     const ups1 = JSON.parse(run(UPS, { cwd: projectDir, session_id: 'e2e-sess', prompt: 'add a filter to the list' }));
     const ctx1 = ups1.hookSpecificOutput?.additionalContext || '';

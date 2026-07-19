@@ -3,7 +3,6 @@
 const { readInput, respond, context } = require('../engine/hook-io');
 const { debugLog, createTimer } = require('../engine/debug-log');
 const { getDb, closeDb } = require('../engine/db');
-const { resolveNodeId } = require('../engine/keyword-node-map');
 const { formatFeatureSection } = require('../engine/dg-note');
 const { isNoteStale } = require('../engine/file-fingerprint');
 const { loadConfig } = require('../engine/config');
@@ -11,30 +10,23 @@ const { loadConfig } = require('../engine/config');
 // Node resolution seam. The per-project keyword index LEADS (DEFAULT-ON): it weighs
 // the WHOLE prompt against the project's own notes (rare-term overlap + margin gate),
 // so it resolves to the actually-relevant node instead of firing on a single stray
-// keyword. The frozen keyword map surfaced e.g. 'ui_ux/filter' for ANY prompt that
-// merely contained the word 'filter' (false surfaces, measured live) — it is now only
-// a legacy escape hatch, used when the index is explicitly disabled. When the index
-// defers (ambiguous/weak, returns null) we do NOT fall back to the crude keyword match;
-// the embedding argmax is the only remaining path, and it loads MiniLM (~680ms cold)
-// so it stays behind sphere_read_resolver_enabled (DEFAULT-OFF).
+// keyword. When the index defers, a LEARNED bootstrap may still NAME a note-LESS
+// feature so the "leave a note" nudge works: its vocabulary is the project's own
+// features table (grown from this user's real edits over time), replacing the old
+// hardcoded demo keyword map that fired on generic words in any repo. We NEVER
+// surface an EXISTING note from a bare name match — the index decides those. The
+// embedding argmax is the only remaining path and loads MiniLM (~680ms cold), so it
+// stays behind sphere_read_resolver_enabled (DEFAULT-OFF).
 // `deps` injects a fake encoder in tests (no real model).
 async function resolveFeatureNodeId(db, promptText, config, deps) {
   if (config.keyword_index_enabled !== false) {
-    const { resolveByProjectIndex } = require('../engine/keyword-index');
+    const { resolveByProjectIndex, resolveBootstrapFeature } = require('../engine/keyword-index');
     const indexNode = resolveByProjectIndex(db, promptText, config.keyword_index_margin);
     if (indexNode) return indexNode;
-    // Index deferred. A keyword may still NAME a note-LESS feature so the "leave a
-    // note" nudge works — but we NEVER surface a bare-keyword node that already HAS a
-    // note. That stray-word match was the false surface (a prompt merely saying
-    // 'filter' pulled up the filter note); the index, not a passing word, decides
-    // which EXISTING note shows.
     try {
-      const kw = resolveNodeId(promptText);
-      if (kw && db.getHeadNoteByNode && !db.getHeadNoteByNode(kw)) return kw;
+      const bs = resolveBootstrapFeature(db, promptText);
+      if (bs && db.getHeadNoteByNode && !db.getHeadNoteByNode(bs)) return bs;
     } catch { /* db mock without getHeadNoteByNode — skip the bootstrap path */ }
-  } else {
-    const keywordNode = resolveNodeId(promptText); // legacy: frozen keyword map only
-    if (keywordNode) return keywordNode;
   }
   if (config.sphere_read_resolver_enabled) {
     const { resolveNodeIdByEmbedding } = require('../engine/embedding-node-resolver');

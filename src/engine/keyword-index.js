@@ -8,23 +8,38 @@
 // defer to the embedding fallback rather than surface a vocabulary-neighbour's note
 // (measured: two exam-question nodes both mentioning 'topic' tie at margin 1.0).
 
-const STOP = new Set((
+// Pure function words (EN + TR) — meaningless in ANY position, including feature
+// names. Turkish is included because notes are written in the session language
+// (measured live: 'yeni'/'için'/'bir' alone drew false surfaces in a small index
+// where every token has df=1).
+const FUNC_WORDS_SRC =
   'the a an of to in for on by and or is are be it its this that these those with as at from into ' +
-  'new file implement return export function questions question answer answers based check iterate ' +
-  'until correct after implementing verify behavior writing running string number array map label each ' +
-  'there no not do so per any given side both may combine every returns null record when else which what ' +
+  'there no not do so per any when else which what ' +
   'you your they them then than has have was were will would should can could must also only just about ' +
-  // Turkish function words — notes are written in the session language, so Turkish
-  // prose needs the same treatment as English (measured live: 'yeni'/'için'/'bir'
-  // alone drew false surfaces in a small index where every token has df=1).
   'için gibi kadar göre sonra önce şimdi ama ancak fakat çünkü yani ise değil daha çok pek hiç her hem ' +
   'ile bir iki onu bunu şunu ona buna şuna onun bunun şunun ben sen biz siz bana sana beni seni ' +
   'evet hayır tamam lütfen olan olarak oldu olur olsun var yok yeni şey yap yaz ' +
-  'nasıl neden niye hangi nerede zaten belki galiba sadece yine ayrıca'
-).split(/\s+/));
+  'nasıl neden niye hangi nerede zaten belki galiba sadece yine ayrıca';
+
+// Dev-prose noise — words that carry no signal in note PROSE ("export the function
+// that returns…") but are perfectly legitimate as feature NAMES ('ui_ux/export').
+// Only the prose index filters these; the name-matching bootstrap must not.
+const PROSE_NOISE_SRC =
+  'new file implement return export function questions question answer answers based check iterate ' +
+  'until correct after implementing verify behavior writing running string number array map label each ' +
+  'given side both may combine every returns null record';
+
+const FUNC_WORDS = new Set(FUNC_WORDS_SRC.split(/\s+/));
+const STOP = new Set((FUNC_WORDS_SRC + ' ' + PROSE_NOISE_SRC).split(/\s+/));
 
 function tokens(s) {
   return (String(s || '').toLowerCase().match(/[a-z0-9çğıöşü]{3,}/g) || []).filter((t) => !STOP.has(t));
+}
+
+// Name-grade tokenizer: drops only pure function words, keeps dev-prose words —
+// a feature legitimately named 'export' or 'map' must stay nameable.
+function nameTokens(s) {
+  return (String(s || '').toLowerCase().match(/[a-z0-9çğıöşü]{3,}/g) || []).filter((t) => !FUNC_WORDS.has(t));
 }
 
 // Pure: build { nodes: Map<node_id, Set<token>>, df: {token: docFreq},
@@ -98,4 +113,32 @@ function resolveByProjectIndex(db, promptText, marginThreshold = 0.75, floor = 0
   }
 }
 
-module.exports = { tokens, buildIndex, resolveIndex, resolveByProjectIndex };
+// Learned bootstrap vocabulary — replaces the old hardcoded demo keyword map.
+// The candidates are the project's OWN feature nodes (rows assignFeature created
+// from real edits), so the vocabulary grows per-project over time instead of
+// firing on generic words in any repo. A prompt "names" a feature only when it
+// contains ALL name tokens of that feature's country (stopword-filtered, word
+// boundaries via the tokenizer). The caller uses this solely to nudge a first
+// note onto a note-LESS feature; features with notes are the index's job above.
+function resolveBootstrapFeature(db, promptText) {
+  try {
+    const feats = db.getAllFeatures();
+    if (!feats || !feats.length) return null;
+    const pt = new Set(nameTokens(promptText));
+    if (!pt.size) return null;
+    let best = null;
+    let bestLen = 0;
+    for (const f of feats) {
+      const name = nameTokens(String(f.country || '').replace(/[/_-]/g, ' '));
+      if (!name.length) continue;
+      if (!name.every((t) => pt.has(t))) continue;
+      const len = name.join('').length; // most specific (longest) name wins ties
+      if (len > bestLen) { best = f.node_id; bestLen = len; }
+    }
+    return best;
+  } catch {
+    return null; // optional layer: a db without getAllFeatures must not break resolution
+  }
+}
+
+module.exports = { tokens, buildIndex, resolveIndex, resolveByProjectIndex, resolveBootstrapFeature };

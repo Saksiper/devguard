@@ -97,6 +97,19 @@ function seedNote(nodeId, noteText, extra = {}) {
   delete process.env.CLAUDE_PLUGIN_DATA;
 }
 
+// Learned bootstrap vocabulary: a features-table row born from the project's own
+// edits (upsertFeatureCentroid is what assignFeature calls at edit time).
+function seedFeature(nodeId) {
+  process.env.CLAUDE_PLUGIN_DATA = tmpDir;
+  const db = loadDb();
+  const proxy = db.getDb(projectDir);
+  const [continent, country] = nodeId.split('/');
+  proxy.upsertFeatureCentroid({ continent, country, node_id: nodeId, embedding: null });
+  db.closeDb();
+  delete require.cache[require.resolve('../../src/engine/db')];
+  delete process.env.CLAUDE_PLUGIN_DATA;
+}
+
 function writeConfig(content) {
   fs.writeFileSync(path.join(projectDir, 'devguard.config.yaml'), content);
 }
@@ -177,13 +190,22 @@ describe('user-prompt-submit.js', () => {
     expect(ctx).toContain('[DG-NOTE ui_ux/filter]');
   });
 
-  it('instructs to leave a note when the feature is named but has no note yet', () => {
+  it('instructs to leave a note when the prompt names a note-less feature the project itself created', () => {
     ensureSession();
+    seedFeature('ui_ux/filter'); // learned vocabulary — no hardcoded keyword map
 
     const result = runHook({ cwd: projectDir, session_id: 'test-session', prompt: 'add a filter' });
     const ctx = JSON.parse(result.stdout).hookSpecificOutput?.additionalContext || '';
     expect(ctx).toContain('[DG-NOTE ui_ux/filter]');
     expect(ctx.toLowerCase()).toContain('no prior note');
+  });
+
+  it('does NOT nudge for a feature this project has never worked on (no hardcoded vocabulary)', () => {
+    ensureSession();
+    // 'filter' used to be in a frozen demo keyword map and fired in ANY project.
+    const result = runHook({ cwd: projectDir, session_id: 'test-session', prompt: 'add a filter' });
+    const ctx = JSON.parse(result.stdout).hookSpecificOutput?.additionalContext || '';
+    expect(ctx).not.toContain('[DG-NOTE');
   });
 
   it('keeps pending summary first and appends feature note as a separate block', () => {
@@ -271,6 +293,7 @@ describe('user-prompt-submit.js', () => {
 
   it('S2.A: feature named but no head note → no empty labeled header', () => {
     ensureSession();
+    seedFeature('ui_ux/filter'); // learned vocabulary — the project itself created this feature
 
     const result = runHook({ cwd: projectDir, session_id: 'test-session', prompt: 'add a filter' });
     const ctx = JSON.parse(result.stdout).hookSpecificOutput.additionalContext;
@@ -398,20 +421,32 @@ describe('user-prompt-submit resolveFeatureNodeId (S2.B branch wiring)', () => {
     expect(node).toBeNull();
   });
 
-  it('LEGACY (keyword_index disabled): falls back to the frozen keyword map, no embedding', async () => {
-    // getAllFeatures throws if the embedding branch ran → proves the keyword path returns first.
-    const guardDb = { getAllFeatures: () => { throw new Error('embedding branch ran'); } };
-    const node = await resolveFeatureNodeId(guardDb, 'tweak the filter behavior',
+  it('index disabled: no hardcoded fallback — resolution is null without the embedding branch', async () => {
+    const node = await resolveFeatureNodeId({}, 'tweak the filter behavior',
       { sphere_read_resolver_enabled: false, keyword_index_enabled: false }, undefined);
-    expect(node).toBe('ui_ux/filter');
+    expect(node).toBeNull();
   });
 
-  it('LEGACY keyword hit (index disabled, resolver ON): keyword map wins, embedding never loads', async () => {
-    const guardDb = { getAllFeatures: () => { throw new Error('embedding branch ran on a keyword hit'); } };
-    const guardDeps = { loadModel: async () => { throw new Error('model loaded on a keyword hit'); } };
-    const node = await resolveFeatureNodeId(guardDb, 'tweak the filter behavior',
-      { sphere_read_resolver_enabled: true, feature_cluster_threshold: 0.5, keyword_index_enabled: false }, guardDeps);
-    expect(node).toBe('ui_ux/filter');
+  it('DEFAULT: when the index defers, the learned bootstrap names a note-less feature from the features table', async () => {
+    const db = {
+      getNotes: () => [],
+      getAllFeatures: () => [{ node_id: 'ui_ux/export', continent: 'ui_ux', country: 'export' }],
+      getHeadNoteByNode: () => null,
+    };
+    const node = await resolveFeatureNodeId(db, 'fix the export button',
+      { sphere_read_resolver_enabled: false }, undefined);
+    expect(node).toBe('ui_ux/export');
+  });
+
+  it('DEFAULT: the learned bootstrap never returns a feature that already HAS a note (index decides those)', async () => {
+    const db = {
+      getNotes: () => [],
+      getAllFeatures: () => [{ node_id: 'ui_ux/export', continent: 'ui_ux', country: 'export' }],
+      getHeadNoteByNode: () => ({ id: 1, note_text: 'existing' }),
+    };
+    const node = await resolveFeatureNodeId(db, 'fix the export button',
+      { sphere_read_resolver_enabled: false }, undefined);
+    expect(node).toBeNull();
   });
 
   it('DEFAULT: the per-project index leads — resolves a genuine prompt to its note', async () => {

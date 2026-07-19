@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const { tokens, buildIndex, resolveIndex, resolveByProjectIndex } = require('../../src/engine/keyword-index');
+const { tokens, buildIndex, resolveIndex, resolveByProjectIndex, resolveBootstrapFeature } = require('../../src/engine/keyword-index');
 
 describe('keyword-index — tokens', () => {
   it('lowercases, drops <3-char and stopwords', () => {
@@ -159,5 +159,38 @@ describe('keyword-index — resolveByProjectIndex (db-backed)', () => {
 
   it('returns null when the project has no notes', () => {
     expect(resolveByProjectIndex(fakeDb([]), 'anything', 0.75)).toBeNull();
+  });
+});
+
+describe('keyword-index — resolveBootstrapFeature (learned per-project vocabulary)', () => {
+  const fakeDb = (features) => ({ getAllFeatures: () => features });
+
+  it('names a feature the project itself created when the prompt contains its name', () => {
+    const db = fakeDb([{ node_id: 'ui_ux/export', continent: 'ui_ux', country: 'export' }]);
+    expect(resolveBootstrapFeature(db, 'fix the export button')).toBe('ui_ux/export');
+  });
+
+  it('requires ALL name tokens for multi-word countries', () => {
+    const db = fakeDb([{ node_id: 'data/data-import', continent: 'data', country: 'data-import' }]);
+    expect(resolveBootstrapFeature(db, 'import the data from csv')).toBe('data/data-import');
+    expect(resolveBootstrapFeature(db, 'just import it')).toBeNull();
+  });
+
+  it('never fires from stopwords, short tokens, or an empty features table', () => {
+    expect(resolveBootstrapFeature(fakeDb([]), 'add a filter')).toBeNull();
+    const db = fakeDb([{ node_id: 'misc/the', continent: 'misc', country: 'the' }]);
+    expect(resolveBootstrapFeature(db, 'the thing over there')).toBeNull();
+  });
+
+  it('prefers the most specific (longest-name) feature on overlap', () => {
+    const db = fakeDb([
+      { node_id: 'ui_ux/export', continent: 'ui_ux', country: 'export' },
+      { node_id: 'ui_ux/export-csv', continent: 'ui_ux', country: 'export-csv' },
+    ]);
+    expect(resolveBootstrapFeature(db, 'the csv export flow')).toBe('ui_ux/export-csv');
+  });
+
+  it('returns null (never throws) when db lacks getAllFeatures', () => {
+    expect(resolveBootstrapFeature({}, 'export the data')).toBeNull();
   });
 });

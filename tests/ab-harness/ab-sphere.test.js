@@ -9,7 +9,6 @@ const Database = require('better-sqlite3');
 const { seedNotes, hiddenFiles, runConsistency, parseConsistencyOutput } = require('../../tools/dg-ab-runner');
 const { computeSummary, sphereSurfaceWarning } = require('../../tools/dg-ab-harness');
 const { stripMarkers } = require('../../tools/lib/ab-strip');
-const { resolveNodeId } = require('../../src/engine/keyword-node-map');
 const { buildIndex, resolveIndex } = require('../../src/engine/keyword-index');
 const { isValidNodeId } = require('../../src/engine/node-taxonomy');
 
@@ -242,20 +241,21 @@ describe('tasks.json: sphere task bank alignment (regression guard)', () => {
     expect(sphere.length).toBeGreaterThanOrEqual(3);
   });
 
-  it('every sphere prompt is surfaceable to its seeded node (keyword map, per-project index, or embedding-eligible)', () => {
-    // The 3-layer resolver: frozen keyword map -> free per-project keyword index
-    // (built from the seeded notes) -> embedding fallback. A task surfaces if any
-    // layer places it. The two model-free layers are checked here; a task that
-    // defers on both must carry a seedFeatureText so the harness seeds the centroid
-    // the embedding fallback needs.
-    const index = buildIndex(sphere.map((t) => ({ node_id: t.seedNotes[0].nodeId, text: t.seedNotes[0].text })));
+  it('every sphere prompt is surfaceable to its seeded node (per-project index or embedding-eligible)', () => {
+    // The resolver chain: free per-project keyword index (built from the seeded
+    // notes) -> learned features-table bootstrap (note-less nudge only, so not a
+    // surface path here) -> embedding fallback. A task surfaces if the index places
+    // it; a task that defers must carry a seedFeatureText so the harness seeds the
+    // centroid the embedding fallback needs. (The old hardcoded keyword map is gone.)
+    // The index is PER TASK: each sandbox seeds only its own notes, so cross-task
+    // vocabulary competition never exists at runtime (mirrors taskNeedsEmbeddingResolver).
     for (const t of sphere) {
       expect(t.seedNotes && t.seedNotes.length, `${t.id} needs seedNotes`).toBeTruthy();
       const node = t.seedNotes[0].nodeId;
-      const kw = resolveNodeId(t.prompt);
+      const index = buildIndex(t.seedNotes.map((s) => ({ node_id: s.nodeId, text: s.text })));
       const idx = resolveIndex(index, t.prompt, 0.75);
-      const surfaceable = kw === node || idx === node || !!t.seedNotes[0].seedFeatureText;
-      expect(surfaceable, `${t.id}: not surfaceable — keyword=${kw} index=${idx} seedFeatureText=${!!t.seedNotes[0].seedFeatureText}`).toBe(true);
+      const surfaceable = idx === node || !!t.seedNotes[0].seedFeatureText;
+      expect(surfaceable, `${t.id}: not surfaceable — index=${idx} seedFeatureText=${!!t.seedNotes[0].seedFeatureText}`).toBe(true);
       for (const s of t.seedNotes) {
         expect(isValidNodeId(s.nodeId), `${t.id}: invalid node_id ${s.nodeId}`).toBe(true);
         expect(typeof s.file).toBe('string');
