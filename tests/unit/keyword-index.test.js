@@ -7,6 +7,13 @@ describe('keyword-index — tokens', () => {
   it('lowercases, drops <3-char and stopwords', () => {
     expect(tokens('The highlight WRAPS a range')).toEqual(['highlight', 'wraps', 'range']);
   });
+
+  it('is Unicode-aware: accented Latin and non-Latin scripts tokenize whole, not mangled', () => {
+    // pre-fix the ASCII+Turkish-only class split 'diseño' into 'dise' — a Spanish
+    // user's vocabulary must survive intact on BOTH sides of the match
+    expect(tokens('diseño récupération façade')).toEqual(['diseño', 'récupération', 'façade']);
+    expect(tokens('фильтр поиска')).toEqual(['фильтр', 'поиска']);
+  });
   it('handles null/empty', () => {
     expect(tokens(null)).toEqual([]);
     expect(tokens('')).toEqual([]);

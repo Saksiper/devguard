@@ -32,14 +32,20 @@ const PROSE_NOISE_SRC =
 const FUNC_WORDS = new Set(FUNC_WORDS_SRC.split(/\s+/));
 const STOP = new Set((FUNC_WORDS_SRC + ' ' + PROSE_NOISE_SRC).split(/\s+/));
 
+// Unicode-aware word class: any letter or digit in any script. The old
+// ASCII+Turkish-only class mangled accented Latin ('diseño' -> 'dise') and
+// produced nothing for Cyrillic/CJK — a non-EN/TR user's vocabulary must
+// tokenize identically on both sides of the match (note text and prompt).
+const WORD_RE = /[\p{L}\p{N}]{3,}/gu;
+
 function tokens(s) {
-  return (String(s || '').toLowerCase().match(/[a-z0-9çğıöşü]{3,}/g) || []).filter((t) => !STOP.has(t));
+  return (String(s || '').toLowerCase().match(WORD_RE) || []).filter((t) => !STOP.has(t));
 }
 
 // Name-grade tokenizer: drops only pure function words, keeps dev-prose words —
 // a feature legitimately named 'export' or 'map' must stay nameable.
 function nameTokens(s) {
-  return (String(s || '').toLowerCase().match(/[a-z0-9çğıöşü]{3,}/g) || []).filter((t) => !FUNC_WORDS.has(t));
+  return (String(s || '').toLowerCase().match(WORD_RE) || []).filter((t) => !FUNC_WORDS.has(t));
 }
 
 // Pure: build { nodes: Map<node_id, Set<token>>, df: {token: docFreq},
