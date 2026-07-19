@@ -99,6 +99,45 @@ describe('post-compact.js — buildSummary', () => {
     expect(summary).toContain('4x');
   });
 
+  it('C2: drops stale open issues (>7 days) and keeps fresh ones', () => {
+    const proxy = freshDb();
+    const { buildSummary } = loadPostCompact();
+    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    proxy.insertIssue({ title: 'ancient forensic test', status: 'open', first_seen: '2026-05-23 10:00:00' });
+    proxy.insertIssue({ title: 'fresh issue', status: 'open', first_seen: now });
+    const summary = buildSummary(proxy, 'test-session');
+    expect(summary).toContain('fresh issue');
+    expect(summary).not.toContain('ancient forensic test');
+  });
+
+  it('C2: dedupes zones per file and drops zones whose absolute file no longer exists', () => {
+    const proxy = freshDb();
+    const { buildSummary } = loadPostCompact();
+    const issueId = proxy.insertIssue({ title: 'fix' });
+    const cid = proxy.insertChange({ file: 'x.js' });
+    const ghost = path.join(tmpDir, 'deleted-temp.js'); // never created on disk
+    const real = path.join(tmpDir, 'alive.js');
+    fs.writeFileSync(real, 'x');
+    for (let i = 0; i < 3; i++) {
+      proxy.insertProtectedZone({
+        issue_id: issueId, change_id: cid, file: ghost,
+        reason: 'old temp', temp_protection: 1, protected_commit: 'a'.repeat(40),
+      });
+    }
+    proxy.insertProtectedZone({
+      issue_id: issueId, change_id: cid, file: real,
+      reason: 'live', temp_protection: 1, protected_commit: 'b'.repeat(40),
+    });
+    proxy.insertProtectedZone({
+      issue_id: issueId, change_id: cid, file: real,
+      reason: 'live-dup', temp_protection: 1, protected_commit: 'c'.repeat(40),
+    });
+    const summary = buildSummary(proxy, 'test-session');
+    expect(summary).toContain('alive.js');
+    expect(summary).not.toContain('deleted-temp.js');
+    expect((summary.match(/alive\.js/g) || []).length).toBe(1);
+  });
+
   it('produces combined summary with all data types', () => {
     const proxy = freshDb();
     const { buildSummary } = loadPostCompact();
@@ -116,16 +155,16 @@ describe('post-compact.js — buildSummary', () => {
     expect(summary).toContain('pipeline.ts');
   });
 
-  it('limits issues to 3', () => {
+  it('limits issues to the NEWEST 3', () => {
     const proxy = freshDb();
     const { buildSummary } = loadPostCompact();
     for (let i = 0; i < 5; i++) {
       proxy.insertIssue({ title: `Issue ${i}`, status: 'open' });
     }
     const summary = buildSummary(proxy, 'test-session');
-    expect(summary).toContain('Issue 0');
+    expect(summary).toContain('Issue 4');
     expect(summary).toContain('Issue 2');
-    expect(summary).not.toContain('Issue 4');
+    expect(summary).not.toContain('Issue 0');
   });
 
   it('QA #4: two consecutive compacts — second overwrites first', () => {

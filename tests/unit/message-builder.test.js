@@ -418,3 +418,31 @@ describe('buildRichMessage', () => {
     expect(msg).toContain('[DG-PAUSE]');
   });
 });
+
+describe('buildRichMessage — context summary sits BEFORE the CTA (C1 budget order)', () => {
+  const CFG = { context_summary_enabled: true, context_summary_confidence_threshold: 0.1 };
+  const changesOf = (n) => Array.from({ length: n }, (_, i) => ({
+    id: i + 1, file: `f${i}.js`, description: 'approach detail '.repeat(15) + i,
+    timestamp: '2026-07-01T10:00:00Z',
+  }));
+
+  it('the summary appears before the directive block, never after it', () => {
+    const db = makeDb({ getChanges: () => changesOf(4), getErrorOutputs: () => [] });
+    const results = [{ type: 'file_match', matches: [], message: 'm', confidence: 0.9 }];
+    const msg = buildRichMessage(db, 'sess1', results, 'warn', null, null, [], CFG);
+    const sumIdx = msg.indexOf('Session summary:');
+    expect(sumIdx).toBeGreaterThan(-1);
+    expect(sumIdx).toBeLessThan(msg.indexOf('REQUIRED: Start your next reply'));
+  });
+
+  it('over budget: the boilerplate summary is what gets cut — cap holds, directive and detection survive', () => {
+    const db = makeDb({ getChanges: () => changesOf(60), getErrorOutputs: () => [] });
+    const results = [{ type: 'file_match', matches: [], message: 'detection-anchor-msg', confidence: 0.9 }];
+    const msg = buildRichMessage(db, 'sess1', results, 'warn', null, null, [], CFG);
+    expect(msg.length).toBeLessThanOrEqual(MAX_MESSAGE_LEN);
+    for (const line of buildDirectiveBlock(false)) {
+      expect(msg).toContain(line.trim());
+    }
+    expect(msg).toContain('detection-anchor-msg');
+  });
+});

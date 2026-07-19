@@ -229,8 +229,10 @@ function buildRichMessage(db, sessionId, results, finalDecision, pickCognitiveLa
     if (question) sections.push('- ' + question);
   }
 
-  for (const line of buildDirectiveBlock(hasProtection)) sections.push(line);
-
+  // Context summary BEFORE the directive: when over budget the CTA tail is kept
+  // verbatim, so anything after the marker would survive truncation at the
+  // expense of the detection sections. Placing the boilerplate summary in the
+  // pre-CTA region makes it the FIRST thing the budget cuts.
   try {
     if (config && (config.context_summary_enabled !== false)) {
       const summary = buildContextSummary(db, sessionId, results, config);
@@ -239,6 +241,8 @@ function buildRichMessage(db, sessionId, results, finalDecision, pickCognitiveLa
   } catch (err) {
     debugLog('message-builder', 'Context summary failed', { error: String(err) });
   }
+
+  for (const line of buildDirectiveBlock(hasProtection)) sections.push(line);
 
   const CTA_MARKER = '\nREQUIRED: Start your next reply';
   let message = sections.join('\n');

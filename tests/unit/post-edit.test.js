@@ -683,6 +683,23 @@ describe('post-edit.js — tool_use_id from hook input', () => {
   });
 });
 
+describe('post-edit.js — Write tool payload (content field)', () => {
+  it('records description from content so Write edits are visible to embedding/FTS/diff-match', () => {
+    ensureSession();
+    runPostEdit({
+      cwd: projectDir,
+      session_id: 'test-session',
+      tool_name: 'Write',
+      tool_input: { file_path: '/project/w.js', content: 'const freshlyWritten = 42;' },
+      tool_response: {},
+      tool_use_id: 'toolu_write_content_1',
+    });
+    const changes = getChanges();
+    expect(changes).toHaveLength(1);
+    expect(changes[0].description).toContain('const freshlyWritten = 42;');
+  });
+});
+
 describe('post-edit.js — session attribution (g2)', () => {
   it('attributes the change to the payload session_id, not the newest session', () => {
     ensureSession(); // 'test-session'

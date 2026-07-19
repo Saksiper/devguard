@@ -197,11 +197,17 @@ async function main() {
       return;
     }
 
-    const lineRanges = resolveLines(filePath, toolInput.new_string || toolInput.old_string);
+    // Write sends `content`, not new_string/old_string — mirror transcript-parser's
+    // describeEdit/diffForEdit mapping so live Write rows match backfilled ones and
+    // stay visible to embedding, clustering, FTS and diff-match.
+    const newText = toolInput.new_string ?? toolInput.content;
+    const oldText = toolInput.old_string ?? (toolName === 'Write' ? toolInput.content : undefined);
+
+    const lineRanges = resolveLines(filePath, newText || oldText);
     const firstRange = (lineRanges && lineRanges.length > 0) ? lineRanges[0] : null;
 
-    const description = truncate(toolInput.new_string) || null;
-    const diffText = truncate(toolInput.old_string) || null;
+    const description = truncate(newText) || null;
+    const diffText = truncate(oldText) || null;
 
     // THIS edit's verdict is NOT captured here: PostToolUse fires before the reply
     // exists in the transcript. claude_verdict stays null now and is patched in
@@ -223,8 +229,8 @@ async function main() {
       protectNote = generateProtectNote({
         filePath,
         action: toolName,
-        newCode: toolInput.new_string,
-        oldCode: toolInput.old_string,
+        newCode: newText,
+        oldCode: oldText,
       });
     } catch (e) {
       debugLog('post-edit', 'protect-heuristic threw', { msg: e && e.message });
