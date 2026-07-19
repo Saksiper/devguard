@@ -11,7 +11,7 @@
       "name": "devguard",
       "source": "./",
       "description": "Vibe coding guardian — cycle detection & cross-concern protection for Claude Code",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "author": {
         "name": "Umut Uygun"
       },
