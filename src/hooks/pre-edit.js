@@ -299,7 +299,7 @@ function main() {
     const cycleResults = results.filter(r => r.type !== 'protection');
     const finalDecision = cycleResults.length > 0 ? 'warn' : 'none';
 
-    // detection_log: warn kayit (dogfood olcum, removable).
+    // detection_log: record each warn (dogfood measurement, removable).
     try {
       for (const r of results) {
         if (r.decision === 'warn') {
