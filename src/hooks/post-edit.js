@@ -150,6 +150,26 @@ async function computeEmbedding(description, diffText) {
   }
 }
 
+// Cold-start seed enqueue (SEED-COLDSTART). When a NEW feature node is born with no
+// head note yet, queue a job for the detached worker to author its "lasting purpose"
+// seed note — breaking the chicken-and-egg where nothing writes the first note. The
+// kill-switch lives HERE, at enqueue time: if disabled (config or env) no pending row
+// is ever created, so the worker never spawns and the heavy model never loads. Idempotent:
+// a node that already has a head note (a real [DG-NOTE] or a prior seed) is skipped.
+// Fully non-fatal — a failure here must never affect the recorded change.
+function maybeEnqueueSeedNote(db, config, { changeId, node_id, file, code, sessionId }) {
+  try {
+    if (!config || !config.seed_note_enabled) return;
+    if (process.env.DEVGUARD_LLM_DISABLED === '1') return;
+    if (!node_id) return;
+    if (db.getHeadNoteByNode(node_id)) return; // already has a head note — idempotent
+    db.enqueueSeedNote({ change_id: changeId, node_id, file, code, session_id: sessionId });
+    debugLog('post-edit', 'seed note enqueued', { changeId, node_id });
+  } catch (err) {
+    debugLog('post-edit', 'seed enqueue failed (non-fatal)', { error: String(err) });
+  }
+}
+
 async function main() {
   const timer = createTimer('post-edit');
   timer.start();
@@ -307,6 +327,8 @@ async function main() {
       });
       db.updateChangeNodeId(changeId, node_id);
       debugLog('post-edit', 'node_id assigned', { changeId, node_id, embedded: !!emb });
+      // Now that this change has a node_id, seed the node's purpose note if it's new.
+      maybeEnqueueSeedNote(db, config, { changeId, node_id, file: filePath, code: description, sessionId });
     } catch (err) {
       debugLog('post-edit', 'node_id assignment failed (non-fatal)', { error: String(err) });
     }
@@ -331,7 +353,7 @@ function flushPendingVerdicts(db, sessionId, transcriptPath) {
   attributeRetrospectiveVerdicts(db, sessionId, transcriptPath, null);
 }
 
-module.exports = { extractIssueTitle, handleIssueLifecycle, computeEmbedding, attributeRetrospectiveVerdicts, flushPendingVerdicts };
+module.exports = { extractIssueTitle, handleIssueLifecycle, computeEmbedding, attributeRetrospectiveVerdicts, flushPendingVerdicts, maybeEnqueueSeedNote };
 
 if (require.main === module) {
   main();

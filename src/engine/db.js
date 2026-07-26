@@ -319,6 +319,29 @@ UPDATE changes SET timestamp = datetime(timestamp)
 WHERE timestamp LIKE '%T%' AND datetime(timestamp) IS NOT NULL;
 `;
 
+// V18: seed-note cold-start queue (SEED-COLDSTART). post-edit enqueues a job when a
+// NEW feature node is born with no head note yet; a detached worker later drains it,
+// asks the local LLM for the file's lasting purpose, and writes the seed note — breaking
+// the chicken-and-egg where nothing authors the first note. change_id is a PLAIN column,
+// NOT a foreign key: pruning/FIFO of changes must never orphan or cascade-explode this
+// queue. Rows are short-lived (deleted on drain). claimed_at/worker_pid reserve a future
+// single-flight DB-atomic claim. CREATE-IF-NOT-EXISTS only — never touch prior CREATEs.
+const MIGRATION_V18_SQL = `
+CREATE TABLE IF NOT EXISTS pending_seed_notes (
+  id INTEGER PRIMARY KEY,
+  project_path TEXT NOT NULL,
+  change_id INTEGER,
+  node_id TEXT NOT NULL,
+  file TEXT NOT NULL,
+  code TEXT,
+  session_id TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  claimed_at DATETIME,
+  worker_pid INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_pending_seed_project ON pending_seed_notes(project_path);
+`;
+
 const MIGRATIONS = [
   { version: 1, name: 'initial_schema', sql: MIGRATION_V1_SQL },
   { version: 2, name: 'error_outputs_session_id', sql: MIGRATION_V2_SQL },
@@ -337,6 +360,7 @@ const MIGRATIONS = [
   { version: 15, name: 'features_and_change_node_id', sql: MIGRATION_V15_SQL },
   { version: 16, name: 'notes_source_fingerprint', sql: MIGRATION_V16_SQL },
   { version: 17, name: 'normalize_change_timestamps', sql: MIGRATION_V17_SQL },
+  { version: 18, name: 'pending_seed_notes', sql: MIGRATION_V18_SQL },
 ];
 
 // CLI/manual runs lack CLAUDE_PLUGIN_DATA; without this scan they'd read/write
@@ -1059,6 +1083,32 @@ function getDb(projectPath) {
       ).lastInsertRowid;
     },
 
+    // --- pending_seed_notes (cold-start seed queue, V18) ---
+    enqueueSeedNote(data) {
+      debugLog('db', 'enqueueSeedNote', { project: pp, node_id: data.node_id, file: data.file });
+      const stmt = db.prepare(`INSERT INTO pending_seed_notes
+        (project_path, change_id, node_id, file, code, session_id)
+        VALUES (?, ?, ?, ?, ?, ?)`);
+      return stmt.run(
+        pp,
+        data.change_id ?? null,
+        data.node_id,
+        data.file,
+        data.code ?? null,
+        data.session_id || null,
+      ).lastInsertRowid;
+    },
+
+    getPendingSeedNotes() {
+      debugLog('db', 'getPendingSeedNotes', { project: pp });
+      return db.prepare('SELECT * FROM pending_seed_notes WHERE project_path = ? ORDER BY id ASC').all(pp);
+    },
+
+    deleteSeedNote(id) {
+      debugLog('db', 'deleteSeedNote', { project: pp, id });
+      return db.prepare('DELETE FROM pending_seed_notes WHERE project_path = ? AND id = ?').run(pp, id);
+    },
+
     getNotes(opts = {}) {
       debugLog('db', 'getNotes', { project: pp, opts });
       let sql = 'SELECT * FROM notes WHERE project_path = ?';
@@ -1611,6 +1661,7 @@ function getDb(projectPath) {
         db.prepare('DELETE FROM blame_cache WHERE project_path = ?').run(normalizedTarget);
         db.prepare('DELETE FROM protected_zones WHERE project_path = ?').run(normalizedTarget);
         db.prepare('DELETE FROM error_outputs WHERE project_path = ?').run(normalizedTarget);
+        db.prepare('DELETE FROM pending_seed_notes WHERE project_path = ?').run(normalizedTarget);
         db.prepare('DELETE FROM note_events WHERE project_path = ?').run(normalizedTarget);
         db.prepare('DELETE FROM notes WHERE project_path = ?').run(normalizedTarget);
         // changes ⇄ issues reference each other (fix_change_id / related_issue_id):

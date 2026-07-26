@@ -22,6 +22,12 @@ const DEFAULTS = {
   periodic_injection_interval: 20,
   embedding_enabled: true,
   embedding_detector_enabled: false,
+  // Seed-note cold-start (SEED-COLDSTART): when a NEW feature node is first born and has
+  // no head note yet, enqueue a job for the local LLM to write its "lasting purpose" seed
+  // note, breaking the chicken-and-egg where nothing ever authors the first note.
+  // DEFAULT-OFF: enabling it opts a project into a ~1.3GB optional model download + local
+  // inference. Stays OFF until broad-bench + live measurement justify flipping it on.
+  seed_note_enabled: false,
   // S2.B: use the embedding read-resolver (prompt→centroid argmax) instead of the
   // keyword map in UserPromptSubmit. DEFAULT-OFF: enabling it loads MiniLM on EVERY
   // prompt turn (synchronous latency). Stays OFF until an N>=20 live measurement.
@@ -85,6 +91,7 @@ const VALIDATORS = {
   periodic_injection_interval: (v) => Number.isInteger(v) && v >= 0,
   embedding_enabled: (v) => typeof v === 'boolean',
   embedding_detector_enabled: (v) => typeof v === 'boolean',
+  seed_note_enabled: (v) => typeof v === 'boolean',
   sphere_read_resolver_enabled: (v) => typeof v === 'boolean',
   keyword_index_enabled: (v) => typeof v === 'boolean',
   keyword_index_margin: (v) => typeof v === 'number' && v > 0 && v <= 1,
