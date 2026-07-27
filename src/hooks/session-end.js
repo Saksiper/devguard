@@ -57,6 +57,15 @@ function main() {
       debugLog('session-end', 'compliance finalize failed (non-fatal)', { error: String(err) });
     }
 
+    // Cold-start seed backstop: spawn the detached drain worker before respond()/exit.
+    try {
+      const { loadConfig } = require('../engine/config');
+      const { maybeSpawnSeedWorker } = require('../engine/spawn-worker');
+      maybeSpawnSeedWorker(db, loadConfig(projectPath), projectPath);
+    } catch (err) {
+      debugLog('session-end', 'seed worker spawn failed (non-fatal)', { error: String(err) });
+    }
+
     closeDb();
     timer.elapsed('Completed');
     respond({});

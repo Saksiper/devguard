@@ -65,23 +65,44 @@ function getModelDir() {
 
 // Lazily build the real Qwen3 generator. Returns an async (messages)=>string, or null
 // if the optional dependency / model is unavailable (never throws).
+// Run load(); if it throws (e.g. a half-written model cache from a killed download),
+// clear() the cache and retry ONCE. A second throw propagates to the caller.
+async function _loadWithRetry(load, clear) {
+  try {
+    return await load();
+  } catch (e1) {
+    debugLog('llm-note', 'load failed; clearing cache and retrying once', { error: String(e1) });
+    try { clear(); } catch { /* ignore */ }
+    return await load();
+  }
+}
+
+function _clearModelCache() {
+  const fs = require('fs');
+  const dir = path.join(getModelDir(), 'onnx-community', 'Qwen3-1.7B-ONNX');
+  if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true });
+}
+
 async function _loadGenerator() {
   if (_generator) return _generator;
   if (_loadFailed) return null;
-  try {
+  const build = async () => {
     const { pipeline, env } = require('@huggingface/transformers');
     env.cacheDir = getModelDir();
     env.allowLocalModels = true;
     env.allowRemoteModels = !process.env.DEVGUARD_OFFLINE;
     const pipe = await pipeline('text-generation', MODEL_ID, { dtype: 'q4' });
-    _generator = async (messages) => {
+    return async (messages) => {
       const out = await pipe(messages, { max_new_tokens: 128, do_sample: false });
       return extractText(out);
     };
+  };
+  try {
+    _generator = await _loadWithRetry(build, _clearModelCache);
     return _generator;
   } catch (err) {
     _loadFailed = true;
-    debugLog('llm-note', 'generator load failed', { error: String(err) });
+    debugLog('llm-note', 'generator load failed after retry', { error: String(err) });
     return null;
   }
 }
@@ -117,5 +138,6 @@ module.exports = {
   isLlmEnabled,
   getModelDir,
   MODEL_ID,
+  _loadWithRetry,
   _resetForTest,
 };

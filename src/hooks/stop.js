@@ -49,6 +49,16 @@ function main() {
       debugLog('stop', 'verdict flush failed (non-fatal)', { error: String(err) });
     }
 
+    // Cold-start seed: spawn the detached worker to drain the seed queue. Must happen BEFORE
+    // respond() (which exits synchronously); the worker is detached+unref so it outlives us.
+    try {
+      const { loadConfig } = require('../engine/config');
+      const { maybeSpawnSeedWorker } = require('../engine/spawn-worker');
+      maybeSpawnSeedWorker(db, loadConfig(projectPath), projectPath);
+    } catch (err) {
+      debugLog('stop', 'seed worker spawn failed (non-fatal)', { error: String(err) });
+    }
+
     closeDb();
     timer.elapsed('Completed');
     respond({});

@@ -56,6 +56,29 @@ function handleMissingDeps() {
   }
 }
 
+// One-time, user-VISIBLE heads-up that enabling seed notes (default-ON) triggers a
+// ~1.3GB local model download. The worker itself runs stdio:'ignore' and cannot print,
+// so the notice has to live in a hook that can. A sentinel file in the model dir makes it
+// show exactly once (ever), never per-session. Silent when disabled, offline, or the model
+// is already present. Fail-safe: any error → no notice (never blocks session start).
+function maybeSeedDownloadNotice(config) {
+  try {
+    if (!config || !config.seed_note_enabled) return null;
+    if (process.env.DEVGUARD_LLM_DISABLED === '1' || process.env.DEVGUARD_OFFLINE) return null;
+    const { getModelDir } = require('../engine/llm-note');
+    const dir = getModelDir();
+    if (fs.existsSync(path.join(dir, 'onnx-community', 'Qwen3-1.7B-ONNX'))) return null; // already downloaded
+    const sentinel = path.join(dir, '.seed_download_notified');
+    if (fs.existsSync(sentinel)) return null; // already notified once
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(sentinel, new Date().toISOString());
+    return 'DevGuard will do a one-time ~1.3GB local model download to write "seed" purpose '
+      + 'notes for new files. Disable with DEVGUARD_LLM_DISABLED=1.';
+  } catch {
+    return null;
+  }
+}
+
 function main() {
   const timer = createTimer('session-start');
   timer.start();
@@ -139,16 +162,17 @@ function main() {
     // Onboarding: show message on first use for this project. Gated on the
     // intervention toggle — in passive/control mode the banner would tell Claude
     // it is being watched (Hawthorne effect) and contaminate A/B measurement.
+    const notices = [];
     const sessionCount = db.getSessionCount();
     if (sessionCount === 1 && config.intervention_enabled) {
-      closeDb();
-      timer.elapsed('Completed (onboarding)');
-      context('DevGuard active. Cycle detection and protection monitoring enabled.', 'SessionStart');
-      return;
+      notices.push('DevGuard active. Cycle detection and protection monitoring enabled.');
     }
+    const dlNotice = maybeSeedDownloadNotice(config);
+    if (dlNotice) notices.push(dlNotice);
 
     closeDb();
-    timer.elapsed('Completed');
+    timer.elapsed(notices.length ? 'Completed (with notice)' : 'Completed');
+    if (notices.length) { context(notices.join(' '), 'SessionStart'); return; }
     respond({});
   } catch (err) {
     debugLog('session-start', 'Error caught, failing gracefully', { error: String(err) });
@@ -161,6 +185,8 @@ function main() {
     respond({});
   }
 }
+
+module.exports = { maybeSeedDownloadNotice };
 
 if (require.main === module) {
   main();

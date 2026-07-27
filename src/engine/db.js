@@ -1109,6 +1109,50 @@ function getDb(projectPath) {
       return db.prepare('DELETE FROM pending_seed_notes WHERE project_path = ? AND id = ?').run(pp, id);
     },
 
+    // Single-flight claim: atomically stamp claimed_at+worker_pid on all claimable rows
+    // (unclaimed, or claimed longer than staleMinutes ago). BEGIN IMMEDIATE via the proxy
+    // serialises two racing workers — the loser's UPDATE matches 0 rows. staleMinutes >= 0
+    // means "older than N min" (a live claim is protected); a NEGATIVE value shifts the
+    // cutoff into the future so every claim counts as stale (test determinism only).
+    claimSeedNotes(workerPid, staleMinutes = 15) {
+      debugLog('db', 'claimSeedNotes', { project: pp, workerPid, staleMinutes });
+      const mod = (staleMinutes >= 0 ? '-' : '+') + Math.abs(staleMinutes) + ' minutes';
+      return db.transaction(() => db.prepare(
+        `UPDATE pending_seed_notes SET claimed_at = datetime('now'), worker_pid = ?
+         WHERE project_path = ? AND (claimed_at IS NULL OR claimed_at < datetime('now', ?))`
+      ).run(workerPid, pp, mod).changes).immediate();
+    },
+
+    getClaimedSeedNotes(workerPid) {
+      debugLog('db', 'getClaimedSeedNotes', { project: pp, workerPid });
+      return db.prepare(
+        'SELECT * FROM pending_seed_notes WHERE project_path = ? AND worker_pid = ? ORDER BY id ASC'
+      ).all(pp, workerPid);
+    },
+
+    // How many rows a worker could claim right now. Drives the hook spawn pre-check so a
+    // turn during an active drain (rows claimed but not yet drained) does NOT spawn.
+    countClaimableSeedNotes(staleMinutes = 15) {
+      const mod = (staleMinutes >= 0 ? '-' : '+') + Math.abs(staleMinutes) + ' minutes';
+      const row = db.prepare(
+        `SELECT COUNT(*) AS n FROM pending_seed_notes
+         WHERE project_path = ? AND (claimed_at IS NULL OR claimed_at < datetime('now', ?))`
+      ).get(pp, mod);
+      return row ? row.n : 0;
+    },
+
+    // True if a DIFFERENT worker holds a still-fresh claim — the second worker must then
+    // NOT load a model (guards against two 1.3GB models running at once).
+    hasLiveClaim(excludePid, staleMinutes = 15) {
+      const mod = (staleMinutes >= 0 ? '-' : '+') + Math.abs(staleMinutes) + ' minutes';
+      const row = db.prepare(
+        `SELECT 1 FROM pending_seed_notes
+         WHERE project_path = ? AND worker_pid IS NOT NULL AND worker_pid != ?
+           AND claimed_at IS NOT NULL AND claimed_at >= datetime('now', ?) LIMIT 1`
+      ).get(pp, excludePid, mod);
+      return !!row;
+    },
+
     getNotes(opts = {}) {
       debugLog('db', 'getNotes', { project: pp, opts });
       let sql = 'SELECT * FROM notes WHERE project_path = ?';

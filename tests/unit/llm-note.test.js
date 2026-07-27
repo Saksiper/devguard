@@ -158,6 +158,31 @@ describe('extractText (real generator output parsing)', () => {
   });
 });
 
+describe('_loadWithRetry (corrupt-cache recovery)', () => {
+  it('returns on first success without clearing the cache', async () => {
+    const { _loadWithRetry } = loadLlmNote();
+    const clear = vi.fn();
+    const r = await _loadWithRetry(async () => 'gen', clear);
+    expect(r).toBe('gen');
+    expect(clear).not.toHaveBeenCalled();
+  });
+
+  it('clears the cache and retries once when the first load fails', async () => {
+    const { _loadWithRetry } = loadLlmNote();
+    let n = 0;
+    const clear = vi.fn();
+    const r = await _loadWithRetry(async () => { if (n++ === 0) throw new Error('corrupt'); return 'gen2'; }, clear);
+    expect(r).toBe('gen2');
+    expect(clear).toHaveBeenCalledOnce();
+  });
+
+  it('propagates the error when the retry also fails', async () => {
+    const { _loadWithRetry } = loadLlmNote();
+    const clear = vi.fn();
+    await expect(_loadWithRetry(async () => { throw new Error('still corrupt'); }, clear)).rejects.toThrow('still corrupt');
+  });
+});
+
 describe('firstSentence', () => {
   it('keeps only the first sentence', () => {
     const { firstSentence } = loadLlmNote();

@@ -82,6 +82,36 @@ describe('runWorker (seed drain)', () => {
     expect(db.getHeadNoteByNode('a/b')).toBeFalsy();
   });
 
+  it('exits without draining when another worker holds a live claim', async () => {
+    const { getDb } = loadDb();
+    const { runWorker } = loadWorker();
+    const seed = getDb(projectDir);
+    seed.enqueueSeedNote({ node_id: 'a/b', file: 'f', code: 'x' });
+    seed.claimSeedNotes(999999); // another (live) worker owns the job
+    const gen = vi.fn(async () => 'should not run');
+
+    const created = await runWorker(projectDir, { generate: gen });
+
+    const db = getDb(projectDir);
+    expect(created).toBe(0);
+    expect(gen).not.toHaveBeenCalled();
+    expect(db.getPendingSeedNotes()).toHaveLength(1); // untouched, still the other worker's
+  });
+
+  it('skips model work and clears jobs when disk space is insufficient', async () => {
+    const { getDb } = loadDb();
+    const { runWorker } = loadWorker();
+    getDb(projectDir).enqueueSeedNote({ node_id: 'a/b', file: 'f', code: 'x' });
+    const gen = vi.fn(async () => 'Purpose.');
+
+    const created = await runWorker(projectDir, { generate: gen, hasEnoughDisk: () => false });
+
+    const db = getDb(projectDir);
+    expect(created).toBe(0);
+    expect(gen).not.toHaveBeenCalled(); // never loaded the model
+    expect(db.getPendingSeedNotes()).toHaveLength(0); // claimed jobs cleared, no half-download
+  });
+
   it('clears the job (no poison loop) when the generator yields null', async () => {
     const { getDb } = loadDb();
     const { runWorker } = loadWorker();

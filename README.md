@@ -139,11 +139,19 @@ window_size: 10                  # Recent changes to analyze
 periodic_injection_interval: 20  # Edits between auto-summaries (0 = disable)
 embedding_enabled: true          # Enable L3 semantic detection
 intervention_enabled: true       # false = passive (measure but inject nothing)
+seed_note_enabled: true          # Auto-write a "purpose" note when a new file appears
 
 # Adaptive intelligence
 adaptive_threshold: true         # Thompson Sampling per-pattern learning
 auto_promote_enabled: true       # Auto-adjust thresholds from feedback
 ```
+
+When `seed_note_enabled` is on (the default), the first time a new file's feature is seen
+DevGuard runs a small local model (Qwen3-1.7B) to write that file's lasting purpose as a
+note. This happens in a **detached background process** — nothing blocks — and, like
+everything else, stays on your machine. On first use it triggers a **one-time ~1.3GB model
+download** (you get a one-time heads-up). To turn it off: `seed_note_enabled: false`, or the
+env var `DEVGUARD_LLM_DISABLED=1` (or `DEVGUARD_OFFLINE=1` to stay fully offline).
 
 ## 📊 Commands
 

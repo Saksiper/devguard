@@ -25,9 +25,10 @@ const DEFAULTS = {
   // Seed-note cold-start (SEED-COLDSTART): when a NEW feature node is first born and has
   // no head note yet, enqueue a job for the local LLM to write its "lasting purpose" seed
   // note, breaking the chicken-and-egg where nothing ever authors the first note.
-  // DEFAULT-OFF: enabling it opts a project into a ~1.3GB optional model download + local
-  // inference. Stays OFF until broad-bench + live measurement justify flipping it on.
-  seed_note_enabled: false,
+  // DEFAULT-ON: a gated-off cold-start fix fixes nothing for real users. On first use this
+  // triggers a one-time ~1.3GB local model download (a visible one-time notice is shown by
+  // the SessionStart hook). Opt out with DEVGUARD_LLM_DISABLED=1 or DEVGUARD_OFFLINE=1.
+  seed_note_enabled: true,
   // S2.B: use the embedding read-resolver (prompt→centroid argmax) instead of the
   // keyword map in UserPromptSubmit. DEFAULT-OFF: enabling it loads MiniLM on EVERY
   // prompt turn (synchronous latency). Stays OFF until an N>=20 live measurement.

@@ -1,39 +1,84 @@
 'use strict';
 
-// Seed-note worker (SEED-COLDSTART · T3-core). Runs as a SEPARATE process so the local
-// LLM's slow inference never blocks a hook. It drains pending_seed_notes: for each job
-// it asks the local model for the file's lasting purpose and writes a low-confidence
-// (confidence_level=1) seed note under the node, which a real [DG-NOTE] later supersedes.
+// Seed-note worker (SEED-COLDSTART · T3). Runs as a SEPARATE detached process (spawned by
+// the Stop/SessionEnd hooks) so the local LLM's slow inference never blocks a hook. It drains
+// pending_seed_notes: for each job it asks the local model for the file's lasting purpose and
+// writes a low-confidence (confidence_level=1) seed note, which a real [DG-NOTE] later supersedes.
 //
-// Idempotent: a node that already has a head note is skipped (a real note or a prior
-// seed won the race). Every job is deleted after handling — success, skip, or a null/
-// error generation — so a poison row can never loop forever. Non-blocking + fail-safe:
-// individual job failures are swallowed; the process exits 0.
+// Hardening (per plan + provocateur review):
+//  - LIVE-WORKER GUARD: if another worker holds a fresh claim, exit before loading a model
+//    (prevents two 1.3GB models running at once).
+//  - SINGLE-FLIGHT CLAIM: atomically claim rows; if 0 claimed, exit.
+//  - ZOMBIE-GUARD: only process jobs whose node still lacks a head note; if none are valid,
+//    exit WITHOUT loading the model (a cancelled/superseded session must not trigger a
+//    1.3GB download for moot work).
+//  - DISK-GUARD: before the first model load, require ~3GB free (unless the model is already
+//    present); otherwise skip gracefully — no half-download.
+// Every claimed job is deleted after handling (success, skip, or null/error) so a poison row
+// can never loop forever. Non-blocking + fail-safe: the process always exits 0.
 //
-// This is the WALKING-SKELETON core. Single-flight (DB-atomic claim), zombie-guard, and
-// the idle-lifetime keepalive from the plan are deliberately NOT here yet — they harden
-// this loop once the end-to-end path is proven.
+// NO idle-lifetime: per-turn spawn + single-flight is the model. A detached background model
+// reload costs the user nothing, so keeping a daemon alive would be pure risk (provocateur #2).
 
+const path = require('path');
 const { debugLog } = require('../engine/debug-log');
 
-// deps.generate is a DI seam for tests: (file, code) => Promise<string|null>.
-// Default delegates to the real local-LLM purpose generator.
+// True if the model download can proceed: the model is already present (no download), or the
+// drive holding the model dir has ~3GB free. Fail-open on any stat error (don't block on IO).
+function defaultHasEnoughDisk() {
+  try {
+    const fs = require('fs');
+    const { getModelDir } = require('../engine/llm-note');
+    const dir = getModelDir();
+    if (fs.existsSync(path.join(dir, 'onnx-community'))) return true; // already downloaded
+    fs.mkdirSync(dir, { recursive: true });
+    const st = fs.statfsSync(dir);
+    return st.bavail * st.bsize > 3 * 1024 * 1024 * 1024;
+  } catch {
+    return true;
+  }
+}
+
+// deps.generate: (file, code) => Promise<string|null> (default = real local LLM).
+// deps.hasEnoughDisk: () => boolean (default = real disk check).
 async function runWorker(projectPath, deps = {}) {
   const { getDb, closeDb } = require('../engine/db');
   const { computeFileFingerprint } = require('../engine/file-fingerprint');
   const generate = deps.generate || ((file, code) => require('../engine/llm-note').generatePurpose({ file, code }));
+  const hasEnoughDisk = deps.hasEnoughDisk || defaultHasEnoughDisk;
+  const pid = process.pid;
 
   const db = getDb(projectPath);
   let created = 0;
   try {
-    const jobs = db.getPendingSeedNotes();
-    debugLog('seed-worker', 'draining', { projectPath, jobs: jobs.length });
+    // (1) Another worker is already running — don't double-load a model.
+    if (db.hasLiveClaim(pid)) { debugLog('seed-worker', 'live claim held by another worker, exit', { pid }); return 0; }
 
-    for (const job of jobs) {
+    // (2) Atomic single-flight claim. Nothing claimable -> exit.
+    const claimed = db.claimSeedNotes(pid);
+    if (claimed === 0) { debugLog('seed-worker', 'nothing claimed, exit', { pid }); return 0; }
+    const jobs = db.getClaimedSeedNotes(pid);
+
+    // (3) Zombie-guard: drop jobs whose node already has a head note (already handled);
+    //     only load a model if at least one job is still valid.
+    const valid = [];
+    for (const j of jobs) {
+      if (db.getHeadNoteByNode(j.node_id)) { try { db.deleteSeedNote(j.id); } catch { /* ignore */ } }
+      else valid.push(j);
+    }
+    if (valid.length === 0) { debugLog('seed-worker', 'no valid jobs, exit without model load'); return 0; }
+
+    // (4) Disk-guard before the first (possibly downloading) model load.
+    if (!hasEnoughDisk()) {
+      debugLog('seed-worker', 'insufficient disk, skip model load', { count: valid.length });
+      for (const j of valid) { try { db.deleteSeedNote(j.id); } catch { /* ignore */ } }
+      return 0;
+    }
+
+    // (5) Drain valid jobs.
+    for (const job of valid) {
       try {
-        // Idempotent: a head note already exists (real note or earlier seed) — drop the job.
-        if (db.getHeadNoteByNode(job.node_id)) { db.deleteSeedNote(job.id); continue; }
-
+        if (db.getHeadNoteByNode(job.node_id)) { db.deleteSeedNote(job.id); continue; } // race re-check
         const purpose = await generate(job.file, job.code);
         if (purpose) {
           const fp = job.file ? computeFileFingerprint(job.file) : null;
@@ -42,7 +87,7 @@ async function runWorker(projectPath, deps = {}) {
               node_id: job.node_id,
               source: 'seed_purpose',
               note_text: purpose,
-              file: job.node_id, // sphere notes store the node_id in `file`
+              file: job.node_id,
               confidence_level: 1,
               session_id: job.session_id,
               related_change_id: job.change_id,
@@ -61,7 +106,7 @@ async function runWorker(projectPath, deps = {}) {
           created++;
           debugLog('seed-worker', 'seed written', { node_id: job.node_id });
         }
-        db.deleteSeedNote(job.id); // handled (written or null) — never re-loop
+        db.deleteSeedNote(job.id);
       } catch (err) {
         debugLog('seed-worker', 'job failed (non-fatal)', { id: job.id, error: String(err) });
         try { db.deleteSeedNote(job.id); } catch { /* ignore */ }

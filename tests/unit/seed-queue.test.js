@@ -66,3 +66,61 @@ describe('pending_seed_notes queue', () => {
     closeDb();
   });
 });
+
+describe('seed claim (single-flight)', () => {
+  it('claims unclaimed rows, stamps worker_pid, and returns the count', () => {
+    const { getDb, closeDb } = loadDb();
+    const db = getDb(projectDir);
+    db.enqueueSeedNote({ node_id: 'a/b', file: 'f1', code: 'x' });
+    db.enqueueSeedNote({ node_id: 'c/d', file: 'f2', code: 'y' });
+    expect(db.claimSeedNotes(100)).toBe(2);
+    const mine = db.getClaimedSeedNotes(100);
+    expect(mine).toHaveLength(2);
+    expect(mine.every((r) => r.worker_pid === 100)).toBe(true);
+    closeDb();
+  });
+
+  it('a second immediate claim gets 0 rows (single-flight)', () => {
+    const { getDb, closeDb } = loadDb();
+    const db = getDb(projectDir);
+    db.enqueueSeedNote({ node_id: 'a/b', file: 'f', code: 'x' });
+    expect(db.claimSeedNotes(100)).toBe(1);
+    expect(db.claimSeedNotes(200)).toBe(0);
+    expect(db.getClaimedSeedNotes(200)).toHaveLength(0);
+    closeDb();
+  });
+
+  it('reclaims stale claims when the stale window has passed', () => {
+    const { getDb, closeDb } = loadDb();
+    const db = getDb(projectDir);
+    db.enqueueSeedNote({ node_id: 'a/b', file: 'f', code: 'x' });
+    db.claimSeedNotes(100);
+    // negative window => "now + N min" cutoff => every existing claim counts as stale
+    expect(db.claimSeedNotes(200, -1)).toBe(1);
+    expect(db.getClaimedSeedNotes(200)).toHaveLength(1);
+    closeDb();
+  });
+
+  it('countClaimableSeedNotes counts unclaimed (and stale) rows', () => {
+    const { getDb, closeDb } = loadDb();
+    const db = getDb(projectDir);
+    db.enqueueSeedNote({ node_id: 'a/b', file: 'f', code: 'x' });
+    db.enqueueSeedNote({ node_id: 'c/d', file: 'g', code: 'y' });
+    expect(db.countClaimableSeedNotes()).toBe(2);
+    db.claimSeedNotes(100);
+    expect(db.countClaimableSeedNotes()).toBe(0); // all freshly claimed
+    expect(db.countClaimableSeedNotes(-1)).toBe(2); // negative window -> all stale/claimable
+    closeDb();
+  });
+
+  it('hasLiveClaim detects another live worker but not itself or stale claims', () => {
+    const { getDb, closeDb } = loadDb();
+    const db = getDb(projectDir);
+    db.enqueueSeedNote({ node_id: 'a/b', file: 'f', code: 'x' });
+    db.claimSeedNotes(100);
+    expect(db.hasLiveClaim(200)).toBe(true); // 100 holds a live claim
+    expect(db.hasLiveClaim(100)).toBe(false); // excludes self
+    expect(db.hasLiveClaim(200, -1)).toBe(false); // negative window -> claim not "live"
+    closeDb();
+  });
+});

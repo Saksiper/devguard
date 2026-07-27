@@ -32,6 +32,9 @@
     "better-sqlite3": "^12.8.0",
     "js-yaml": "^4.1.1"
   },
+  "optionalDependencies": {
+    "@huggingface/transformers": "^4.2.0"
+  },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^1.0.0",
     "eslint": "^9.0.0",
