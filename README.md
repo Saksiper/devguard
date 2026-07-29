@@ -47,6 +47,15 @@ Then start a new session. That's it. DevGuard needs one native module (SQLite) t
 
 > If the automatic build can't run (no network, or `npm` isn't on your PATH), DevGuard says so at session start and tells you the one command to run by hand. It never fails silently.
 
+**Updating.** New versions ship to the marketplace. To pull one:
+
+```bash
+/plugin marketplace update          # refresh the catalog from GitHub
+/plugin update devguard             # upgrade the installed plugin
+```
+
+Then restart Claude Code. Marketplace autoUpdate alone does not reliably refresh a plugin's bundled hooks (a known Claude Code limitation), so run the explicit update after each release.
+
 ## 🧠 Feature Memory
 
 This is the layer that makes DevGuard more than a linter. As the agent works, DevGuard maps each edit to a **feature** (a "country" on a conceptual map, e.g. `ui_ux/filter`, `security/auth`) and keeps **one living note per feature**.
@@ -58,6 +67,8 @@ This is the layer that makes DevGuard more than a linter. As the agent works, De
 3. The new note **supersedes** the old one: exactly one "head" note per feature, with full history retained behind it.
 
 So the memory is **captured automatically from the session and pushed back proactively** next time. It is not something you write by hand or remember to query. DevGuard also tracks **compliance**: after surfacing a note, it classifies the follow-up edit as `complied` / `ignored` / `superseded`, so the memory's actual influence is measurable, not assumed.
+
+**The first note writes itself.** Step 2 above has a catch: on a brand-new file the agent hasn't left a marker yet, so there is nothing to surface (a cold start). DevGuard closes that gap with a small local model (Qwen3-1.7B). The first time a new file's feature appears, a detached background process reads the file and writes its lasting purpose as a low-confidence *seed* note, which a real `[DG-NOTE]` later supersedes. Nothing blocks, nothing leaves your machine; first use triggers a one-time ~1.3GB model download, and it is off with `seed_note_enabled: false`.
 
 **How a prompt finds its feature:** there is no hardcoded keyword list. The resolver builds its vocabulary from the project's own notes and feature names, so it works in whatever language you write, tolerates word-form changes ("filtering" still reinforces `filter`), and only surfaces a note when the match evidence is strong. Every surfaced note records exactly which words triggered it, and a note whose source file has been deleted from the project retires automatically instead of resurfacing forever.
 
@@ -148,7 +159,7 @@ auto_promote_enabled: true       # Auto-adjust thresholds from feedback
 
 When `seed_note_enabled` is on (the default), the first time a new file's feature is seen
 DevGuard runs a small local model (Qwen3-1.7B) to write that file's lasting purpose as a
-note. This happens in a **detached background process** — nothing blocks — and, like
+note. This happens in a **detached background process** (nothing blocks) and, like
 everything else, stays on your machine. On first use it triggers a **one-time ~1.3GB model
 download** (you get a one-time heads-up). To turn it off: `seed_note_enabled: false`, or the
 env var `DEVGUARD_LLM_DISABLED=1` (or `DEVGUARD_OFFLINE=1` to stay fully offline).
