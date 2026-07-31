@@ -51,7 +51,7 @@ function buildMessages(file, code) {
   const system =
     "You are a code analysis assistant. Reply with EXACTLY ONE concise English sentence " +
     "describing the file's lasting purpose — what it exists to do — not what is currently " +
-    "being edited, added or tested. No preamble, no markdown, no code.";
+    "being edited, added or tested. No preamble, no markdown, no code. Keep it under ~140 characters.";
   const user = `/no_think\nFile: ${file}\n\n\`\`\`\n${code}\n\`\`\``;
   return [
     { role: 'system', content: system },

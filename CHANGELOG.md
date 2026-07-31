@@ -2,6 +2,15 @@
 
 All notable changes to DevGuard are documented here.
 
+## 0.5.1
+
+### Changed
+- **Feature notes are now asked to be short.** The instruction Claude receives when
+  leaving or continuing a `[DG-NOTE]` now requests a single short sentence (aim under
+  ~140 characters); the same brevity hint was added to the local seed-note prompt.
+  On real usage, short notes are followed far more often than long ones, which get
+  truncated at injection. Note wording only; the 300-character safety cap is unchanged.
+
 ## 0.5.0
 
 ### Added

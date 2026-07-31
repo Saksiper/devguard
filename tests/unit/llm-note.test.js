@@ -19,6 +19,13 @@ afterEach(() => {
   else process.env.DEVGUARD_LLM_DISABLED = savedDisabled;
 });
 
+describe('buildMessages — brevity guidance (seed notes)', () => {
+  it('system prompt asks to keep the note under ~140 characters', () => {
+    const { buildMessages } = loadLlmNote();
+    expect(buildMessages('a.js', 'x')[0].content).toContain('140');
+  });
+});
+
 describe('stripThink', () => {
   it('removes a <think>...</think> block and trims to the answer', () => {
     const { stripThink } = loadLlmNote();

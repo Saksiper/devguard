@@ -77,6 +77,20 @@ describe('dg-note formatInstruction', () => {
   });
 });
 
+describe('dg-note formatInstruction — brevity guidance (compliance: short notes get followed)', () => {
+  it('no-prior branch asks for a short note with a ~140-char target', () => {
+    const msg = formatInstruction('ui_ux/filter', null).toLowerCase();
+    expect(msg).toContain('short');
+    expect(msg).toContain('140');
+  });
+
+  it('prior branch asks for a short note with a ~140-char target', () => {
+    const msg = formatInstruction('ui_ux/filter', 'earlier decision text').toLowerCase();
+    expect(msg).toContain('short');
+    expect(msg).toContain('140');
+  });
+});
+
 describe('dg-note formatInstruction — past-tense/no-future rule (S3.1.3)', () => {
   it('no-prior branch forbids future plans/intentions and scopes to this edit', () => {
     const msg = formatInstruction('ui_ux/filter', null);

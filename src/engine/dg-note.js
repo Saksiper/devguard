@@ -18,7 +18,7 @@ function formatInstruction(nodeId, priorNote) {
   if (!priorNote) {
     return (
       `No prior note exists for feature \`${nodeId}\`. ` +
-      `When you finish this task, leave one past-tense, single-sentence note at the end of your reply: ` +
+      `When you finish this task, leave one short, single-sentence past-tense note (aim for one line, under ~140 characters) at the end of your reply: ` +
       `${marker} <what you changed and why>.` +
       pastTenseRule
     );
@@ -32,7 +32,7 @@ function formatInstruction(nodeId, priorNote) {
     `Respect this earlier decision and build on it. ` +
     `When you finish, END your reply with this two-line block:\n` +
     `[DG-CONTINUE ${nodeId}] <one past-tense sentence: how you followed the note>\n` +
-    `${marker} <one past-tense sentence: what you changed and why>\n` +
+    `${marker} <one short past-tense sentence, under ~140 characters: what you changed and why>\n` +
     `Use [DG-PIVOT ${nodeId}] instead if you deliberately diverged, or ` +
     `[DG-PAUSE ${nodeId}] if you must investigate first.` +
     pastTenseRule
