@@ -200,6 +200,9 @@ function computeSummary(pairs) {
   // is a falsification probe ("k decisive active losses"), not a powered comparison.
   if (ctrlValid.length || ctrlErrored.length) {
     s.control_pairs = ctrlValid.length + ctrlErrored.length;
+    // errored_pairs above counts ALL errored pairs (control included); this field
+    // disambiguates so total_pairs = valid_pairs + control_pairs + (errored_pairs - control_errored_pairs).
+    s.control_errored_pairs = ctrlErrored.length;
     s.controls = {};
     for (const type of [...new Set([...ctrlValid, ...ctrlErrored].map((p) => p.control))]) {
       const v = ctrlValid.filter((p) => p.control === type);
@@ -307,7 +310,7 @@ async function main() {
       honesty_note: 'Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.',
       measurable_components_note: 'Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms\' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.',
       sphere_mode_note: 'Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality. Exception: on control:"misleading" tasks the seeded decisions are stale by construction and the consistency checker scores adherence to the CURRENT prompt spec — higher = resisted the note.',
-      negative_controls_note: 'Control tasks (pairs[].control) measure harm/noise, not benefit: "irrelevant" seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), "misleading" seeds a note contradicting the prompt\'s current spec (following it is a consistency FAIL), "none" seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only (small n, forced-choice judging; stripMarkers may also remove note-echo evidence, biasing controls toward tie).',
+      negative_controls_note: 'Control tasks (pairs[].control) measure harm/noise, not benefit: "irrelevant" seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), "misleading" seeds a note contradicting the prompt\'s current spec (following it is a consistency FAIL), "none" seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only (small n, forced-choice judging; stripMarkers may also remove note-echo evidence, biasing controls toward tie). For irrelevant/none controls the consistency score is only a spontaneous-adherence baseline to the reused fixture\'s hidden conventions (neither arm was told them) — it measures resistance to nothing.',
       run_model: params.model, judge_model: params.judgeModel,
       permission_mode: 'acceptEdits',
       bias_mitigation: ['blind-judge', 'position-swap', 'code-only+strip'],

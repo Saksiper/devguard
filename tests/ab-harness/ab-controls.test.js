@@ -68,6 +68,7 @@ describe('ab-harness: computeSummary partitions control pairs out of headline me
       pair('active', { control: 'irrelevant', activeErr: true }),
     ]);
     expect(s.errored_pairs).toBe(1);
+    expect(s.control_errored_pairs).toBe(1); // disambiguates: that errored pair is a control one
     expect(s.controls.irrelevant).toMatchObject({ pairs: 0, errored: 1 });
     expect(s.valid_pairs).toBe(1);
     expect(s.active_wins).toBe(1);
