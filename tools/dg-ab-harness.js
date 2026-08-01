@@ -152,9 +152,14 @@ function computeSummary(pairs) {
   const s = { total_pairs: pairs.length, active_wins: 0, passive_wins: 0, ties: 0, inconsistent: 0, errored_pairs: 0 };
   // MAJOR-2: a pair where either arm errored/timed out is not a valid comparison —
   // exclude it from win-rate AND from proxy/test means.
+  // Negative-control pairs (p.control) measure harm/noise, not benefit — they are
+  // partitioned out of every headline metric and reported under summary.controls.
   const valid = [];
+  const ctrlValid = [];
+  const ctrlErrored = [];
   for (const p of pairs) {
-    if (p.active.isError || p.passive.isError) { s.errored_pairs++; continue; }
+    if (p.active.isError || p.passive.isError) { s.errored_pairs++; if (p.control) ctrlErrored.push(p); continue; }
+    if (p.control) { ctrlValid.push(p); continue; }
     valid.push(p);
     if (p.verdict.pair_winner === 'active') s.active_wins++;
     else if (p.verdict.pair_winner === 'passive') s.passive_wins++;
@@ -190,6 +195,35 @@ function computeSummary(pairs) {
     active: mean(valid.map((p) => surfacedCount(p, p.active))),
     passive: mean(valid.map((p) => surfacedCount(p, p.passive))),
   };
+  // Controls block: descriptive counts + per-arm means only. Deliberately NO win
+  // rate and NO Wilson CI — at n=2-3 per type a rate would overstate; the readout
+  // is a falsification probe ("k decisive active losses"), not a powered comparison.
+  if (ctrlValid.length || ctrlErrored.length) {
+    s.control_pairs = ctrlValid.length + ctrlErrored.length;
+    s.controls = {};
+    for (const type of [...new Set([...ctrlValid, ...ctrlErrored].map((p) => p.control))]) {
+      const v = ctrlValid.filter((p) => p.control === type);
+      const c = { pairs: v.length, errored: ctrlErrored.filter((p) => p.control === type).length, active_wins: 0, passive_wins: 0, ties: 0, inconsistent: 0 };
+      for (const p of v) {
+        if (p.verdict.pair_winner === 'active') c.active_wins++;
+        else if (p.verdict.pair_winner === 'passive') c.passive_wins++;
+        else c.ties++;
+        if (p.verdict.consistent === false) c.inconsistent++;
+      }
+      c.numTurns = { active: mean(v.map((p) => p.active.proxies.numTurns)), passive: mean(v.map((p) => p.passive.proxies.numTurns)) };
+      c.costUsd = { active: mean(v.map((p) => p.active.proxies.costUsd)), passive: mean(v.map((p) => p.passive.proxies.costUsd)) };
+      c.testPass = {
+        active: mean(v.map((p) => (p.active.testPass === null ? null : p.active.testPass ? 1 : 0))),
+        passive: mean(v.map((p) => (p.passive.testPass === null ? null : p.passive.testPass ? 1 : 0))),
+      };
+      // For control:'misleading' the consistency checker scores adherence to the
+      // CURRENT prompt spec — higher = resisted the stale note, inverse of the
+      // positive-task reading.
+      c.consistency = { active: mean(v.map((p) => consistencyScore(p.active))), passive: mean(v.map((p) => consistencyScore(p.passive))) };
+      c.surfaced = { active: mean(v.map((p) => surfacedCount(p, p.active))), passive: mean(v.map((p) => surfacedCount(p, p.passive))) };
+      s.controls[type] = c;
+    }
+  }
   return s;
 }
 
@@ -246,6 +280,7 @@ async function main() {
         console.log(`  -> winner=${verdict.pair_winner} consistent=${verdict.consistent} | test p=${passive.testPass} a=${active.testPass} | cons p=${passive.consistency.score}/${passive.consistency.total} a=${active.consistency.score}/${active.consistency.total} | err p=${passive.isError} a=${active.isError}`);
         pairs.push({
           task: task.id, replica: r,
+          control: task.control || undefined,
           seeded: !!(task.seedNotes && task.seedNotes.length),
           surface_warning: surfaceWarn || undefined,
           passive: { proxies: passive.proxies, testPass: passive.testPass, consistency: passive.consistency, isError: passive.isError },
@@ -271,7 +306,8 @@ async function main() {
       experiment_type: 'A/B live claude -p (passive vs active intervention)',
       honesty_note: 'Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.',
       measurable_components_note: 'Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms\' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.',
-      sphere_mode_note: 'Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality.',
+      sphere_mode_note: 'Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality. Exception: on control:"misleading" tasks the seeded decisions are stale by construction and the consistency checker scores adherence to the CURRENT prompt spec — higher = resisted the note.',
+      negative_controls_note: 'Control tasks (pairs[].control) measure harm/noise, not benefit: "irrelevant" seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), "misleading" seeds a note contradicting the prompt\'s current spec (following it is a consistency FAIL), "none" seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only (small n, forced-choice judging; stripMarkers may also remove note-echo evidence, biasing controls toward tie).',
       run_model: params.model, judge_model: params.judgeModel,
       permission_mode: 'acceptEdits',
       bias_mitigation: ['blind-judge', 'position-swap', 'code-only+strip'],
