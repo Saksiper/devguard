@@ -180,20 +180,32 @@ DevGuard measures itself on two separate axes, kept apart on purpose because the
 
 Across 12 controlled scenarios covering all detection levels, precision and recall are high. **Honest caveat:** these are *designed* scenarios. In real-world use, false positives do occur (most notably cross-file embedding similarity flagging unrelated edits) and thresholds are tuned down as those are found. Treat the controlled numbers as "the detector fires on the patterns it's meant to," not as a real-world false-positive guarantee.
 
+**Measured reality check** (first labeled dogfood batch, 2026-08: a deterministic 45-event sample of real detection logs): the cross-file embedding-similarity detector's real-world precision was **~0 on this sample**; its warnings fired on distinct forward-progress edits whose descriptions were naturally similar during focused work. The protection detector produced the sample's one true positive. Gating or retiring the embedding detector is the next tuning target. Synthetic precision and real-world precision are different quantities; don't quote one as the other.
+
 ### 2. Intervention effectiveness (blind A/B)
 
-Does the memory layer actually change the output? Measured with **20 synthetic feature-extension tasks**, each run twice in isolated `claude -p` sessions, one with DevGuard's memory surfaced (`intervention_enabled: true`) and one without, then scored by a **blind, position-swapped LLM judge** that doesn't know which arm is which.
+Does the memory layer actually change the output? Measured with isolated `claude -p` pairs, one arm with DevGuard's memory surfaced (`intervention_enabled: true`) and one without, scored by a **blind, position-swapped LLM judge** that doesn't know which arm is which, across three task groups kept separate on purpose:
 
-| Metric | Result |
-|--------|--------|
-| Memory-arm win rate | **20 / 20** (Wilson 95% CI **[0.84, 1.0]**) |
-| Decision consistency | memory **3.0 / 3** vs control **0.25 / 3** |
-| Prior note surfaced | 20 / 20 valid pairs |
-| Functional test pass | memory 100% · control 95% |
+| Task group | Valid pairs | Memory-arm result |
+|------------|-------------|-------------------|
+| Synthetic showcase | 20 | **20 W** (saturated; see caveat) |
+| Real-project tasks | 5 | **3 W / 1 L / 1 T** |
+| Negative controls (harm probe) | 16 | 3 W / 4 L / 9 T; **no harm detected** |
 
-**Honest caveats:** this is a *synthetic* benchmark of the **memory channel** (does surfacing a prior decision make the agent honor it?), not a proxy for general coding quality. The strongest evidence is the mechanical consistency/surfaced numbers; the win rate should be read knowing the judge is given the seeded decisions as context. It is not a substitute for long-horizon real-world usage, which is an ongoing measurement via the dogfood tooling.
+**Synthetic showcase (20/20, Wilson 95% CI [0.84, 1.0]; consistency 3.0/3 vs 0.25/3).** Read this as a saturated benchmark: the 20 tasks are variants of just **three templates** (7 filter / 7 search / 6 auth), all shaped "extend a feature whose seeded note helps", and the judge is given the seeded decisions as context. The CI therefore overstates precision (the effective independent units are closer to the 3 template families), and 20/20 mostly proves the memory transport channel works, not that DevGuard wins 100% of real work.
 
-**Reproduce it yourself:** the full A/B harness and all 20 task definitions live in this repo under `tests/ab-harness/`. Don't take the number on faith, run it.
+**Real-project tasks (3/5).** Five tasks derived from a real production side project, same harness: the memory arm won 3, lost 1, tied 1 (consistency 3.0/3 vs 2.2/3). The honest signal: on realistic tasks a strong model often **infers project conventions without any note** (the no-memory arm scored 3/3 on three of five tasks). Memory helps most when conventions are non-obvious, and it does not always win.
+
+**Negative controls (16 pairs, 8 tasks × 2 replicas).** These measure DevGuard's real risk (injecting a note at the wrong time) and are excluded from the win rates above by construction:
+- *Irrelevant note* (6 pairs): an off-topic note is force-surfaced into the memory arm. Result: 1 W / 2 L / 3 T, functional tests 100% in both arms, cost and turns ~equal. No measurable harm, and the memory arm *not* winning here is itself evidence the judge isn't biased toward the note arm.
+- *Misleading note* (6 pairs): the seeded note contradicts the task's current spec; following it is scored as failure. Result: the memory arm **resisted the stale note in 6/6 pairs** (3/3 current-spec consistency, judge 1 W / 0 L / 5 T) and finished in fewer turns than the control arm.
+- *No note* (4 pairs): hooks on, empty memory. Turns identical (7.0 vs 7.0), cost overhead ~$0.03/task (~5%).
+
+Framing: this is a **falsification probe at small n, not a powered comparison**: 4 decisive memory-arm losses vs 3 wins across 16 valid control pairs is noise around a null, with full functional-test parity. 11 additional control pairs errored on CLI usage limits mid-run; they are documented in the report and excluded from every metric.
+
+**Honest caveats:** synthetic numbers measure the **memory channel**, not general coding quality; the judge sees the seeded decisions for showcase tasks; the misleading controls test the *easy* resistance case (the requirement change is stated in the prompt). Long-horizon real-world effect is still an open measurement; see the dogfood reality check above, including the embedding detector's ~0 real-world precision.
+
+**Reproduce it yourself:** the harness, all 33 task definitions (including the 8 negative controls) and the merged run report (`tests/ab-harness/ab-effectiveness-report-n41.json`) live in this repo under `tests/ab-harness/`. Don't take the numbers on faith, run it.
 
 ## 🏗 Architecture
 

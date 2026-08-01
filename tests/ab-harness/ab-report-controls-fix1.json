@@ -1,0 +1,179 @@
+{
+  "meta": {
+    "product": "DevGuard",
+    "experiment_type": "A/B live claude -p (passive vs active intervention)",
+    "honesty_note": "Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.",
+    "measurable_components_note": "Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.",
+    "sphere_mode_note": "Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality. Exception: on control:\"misleading\" tasks the seeded decisions are stale by construction and the consistency checker scores adherence to the CURRENT prompt spec — higher = resisted the note.",
+    "negative_controls_note": "Control tasks (pairs[].control) measure harm/noise, not benefit: \"irrelevant\" seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), \"misleading\" seeds a note contradicting the prompt's current spec (following it is a consistency FAIL), \"none\" seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only (small n, forced-choice judging; stripMarkers may also remove note-echo evidence, biasing controls toward tie). For irrelevant/none controls the consistency score is only a spontaneous-adherence baseline to the reused fixture's hidden conventions (neither arm was told them) — it measures resistance to nothing.",
+    "run_model": "opus",
+    "judge_model": "opus",
+    "permission_mode": "acceptEdits",
+    "bias_mitigation": [
+      "blind-judge",
+      "position-swap",
+      "code-only+strip"
+    ],
+    "isolation": "strategy-B: unique project_path per run + per-pair cleanup"
+  },
+  "generated_at": "2026-08-01T22:20:31.307Z",
+  "parameters": {
+    "tasks_file": "C:\\Users\\umut_\\OneDrive\\Desktop\\Projeler\\devguard\\tests\\ab-harness\\tasks.json",
+    "n_replicas": 1,
+    "only": [
+      "ctrl-irrelevant-auth"
+    ]
+  },
+  "pairs": [
+    {
+      "task": "ctrl-irrelevant-auth",
+      "replica": 1,
+      "control": "irrelevant",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 9,
+          "costUsd": 0.9450255,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 4,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "surfaced": 1
+          },
+          "numTurns": 12,
+          "costUsd": 1.0482215000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "A",
+          "reason": "",
+          "confidence": null,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "B",
+          "reason": "",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "passive",
+        "consistent": true
+      }
+    }
+  ],
+  "summary": {
+    "total_pairs": 1,
+    "active_wins": 0,
+    "passive_wins": 0,
+    "ties": 0,
+    "inconsistent": 0,
+    "errored_pairs": 0,
+    "active_win_rate": null,
+    "active_win_rate_ci_wilson": [
+      0,
+      0
+    ],
+    "valid_pairs": 0,
+    "test_pass_rate": {
+      "active": null,
+      "passive": null
+    },
+    "proxy_means": {
+      "cycleWarn": {
+        "active": null,
+        "passive": null
+      },
+      "changeCount": {
+        "active": null,
+        "passive": null
+      },
+      "sameFileMax": {
+        "active": null,
+        "passive": null
+      },
+      "numTurns": {
+        "active": null,
+        "passive": null
+      }
+    },
+    "consistency": {
+      "active": null,
+      "passive": null
+    },
+    "surfaced": {
+      "active": null,
+      "passive": null
+    },
+    "control_pairs": 1,
+    "control_errored_pairs": 0,
+    "controls": {
+      "irrelevant": {
+        "pairs": 1,
+        "errored": 0,
+        "active_wins": 0,
+        "passive_wins": 1,
+        "ties": 0,
+        "inconsistent": 0,
+        "numTurns": {
+          "active": 12,
+          "passive": 9
+        },
+        "costUsd": {
+          "active": 1.048,
+          "passive": 0.945
+        },
+        "testPass": {
+          "active": 1,
+          "passive": 1
+        },
+        "consistency": {
+          "active": 0,
+          "passive": 0
+        },
+        "surfaced": {
+          "active": 1,
+          "passive": 0
+        }
+      }
+    }
+  }
+}
