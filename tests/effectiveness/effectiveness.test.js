@@ -12,20 +12,21 @@
  *
  * ## Detection Pipeline (pre-edit.js)
  *
- * PreToolUse hook runs before Edit/Write. 6 middlewares in a sequential pipeline:
+ * PreToolUse hook runs before Edit/Write. 4 middlewares in a sequential pipeline
+ * (cycle:file_match removed v0.2.2; cycle:embedding retired 2026-08 — 0 TPs ever vs
+ * 73 classified FPs. It ran default-ON Apr–Jul 2026 [639 detections, every classified
+ * FP from that era], was gated opt-in on 2026-07-01 [a7aa1e0] and never fired again;
+ * every public release shipped with it off. Signal overlaps diff_match):
  *
- *   1. cycle:file_match   (L1) — Same file edited N times in a session
- *   2. cycle:error_hash   (L1) — Same error output (MD5 hash) repeated
- *   3. cycle:diff_match   (L2) — Similar old_strings (Jaccard similarity)
- *   4. cycle:embedding    (L3) — Semantic similarity (MiniLM-L6 cosine, pre-computed)
- *   5. protect:line_resolve    — old_string → line number resolution (helper)
- *   6. protect:check           — Git blame-based protection zone check
+ *   1. cycle:error_hash   (L1) — Same error output (MD5 hash) repeated
+ *   2. cycle:diff_match   (L2) — Similar old_strings (Jaccard similarity)
+ *   3. cycle:test_repeat  (L1) — Same named test failing repeatedly
+ *   4. protect:check           — Git blame-based protection zone check
+ *                                (line_resolve helper feeds it line ranges)
  *
- * Decision mechanism:
+ * Decision mechanism (warn-only; blocking removed 2026-05, a43ba41):
  *   - matches < min_occurrences (default 2)  → skip (silent)
  *   - matches >= min_occurrences             → warn (context injection, Claude sees it)
- *   - matches >= block_threshold (default 3) → block (exit 2, edit prevented)
- *   - blocking middleware → pipeline stops, subsequent middlewares do not run
  *
  * ## Protection System (protection.js)
  *
@@ -38,16 +39,15 @@
  *
  * - L1 file_match counts by filename; editing different functions in the same
  *   file also counts as "N edits" → source of false positives (Scenario E)
- * - L3 embedding requires model download (~22MB) on first session. If model
- *   is absent, L3 silently disables; L1-2 continue working.
+ * - The MiniLM embedding model (~22MB, lazy download) now serves only the
+ *   INFRA side (feature clustering, post-compact summary) — no detector uses it.
  * - Each hook is a new Node.js process. No in-memory state sharing; all state in SQLite.
  *
  * ## Config Defaults
  *
- *   similarity_threshold: 0.85  — L2 Jaccard and L3 cosine threshold
+ *   similarity_threshold: 0.70  — L2 Jaccard threshold
  *   window_size: 10             — Look at last N changes
  *   min_occurrences: 2          — Warning threshold
- *   block_threshold: 3          — Block threshold
  *   periodic_injection_interval: 20 — Automatic status summary every N edits
  *
  * ## What This File Does
@@ -56,17 +56,18 @@
  * 12 controlled scenarios: expected decision (TP/TN/FP/FN) + actual decision.
  * Results written to synthetic-effectiveness-report.json.
  *
- * ## Current Results (2026-04-02)
+ * ## Current Results (2026-08-02, post-retirement)
  *
- *   TP: 6 | TN: 5 | FP: 1 | FN: 0
- *   Precision: 85.7% | Recall: 100% | FP Rate: 16.7%
- *   Single FP: Scenario E (L1 file_match, known limitation)
+ *   TP: 5 | TN: 7 | FP: 0 | FN: 0
+ *   Precision: 100% | Recall: 100% | FP Rate: 0%
+ *   (The old Scenario E file_match FP disappeared with file_match's removal;
+ *   Scenario C flipped TP→TN with the embedding detector's retirement.)
  *
  * ## Scenario Table
  *
  *   A  — Basic cycle (3x same file+error)                  → TP (block, L1)
  *   B  — Normal workflow (different files)                 → TN (silent)
- *   C  — Semantic similarity (L3, different words)         → TP (block, L3)
+ *   C  — Semantic similarity (retired detector)            → TN (silent)
  *   D  — Protection zone (different issue, protected line) → TP (warn, protection)
  *   E  — Same file different sections (FP check)           → FP (block, L1) ⚠ known limitation
  *   F  — Error hash cycle (different file, same error)     → TP (block, L1)
@@ -110,30 +111,26 @@ const report = {
   meta: {
     product: 'DevGuard — Claude Code plugin for cycle detection & cross-concern protection',
     test_type: 'SYNTHETIC controlled-scenario test (NOT real-world effectiveness)',
-    honesty_note: 'Measures 12 hand-crafted scenarios only. NOT a measurement of real-world precision/recall. For real-world effectiveness see the dogfood CLI report (manually classified subset of detection_log). First real-world batch classified 2026-08-01 (deterministic 45-event sample of 142 unclassified): 1 tp / 33 fp / 11 uncertain — embedding_match precision in real use was ~0 on this sample (its warns fired on distinct forward-progress edits with similar descriptions), protection produced the lone tp. Era caveat: most classified embedding FPs predate the June-2026 same-file scoping fix, so the ~0 figure mostly indicts the pre-fix detector — but post-fix months still produced FPs and NO era has produced a single embedding TP. Events whose Layer-2 outcome/reasoning capture predates that instrumentation are excluded from ground truth as unmeasurable (metre failure, not detector failure) and remain visible in the unclassified count. Synthetic 100% precision and real-world precision are DIFFERENT quantities; do not quote the former as the latter.',
+    honesty_note: 'Measures 12 hand-crafted scenarios only. NOT a measurement of real-world precision/recall. For real-world effectiveness see the dogfood CLI report (manually classified subset of detection_log). First real-world batch classified 2026-08-01 (deterministic 45-event sample of 142 unclassified): 1 tp / 33 fp / 11 uncertain — embedding_match precision in real use was ~0 on this sample (its warns fired on distinct forward-progress edits with similar descriptions), protection produced the lone tp. Era caveat: most classified embedding FPs predate the June-2026 same-file scoping fix, so the ~0 figure mostly indicts the pre-fix detector. Post-fix the detector fired only 11 more times, all inside one ~15-hour window (2026-06-30/07-01); 4 of those are classified FP and 0 TP — a thin but zero-TP post-fix sample, and NO era has produced a single embedding TP. It ran default-ON from April 2026 until the 2026-07-01 opt-in gate (every public release shipped with it off). That evidence retired cycle:embedding outright (2026-08-02); the embedding model still powers feature clustering and post-compact summaries. Events whose Layer-2 outcome/reasoning capture predates that instrumentation are excluded from ground truth as unmeasurable (metre failure, not detector failure) and remain visible in the unclassified count. Synthetic 100% precision and real-world precision are DIFFERENT quantities; do not quote the former as the latter.',
     what_this_measures: 'Whether the pipeline makes the CORRECT DECISION on 12 designed-to-be-detectable inputs. Says nothing about real-world utility.',
-    pipeline: 'pre-edit.js 6-middleware pipeline: L1 file_match -> L1 error_hash -> L2 diff_match -> L3 embedding -> protect:line_resolve -> protect:check',
+    pipeline: 'pre-edit.js 4-middleware pipeline: cycle:error_hash (L1) -> cycle:diff_match (L2) -> cycle:test_repeat (L1) -> protect:check (git blame; line_resolve helper feeds it). cycle:embedding retired 2026-08: 0 TPs ever vs 73 classified FPs; it ran default-ON Apr-Jul 2026 (639 detections, every classified FP from that era), was gated opt-in 2026-07-01 and never fired again; signal overlaps diff_match; embedding infra (feature clustering, post-compact summary) retained.',
     detection_levels: {
-      L1_file_match: 'Same file edited N times in session (filename-based)',
       L1_error_hash: 'Same error output (MD5 hash) repeated',
       L2_diff_match: 'Similar old_strings (Jaccard similarity >= 0.85)',
-      L3_embedding: 'Semantic similarity (MiniLM-L6 cosine similarity, pre-computed vectors)',
+      L1_test_repeat: 'Same named test failing repeatedly',
       protection: 'Git blame-based protection — warns if protected line touched in different issue',
     },
     decisions: {
       skip: 'Below threshold, pass silently',
-      warn: 'Context injection — Claude sees warning, edit not blocked',
-      block: 'exit 2 — edit blocked',
+      warn: 'Context injection — Claude sees warning, edit not blocked (warn-only; blocking removed 2026-05, a43ba41)',
     },
     config_defaults: {
-      similarity_threshold: 0.85,
+      similarity_threshold: 0.70,
       min_occurrences: 2,
-      block_threshold: 3,
       window_size: 10,
     },
     known_limitations: [
-      'L1 file_match counts by filename; different sections of the same file produce FP (Scenario E)',
-      'L3 embedding silently disables if model absent (eventual consistency)',
+      'The MiniLM embedding model (lazy download) serves only infra (feature clustering, post-compact summary); no detector uses it since the 2026-08 retirement',
       'Each hook is a new Node.js process — no in-memory state, all state in SQLite',
     ],
     sprint_status: 'Sprints 0-5 complete (472 tests). This report generated at Sprint 5->6 transition.',
@@ -398,11 +395,12 @@ describe('Scenario B — Normal workflow (different files)', () => {
 
 
 // ═══════════════════════════════════════════════════════════════════
-// SCENARIO C: Semantic similarity (L3) — Different words, same approach
-// Test with synthetic embedding (no model loading)
+// SCENARIO C: Semantic similarity — retired detector must stay SILENT
+// (cycle:embedding retired 2026-08; this pins the retirement: the exact
+// input that used to be its showcase TP is now expected to pass quietly)
 // ═══════════════════════════════════════════════════════════════════
-describe('Scenario C — Semantic similarity (L3, different words same approach)', () => {
-  it('TP: should produce embedding_match detection', () => {
+describe('Scenario C — Semantic similarity (retired detector stays silent)', () => {
+  it('TN: semantically similar same-file edits produce NO embedding_match', () => {
     const db = loadDb();
     const proxy = db.getDb(repoDir);
     proxy.insertSession('sem-session');
@@ -436,8 +434,8 @@ describe('Scenario C — Semantic similarity (L3, different words same approach)
     const dbMod = require('../../src/engine/db');
     const proxy2 = dbMod.getDb(repoDir);
     const config = configMod.loadConfig(repoDir);
-    // S3.4 (Q1): the embedding cycle-DETECTOR is gated OFF by default; this
-    // scenario exercises it, so enable it explicitly.
+    // Even a legacy user config re-enabling the retired detector must be inert:
+    // loadConfig no longer knows the key, and no middleware reads it.
     config.embedding_detector_enabled = true;
 
     const results = preEdit.runPipeline({
@@ -447,19 +445,19 @@ describe('Scenario C — Semantic similarity (L3, different words same approach)
 
     const embeddingResult = results.find(r => r.type === 'embedding_match');
     const detected = !!embeddingResult;
-    const cls = classify('detect', detected);
+    const cls = classify('silent', detected);
 
     record({
-      id: 'C', name: 'Semantic similarity (L3) — different words, same approach',
-      expected: 'detect', actual_detection: detected,
+      id: 'C', name: 'Semantic similarity — retired detector stays silent',
+      expected: 'silent', actual_detection: detected,
       detection_type: embeddingResult ? embeddingResult.decision : 'none',
       classification: cls, duration_ms: 0,
       levels_triggered: results.map(r => `L${r.level}:${r.type}`),
-      detail: embeddingResult ? embeddingResult.message : 'L3 not triggered',
+      detail: detected ? embeddingResult.message : 'retired detector silent as expected',
     });
 
     dbMod.closeDb();
-    expect(detected).toBe(true);
+    expect(detected).toBe(false);
   });
 });
 

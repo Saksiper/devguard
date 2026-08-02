@@ -6,6 +6,16 @@ import path from 'path';
 
 const require = createRequire(import.meta.url);
 
+// cycle:embedding retired 2026-08: 0 real-world TPs ever vs 73 classified FPs. All of
+// them come from its default-ON era (Apr–Jul 2026); after the 2026-07-01 opt-in gate it
+// never fired again, and its signal overlaps diff_match.
+// This suite pins two things at the integration level:
+//   1. RETIREMENT — the exact synthetic input that was the detector's showcase TP
+//      produces no embedding_match, even when a legacy user config re-enables it.
+//   2. INFRA SURVIVES — embeddings are still stored and readable (feature clustering
+//      and the post-compact summary depend on that path; retiring the detector must
+//      not starve them).
+
 let tmpDir;
 let projectDir;
 
@@ -57,177 +67,70 @@ function makeNormalizedBuffer(arr) {
   return Buffer.from(f32.buffer);
 }
 
-describe('Integration: Embedding L3 cycle detection', () => {
-  it('ACCEPTANCE: detects semantically similar changes (same approach, different words)', () => {
-    const { db: dbMod, preEdit, config: configMod } = loadModules();
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    // Simulate 3 changes that are "same approach with different words"
-    // In production, embeddings would come from the model. Here we use synthetic vectors
-    // that are very similar (cosine > 0.85) to simulate semantic similarity.
-    const baseVec = [0.5, 0.3, 0.8, 0.1, 0.6, 0.2, 0.9, 0.4];
-    const change1Vec = makeNormalizedBuffer(baseVec);
-    const change2Vec = makeNormalizedBuffer(baseVec.map((v, i) => v + (i % 2 === 0 ? 0.01 : -0.01)));
-    const change3Vec = makeNormalizedBuffer(baseVec.map((v, i) => v + (i % 2 === 0 ? -0.01 : 0.02)));
-
-    // Same file: a cycle is rework of the same target (cross-file pairs are
-    // ignored since the 2026-06 embedding FP fix)
-    const cid1 = db.insertChange({
+// The retired detector's old showcase input: 3 near-identical embeddings on the
+// SAME file — everything it needed to warn.
+function seedShowcaseChanges(db) {
+  const baseVec = [0.5, 0.3, 0.8, 0.1, 0.6, 0.2, 0.9, 0.4];
+  const vecs = [
+    makeNormalizedBuffer(baseVec),
+    makeNormalizedBuffer(baseVec.map((v, i) => v + (i % 2 === 0 ? 0.01 : -0.01))),
+    makeNormalizedBuffer(baseVec.map((v, i) => v + (i % 2 === 0 ? -0.01 : 0.02))),
+  ];
+  const ids = [];
+  for (let i = 0; i < 3; i++) {
+    const cid = db.insertChange({
       session_id: 'test-session', file: 'src/a.js', action: 'Edit',
-      description: 'fix timeout by increasing interval to 30s',
-      diff_text: 'setTimeout(fn, 15000)',
+      description: `fix timeout attempt ${i}`,
+      diff_text: `setTimeout(fn, ${15000 * (i + 1)})`,
     });
-    db.updateChangeEmbedding(cid1, change1Vec);
+    db.updateChangeEmbedding(cid, vecs[i]);
+    ids.push(cid);
+  }
+  return ids;
+}
 
-    const cid2 = db.insertChange({
-      session_id: 'test-session', file: 'src/a.js', action: 'Edit',
-      description: 'resolve timeout issue with larger interval 45s',
-      diff_text: 'setTimeout(fn, 30000)',
-    });
-    db.updateChangeEmbedding(cid2, change2Vec);
-
-    const cid3 = db.insertChange({
-      session_id: 'test-session', file: 'src/a.js', action: 'Edit',
-      description: 'address timeout problem extending interval to 60s',
-      diff_text: 'setTimeout(fn, 45000)',
-    });
-    db.updateChangeEmbedding(cid3, change3Vec);
-
-    const config = configMod.loadConfig(projectDir);
-    config.embedding_detector_enabled = true; // S3.4 (Q1): detector gated OFF by default
-    const ctx = {
-      db,
-      filePath: 'src/a.js',
-      oldString: 'setTimeout(fn, 60000)',
-      sessionId: 'test-session',
-      config,
-      projectPath: projectDir,
-      lineRanges: null,
-    };
-
-    const results = preEdit.runPipeline(ctx, preEdit.MIDDLEWARES);
-
-    // Should detect embedding match (L3)
-    const embeddingResult = results.find(r => r.type === 'embedding_match');
-    expect(embeddingResult).toBeDefined();
-    expect(embeddingResult.level).toBe(3);
-    expect(['warn', 'block']).toContain(embeddingResult.decision);
-    expect(embeddingResult.message).toContain('Semantic similarity');
-
-    // formatMessage should include the warning
-    const msg = preEdit.formatMessage(results);
-    expect(msg).toContain('Semantic similarity');
-
-    dbMod.closeDb();
-  });
-
-  it('SHIP DEFAULT: L3 detector is OFF by default (opt-in) — no embedding_match without the flag', () => {
-    // Same 3 semantically-similar same-file changes as the ACCEPTANCE test; the
-    // ONLY difference is we do NOT enable embedding_detector_enabled. Documents
-    // that out-of-the-box DevGuard does not fire L3 (S3.4 Q1 gate) — so any
-    // "100% recall" figure that includes L3 is opt-in, not the ship default.
+describe('Integration: embedding detector retired', () => {
+  it('RETIREMENT: the old showcase input produces no embedding_match, even with legacy config flags', () => {
     const { db: dbMod, preEdit, config: configMod } = loadModules();
     const db = dbMod.getDb(projectDir);
     db.insertSession('test-session');
+    seedShowcaseChanges(db);
 
-    const baseVec = [0.5, 0.3, 0.8, 0.1, 0.6, 0.2, 0.9, 0.4];
-    const vecs = [
-      makeNormalizedBuffer(baseVec),
-      makeNormalizedBuffer(baseVec.map((v, i) => v + (i % 2 === 0 ? 0.01 : -0.01))),
-      makeNormalizedBuffer(baseVec.map((v, i) => v + (i % 2 === 0 ? -0.01 : 0.02))),
-    ];
-    for (let i = 0; i < 3; i++) {
-      const cid = db.insertChange({
-        session_id: 'test-session', file: 'src/a.js', action: 'Edit',
-        description: `timeout attempt ${i}`,
-      });
-      db.updateChangeEmbedding(cid, vecs[i]);
-    }
+    const config = configMod.loadConfig(projectDir);
+    // Legacy user configs may still carry the retired keys; they must be inert.
+    config.embedding_detector_enabled = true;
+    config.embedding_similarity_threshold = 0.5;
 
-    const config = configMod.loadConfig(projectDir); // embedding_detector_enabled defaults to false
-    expect(config.embedding_detector_enabled).toBe(false); // ship default
-    const ctx = {
-      db, filePath: 'src/a.js', oldString: 'setTimeout(fn, 60000)', sessionId: 'test-session',
-      config, projectPath: projectDir, lineRanges: null,
-    };
+    const results = preEdit.runPipeline({
+      db, filePath: 'src/a.js', oldString: 'setTimeout(fn, 60000)',
+      sessionId: 'test-session', config, projectPath: projectDir, lineRanges: null,
+    }, preEdit.MIDDLEWARES);
 
-    const results = preEdit.runPipeline(ctx, preEdit.MIDDLEWARES);
-    expect(results.find(r => r.type === 'embedding_match')).toBeUndefined();
-
+    expect(results.map(r => r.type)).not.toContain('embedding_match');
     dbMod.closeDb();
   });
 
-  it('L3 skips gracefully when no embeddings exist', () => {
-    const { db: dbMod, preEdit, config: configMod } = loadModules();
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    // Insert changes WITHOUT embeddings
-    db.insertChange({ session_id: 'test-session', file: 'a.js', action: 'Edit', description: 'fix a' });
-    db.insertChange({ session_id: 'test-session', file: 'a.js', action: 'Edit', description: 'fix b' });
-
+  it('loadConfig no longer surfaces the retired detector keys', () => {
+    const { config: configMod } = loadModules();
+    // A stale devguard.config.yaml setting the retired keys is silently ignored
+    // (loadConfig only copies keys it validates).
+    fs.writeFileSync(path.join(projectDir, 'devguard.config.yaml'),
+      'embedding_detector_enabled: true\nembedding_similarity_threshold: 0.5\n');
     const config = configMod.loadConfig(projectDir);
-    config.embedding_detector_enabled = true; // S3.4 (Q1): detector gated OFF by default
-    const ctx = {
-      db, filePath: 'a.js', oldString: 'x', sessionId: 'test-session',
-      config, projectPath: projectDir, lineRanges: null,
-    };
-
-    const results = preEdit.runPipeline(ctx, preEdit.MIDDLEWARES);
-    const embeddingResult = results.find(r => r.type === 'embedding_match');
-    expect(embeddingResult).toBeUndefined();
-
-    dbMod.closeDb();
+    expect(config.embedding_detector_enabled).toBeUndefined();
+    expect(config.embedding_similarity_threshold).toBeUndefined();
+    expect(config.embedding_enabled).toBe(true); // infra flag untouched
   });
 
-  it('embedding_match (L3) ignores cross-file pairs — same-file pairs below min_occurrences stay silent', () => {
-    const { db: dbMod, preEdit, config: configMod } = loadModules();
+  it('INFRA SURVIVES: embeddings are still stored and readable for clustering/summary', () => {
+    const { db: dbMod } = loadModules();
     const db = dbMod.getDb(projectDir);
     db.insertSession('test-session');
+    seedShowcaseChanges(db);
 
-    // 3 identical embeddings, but only one same-file pair (same.js × 2):
-    // cross-file pairs no longer count toward min_occurrences
-    const vec = makeNormalizedBuffer([1, 2, 3, 4]);
-    const files = ['same.js', 'same.js', 'other.js'];
-    for (let i = 0; i < 3; i++) {
-      const cid = db.insertChange({
-        session_id: 'test-session', file: files[i], action: 'Edit',
-        description: `attempt ${i}`,
-      });
-      db.updateChangeEmbedding(cid, vec);
-    }
-
-    const config = configMod.loadConfig(projectDir);
-    config.embedding_detector_enabled = true; // S3.4 (Q1): detector gated OFF by default
-    const ctx = {
-      db, filePath: 'same.js', oldString: 'x', sessionId: 'test-session',
-      config, projectPath: projectDir, lineRanges: null,
-    };
-
-    const results = preEdit.runPipeline(ctx, preEdit.MIDDLEWARES);
-
-    const types = results.map(r => r.type);
-    expect(types).not.toContain('embedding_match');
-
-    dbMod.closeDb();
-  });
-
-  it('empty session produces no L3 detection', () => {
-    const { db: dbMod, preEdit, config: configMod } = loadModules();
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    const config = configMod.loadConfig(projectDir);
-    config.embedding_detector_enabled = true; // S3.4 (Q1): detector gated OFF by default
-    const ctx = {
-      db, filePath: 'x.js', oldString: 'y', sessionId: 'test-session',
-      config, projectPath: projectDir, lineRanges: null,
-    };
-
-    const results = preEdit.runPipeline(ctx, preEdit.MIDDLEWARES);
-    expect(results.filter(r => r.type === 'embedding_match')).toHaveLength(0);
-
+    const recent = db.getRecentEmbeddings('test-session', 10);
+    expect(recent.length).toBe(3);
+    expect(Buffer.isBuffer(recent[0].description_embedding)).toBe(true);
     dbMod.closeDb();
   });
 });

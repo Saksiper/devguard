@@ -2,6 +2,23 @@
 
 All notable changes to DevGuard are documented here.
 
+## Unreleased
+
+### Removed
+- **`cycle:embedding` detector retired.** Real-world ground truth settled it: the
+  semantic-similarity detector produced 0 true positives against 73 classified
+  false positives, ever (its warns fired on distinct forward-progress edits whose
+  descriptions were naturally similar). Honest history: it ran default-ON from
+  April 2026 to 2026-07-01 — all 639 of its detections and every classified FP
+  come from that era — then was gated opt-in and never fired again; every public
+  release shipped with it off. After the June-2026 same-file scoping fix it fired
+  only 11 more times inside one ~15-hour window (4 classified FP, 0 TP) — a thin
+  but zero-TP post-fix sample. Its target signal overlaps `cycle:diff_match`.
+  Only the detector is gone — embeddings are still computed per edit and still
+  power feature clustering and the post-compact summary. The retired config keys
+  (`embedding_detector_enabled`, `embedding_similarity_threshold`) are now
+  ignored if present in a user config.
+
 ## 0.5.1
 
 ### Changed
