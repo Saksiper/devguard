@@ -37,7 +37,9 @@
         "n_pairs": 10
       }
     ],
-    "merge_note": "Merged offline from the batches in merged_from; pairs concatenated, summary recomputed via the harness computeSummary. Valid only because every batch shares run/judge models and unchanged task definitions."
+    "merge_note": "Merged offline from the batches in merged_from; pairs concatenated, summary recomputed via the harness computeSummary. Valid only because every batch shares run/judge models and unchanged task definitions. Meta above is inherited from the FIRST (oldest) batch; the notes below were added by hand because the merge tool does not union meta fields.",
+    "negative_controls_note": "Control tasks (pairs[].control) measure harm/noise, not benefit: 'irrelevant' seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), 'misleading' seeds a note contradicting the prompt's current spec (following it is a consistency FAIL; on those tasks the consistency score means RESISTANCE to the note), 'none' seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only. For irrelevant/none controls the consistency score is only a spontaneous-adherence baseline; it measures resistance to nothing.",
+    "judge_capture_note": "In the 2026-08-01/02 opus batches many verdicts carry reason:'' and confidence:null: the judge's winner letter was recovered via the defensive parse fallback while rationale metadata was lost. Winner extraction remains guarded by the both-swapped-rounds-must-agree rule; treat missing reasons as telemetry loss, not verdict invalidity. Parser robustness against the newer judge output format is tracked as follow-up work."
   },
   "generated_at": "2026-08-01T23:26:57.062Z",
   "n_pairs": 52,
