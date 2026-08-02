@@ -2,7 +2,26 @@
 
 All notable changes to DevGuard are documented here.
 
-## Unreleased
+## 0.5.2
+
+### Changed
+- **Note capture now prefers the hook payload over re-parsing the transcript.**
+  The `Stop` hook reads the turn's final assistant text from the payload's
+  `last_assistant_message` field (present on Stop/SubagentStop as of recent
+  Claude Code builds; CC's own docs point hooks at it) for both `[DG-NOTE]`
+  capture and ack harvest. `SessionEnd` has no such field (measured absent in
+  5/5 live runs) and older clients don't send it — those paths keep the
+  transcript fallback, so nothing regresses on old versions.
+
+### Fixed
+- **Short final replies no longer mis-attribute the turn's answer.**
+  `getLastAssistantText` silently skipped assistant replies under 10 characters
+  ("DONE", "OK") and returned the PREVIOUS message as if it were the turn's
+  answer — so an ack or note could be harvested from the wrong turn. Measured
+  across 502 real transcripts: 11 divergences (2.19%), none of them the
+  tool-call fragments the floor was presumed to protect against. The floor is
+  gone; a DG marker is structurally longer than 10 characters, so no capture
+  is lost by returning short finals.
 
 ### Removed
 - **`cycle:embedding` detector retired.** Real-world ground truth settled it: the
