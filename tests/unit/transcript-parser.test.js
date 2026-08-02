@@ -183,6 +183,29 @@ describe('getLastAssistantText', () => {
     }
     expect(recovered).toBe(20);
   });
+
+  it('returns a SHORT final reply instead of skipping back to an older message', () => {
+    const { getLastAssistantText } = loadModule();
+    const entries = [
+      { type: 'user', message: { role: 'user', content: [{ type: 'text', text: 'run the probe' }] } },
+      { type: 'assistant', message: { role: 'assistant', content: [{ type: 'text', text: 'I will launch a subagent to write the file.' }] } },
+      { type: 'assistant', message: { role: 'assistant', content: [{ type: 'text', text: 'DONE' }] } },
+    ];
+    const filePath = path.join(tmpDir, 'short-final.jsonl');
+    writeJsonl(filePath, entries);
+    expect(getLastAssistantText(filePath)).toBe('DONE');
+  });
+
+  it('skips a whitespace-only final block and returns the newest block with real text', () => {
+    const { getLastAssistantText } = loadModule();
+    const entries = [
+      { type: 'assistant', message: { role: 'assistant', content: [{ type: 'text', text: 'The real answer.' }] } },
+      { type: 'assistant', message: { role: 'assistant', content: [{ type: 'text', text: '   \n  ' }] } },
+    ];
+    const filePath = path.join(tmpDir, 'blank-final.jsonl');
+    writeJsonl(filePath, entries);
+    expect(getLastAssistantText(filePath)).toBe('The real answer.');
+  });
 });
 
 describe('findResponseAfter', () => {

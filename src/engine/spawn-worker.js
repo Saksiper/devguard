@@ -17,7 +17,13 @@ function spawnSeedNoteWorker(projectPath) {
     if (process.platform === 'win32') {
       // On Windows, `detached:true` alone does NOT break the child out of the parent hook's
       // job object, so the worker dies the moment the hook process exits (verified: a detached
-      // spawn survives while the parent is alive, but not after the hook returns). Launch via
+      // spawn survives while the parent is alive, but not after the hook returns).
+      //
+      // CC 2.1.220 headless probe (2026-08-02): plain `detached:true` ALSO survived there, so
+      // upstream may have fixed this. Kept anyway — the no-repro was headless-only (interactive
+      // unverified), users on older clients still hit the original bug, and cmd-start works on
+      // both. Removing it buys ~15 lines against a real regression risk.
+      // Launch via
       // cmd `start` — an empty-title ("") then the quoted exe — which creates a fully
       // independent process that outlives the hook. windowsVerbatimArguments so we control the
       // quoting (paths may contain spaces, e.g. "C:\Program Files\nodejs\node.exe").

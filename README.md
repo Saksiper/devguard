@@ -21,7 +21,7 @@ You've probably watched Claude undo a fix it made an hour ago, or loop on the sa
 1. **Remembers decisions per feature.** When you come back to a part of the codebase you've worked on before, DevGuard surfaces the note it left last time (*"last time, filtering was made case-insensitive and sorted ascending"*) so the agent builds on the earlier decision instead of silently contradicting it.
 2. **Interrupts repeating loops.** When the agent is about to retry a failing approach, re-apply a similar fix, or overwrite code that was written to fix an earlier bug, DevGuard injects a short message into its thinking: the *"wait, let me reconsider"* pause.
 
-It's a **hook-based Claude Code plugin**. No edits are ever blocked, nothing leaves your machine, and it works with zero configuration. Real-time nudging works best in the **terminal**; Desktop and web sessions are recovered retrospectively (see "Where It Works Best" below).
+It's a **hook-based Claude Code plugin**. No edits are ever blocked, nothing leaves your machine, and it works with zero configuration. Real-time nudging works best in the **terminal**; Desktop records edits live too, and anything a hook misses is recovered from the transcript afterwards (see "Where It Works Best" below).
 
 ```
 I'm DevGuard, a secondary mechanism set up by the user.
@@ -126,14 +126,15 @@ DevGuard is hook-based, and Claude Code dispatches hooks differently across surf
 | Surface | Real-time detection | Notes |
 |---------|:-------------------:|-------|
 | **Terminal Claude Code** | ✅ Full | Every edit passes through the pipeline *before* it happens; the thinking trigger and note-surfacing fire live. **This is where DevGuard is strongest.** |
-| **Claude Desktop (Code)** | 🟡 Capture | Current Desktop builds dispatch `SessionStart`/`PostToolUse` (verified live), so edits are recorded and memory accumulates in real time. The pre-edit thinking trigger is not verified on Desktop, so treat live *prevention* as terminal-first. |
+| **Subagents (`Task` tool)** | ✅ Capture | A subagent's `Edit`/`Write` fires the same `PreToolUse`/`PostToolUse` hooks as the main thread (verified live; the payload even names the agent via `agent_id`/`agent_type`), so subagent work lands in memory as it happens. |
+| **Claude Desktop (Code)** | 🟡 Capture | Documented — *"hooks and skills defined in settings apply to both"* ([Desktop docs](https://code.claude.com/docs/en/desktop)) — and verified live: Desktop dispatches `SessionStart`/`PostToolUse`, so edits are recorded and memory accumulates in real time. The pre-edit thinking trigger is not verified on Desktop, so treat live *prevention* as terminal-first. |
 | **claude.ai/code (web)** | ❌ Not verified | No live hook verification yet; web sessions are recovered via transcript backfill below. |
 
-### Transcript Backfill: recovering the blind spots
+### Transcript Backfill: the safety net
 
-So non-terminal work isn't invisible, DevGuard **replays missed edits from Claude Code's transcript logs**. On every terminal `SessionStart` it scans `~/.claude/projects/*.jsonl` (Desktop, web, and subagent sessions included), extracts the `Edit`/`Write`/`MultiEdit` calls no hook captured, and backfills them: attributed to the real project, idempotent (a per-transcript byte cursor plus a unique `tool_use_id` index), and bounded so startup stays fast.
+Hooks cover the surfaces above, so backfill is not how Desktop or subagent work gets recorded — it's the net under **everything a hook can miss**. DevGuard **replays missed edits from Claude Code's transcript logs**: on every terminal `SessionStart` it scans `~/.claude/projects/*.jsonl`, extracts the `Edit`/`Write`/`MultiEdit` calls no hook captured, and backfills them — attributed to the real project, idempotent (a per-transcript byte cursor plus a unique `tool_use_id` index), and bounded so startup stays fast.
 
-**What this buys you:** cycle history, memory, and stats stay complete across terminal/Desktop switches. **What it doesn't:** recovery is *retrospective*; real-time prevention remains terminal-only.
+**What it catches:** sessions from a surface that didn't dispatch hooks (web), a hook that errored or was killed mid-flight, and transcripts from before you installed DevGuard. **What it doesn't:** recovery is *retrospective*; real-time prevention remains terminal-first.
 
 ## ⚙️ Configuration
 

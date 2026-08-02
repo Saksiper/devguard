@@ -316,7 +316,11 @@ function getLastAssistantText(transcriptPath) {
           if (textParts.length > 0) text = textParts.join('\n');
         }
 
-        if (text && text.length >= 10) return text;
+        // Any non-blank text counts. A length floor here silently skipped SHORT final
+        // replies ("DONE", "OK") and returned the PREVIOUS message as if it were the
+        // turn's answer — measured on 502 real transcripts: 11 divergences, none of
+        // them a tool-call fragment, so there is nothing for a floor to protect.
+        if (text && text.trim().length > 0) return text;
       } catch { /* skip malformed lines */ }
     }
 

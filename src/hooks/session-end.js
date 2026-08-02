@@ -11,6 +11,17 @@ const { flushPendingVerdicts } = require('./post-edit');
 // capture any DG-NOTE marker. Same capture core as the Stop hook. Idempotency is
 // content-based inside captureNoteFromTranscript, so Stop having already captured
 // then SessionEnd firing on the same transcript does NOT double-write.
+//
+// NOT guaranteed to run. Measured on CC 2.1.220 (2026-08-02): whether SessionEnd
+// fires at all depends on how long the Stop hook holds the session open — with a
+// fast Stop, `claude -p` exited before the SessionEnd hook could start (5 runs, 0
+// fired); with a slow Stop it fired every time. So finalizeNoteCompliance below can
+// be skipped entirely for a session; the SessionStart orphan backstop then finalizes
+// those notes as 'lapsed' (see db.finalizeStaleSessions) after finalize_stale_after_hours.
+// That makes 'lapsed' the visible signal that this limit was hit — see tests/ab-harness/README.md.
+//
+// The payload has NO `last_assistant_message` (measured: absent in 5/5 runs), which is
+// why this hook reads the transcript while stop.js prefers the payload field.
 function main() {
   const timer = createTimer('session-end');
   timer.start();

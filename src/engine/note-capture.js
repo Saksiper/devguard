@@ -11,6 +11,15 @@ const { computeFileFingerprint } = require('./file-fingerprint');
 // "wrong zone" (node_unresolved) apart from "broken syntax" (marker_malformed).
 const NODE_TOKEN_RE = /\[DG-NOTE\s+([^\]\s]+)/;
 
+// Resolve the turn's final assistant text. The Stop/SubagentStop payload carries it
+// directly (`last_assistant_message`) and CC's own docs point hooks at that field, so
+// prefer it. SessionEnd has no such field and older clients send none — those fall
+// back to re-reading the transcript tail.
+function resolveLastAssistantText(lastAssistantText, transcriptPath) {
+  if (typeof lastAssistantText === 'string' && lastAssistantText.trim() !== '') return lastAssistantText;
+  return getLastAssistantText(transcriptPath);
+}
+
 // Capture a sphere note from the LAST assistant reply in a transcript.
 //
 // Markers carry no tool_use_id, so idempotency is CONTENT-based. Because
@@ -20,8 +29,8 @@ const NODE_TOKEN_RE = /\[DG-NOTE\s+([^\]\s]+)/;
 // Stop(async) + SessionEnd can't both insert (the second re-reads the head).
 //
 // The caller (hook) owns try/catch and exit-0 non-blocking semantics.
-function captureNoteFromTranscript(db, { transcriptPath, sessionId } = {}) {
-  const text = getLastAssistantText(transcriptPath);
+function captureNoteFromTranscript(db, { transcriptPath, sessionId, lastAssistantText } = {}) {
+  const text = resolveLastAssistantText(lastAssistantText, transcriptPath);
   recordCanary('fired', { sessionId });
 
   const marker = parseMarker(text || '');
@@ -96,9 +105,9 @@ function captureNoteFromTranscript(db, { transcriptPath, sessionId } = {}) {
 // reply and credit the session's surfaced notes ('complied'). Must run AFTER
 // captureNoteFromTranscript in the hooks: the reply's DG-NOTE layers the new head
 // first, so the ack lands on the surfaced note without a head-advance check.
-function captureAckCompliance(db, { transcriptPath, sessionId } = {}) {
+function captureAckCompliance(db, { transcriptPath, sessionId, lastAssistantText } = {}) {
   if (!sessionId) return 0;
-  const tags = parseAckTags(getLastAssistantText(transcriptPath) || '');
+  const tags = parseAckTags(resolveLastAssistantText(lastAssistantText, transcriptPath) || '');
   let emitted = 0;
   for (const tag of tags) {
     if (!tag.nodeToken) {
