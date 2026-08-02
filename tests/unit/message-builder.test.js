@@ -8,7 +8,6 @@ const {
   buildErrorHashSection,
   buildDiffMatchSection,
   buildTestRepeatSection,
-  buildEmbeddingSection,
   buildProtectionSection,
   truncate,
   formatTime,
@@ -180,47 +179,6 @@ describe('buildTestRepeatSection', () => {
     expect(section).toContain('should validate token');
     expect(section).toContain('jwt.verify is not a function');
     expect(section).toContain('2 failures:');
-  });
-});
-
-describe('buildEmbeddingSection', () => {
-  it('builds rich message with similar pair descriptions', () => {
-    const db = makeDb({
-      getChangesByIds: () => [
-        { id: 1, description: 'add retry with setTimeout', file: 'app.js' },
-        { id: 2, description: 'implement retry logic with delay', file: 'app.js' },
-      ],
-    });
-    const result = {
-      type: 'embedding_match',
-      matches: [{ a: 1, b: 2, similarity: 0.87 }],
-      message: 'fallback',
-    };
-
-    const section = buildEmbeddingSection(db, 'sess1', result);
-    expect(section).toContain('Semantic similarity:');
-    expect(section).toContain('add retry with setTimeout');
-    expect(section).toContain('implement retry logic with delay');
-    expect(section).toContain('%87');
-  });
-
-  it('prefers claude_verdict over description for each pair side', () => {
-    const db = makeDb({
-      getChangesByIds: () => [
-        { id: 1, claude_verdict: 'verdict for A side', description: 'add retry with setTimeout', file: 'app.js' },
-        { id: 2, claude_verdict: 'verdict for B side', description: 'implement retry logic with delay', file: 'app.js' },
-      ],
-    });
-    const result = {
-      type: 'embedding_match',
-      matches: [{ a: 1, b: 2, similarity: 0.87 }],
-      message: 'fallback',
-    };
-
-    const section = buildEmbeddingSection(db, 'sess1', result);
-    expect(section).toContain('verdict for A side');
-    expect(section).toContain('verdict for B side');
-    expect(section).not.toContain('add retry with setTimeout');
   });
 });
 

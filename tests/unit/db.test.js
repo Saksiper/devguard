@@ -860,7 +860,7 @@ describe('db.js — hasRecentDetectionForFile (cooldown)', () => {
       decision: 'warn', level: 1, type: 'file_match', confidence: 1, message: 'x',
     });
     expect(proxy.hasRecentDetectionForFile('s1', 'app.js', 'cycle:file_match', 3)).toBe(true);
-    expect(proxy.hasRecentDetectionForFile('s1', 'app.js', 'cycle:embedding', 3)).toBe(false);
+    expect(proxy.hasRecentDetectionForFile('s1', 'app.js', 'cycle:diff_match', 3)).toBe(false);
   });
 
   it('distinguishes per-file — different file does not share cooldown', () => {

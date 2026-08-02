@@ -24,6 +24,7 @@ function main() {
     captureNoteFromTranscript(db, {
       transcriptPath: input.transcript_path,
       sessionId: input.session_id,
+      lastAssistantText: input.last_assistant_message,
     });
 
     // Ack harvest AFTER the note capture: the reply's DG-NOTE layers the new head
@@ -32,7 +33,11 @@ function main() {
     // an ack arriving on a later turn (finalize is SessionEnd's job).
     try {
       if (input.session_id) {
-        captureAckCompliance(db, { transcriptPath: input.transcript_path, sessionId: input.session_id });
+        captureAckCompliance(db, {
+          transcriptPath: input.transcript_path,
+          sessionId: input.session_id,
+          lastAssistantText: input.last_assistant_message,
+        });
       }
     } catch (err) {
       debugLog('stop', 'ack harvest failed (non-fatal)', { error: String(err) });

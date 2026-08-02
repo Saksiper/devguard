@@ -101,7 +101,8 @@
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/session-end.js\"",
-            "timeout": 30
+            "timeout": 30,
+            "_comment": "KEEP timeout. Measured on CC 2.1.220 (2026-08-02): a SessionEnd hook with NO explicit timeout is killed at ~1500ms mid-work, while timeout:30 lets a 5s job finish. The docs' 600s command default does NOT apply here."
           }
         ]
       }

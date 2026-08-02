@@ -131,6 +131,56 @@ describe('stop hook — sphere note capture from transcript', () => {
     expect(head.session_id).toBe('stop-sess-1');
   });
 
+  it('prefers the last_assistant_message payload field over the transcript tail', () => {
+    // CC 2.x carries the turn's authoritative final text on the Stop payload. The
+    // transcript here holds a DIFFERENT (older) marker, so whichever note lands
+    // proves which source the hook actually read.
+    const transcriptPath = writeTranscript([
+      { type: 'user', message: { role: 'user', content: 'go' } },
+      {
+        type: 'assistant',
+        message: {
+          role: 'assistant',
+          content: [{ type: 'text', text: 'Older turn. [DG-NOTE logic/stop-hook] the stale transcript note.' }],
+        },
+      },
+    ]);
+
+    const res = runStop({
+      session_id: 'stop-sess-lam',
+      transcript_path: transcriptPath,
+      cwd: projectDir,
+      last_assistant_message: 'Fresh turn. [DG-NOTE logic/stop-hook] the fresh payload note.',
+    });
+    expect(res.ok).toBe(true);
+
+    const head = headNote('logic/stop-hook');
+    expect(head).toBeTruthy();
+    expect(head.note_text).toBe('the fresh payload note.');
+    expect(notesFor('logic/stop-hook')).toHaveLength(1);
+  });
+
+  it('falls back to the transcript when the payload carries no last_assistant_message', () => {
+    const transcriptPath = writeTranscript([
+      { type: 'user', message: { role: 'user', content: 'go' } },
+      {
+        type: 'assistant',
+        message: {
+          role: 'assistant',
+          content: [{ type: 'text', text: 'Done. [DG-NOTE logic/stop-hook] captured via the transcript fallback.' }],
+        },
+      },
+    ]);
+
+    expect(runStop({
+      session_id: 'stop-sess-fallback',
+      transcript_path: transcriptPath,
+      cwd: projectDir,
+    }).ok).toBe(true);
+
+    expect(headNote('logic/stop-hook').note_text).toBe('captured via the transcript fallback.');
+  });
+
   it('writes no note when the final reply has no marker (non-blocking, exits 0)', () => {
     const transcriptPath = writeTranscript([
       {

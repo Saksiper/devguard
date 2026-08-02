@@ -9,7 +9,6 @@ try { debugLog = require('./debug-log').debugLog; } catch { debugLog = () => {};
 
 const DEFAULTS = {
   similarity_threshold: 0.70,
-  embedding_similarity_threshold: 0.85,
   // Calibrated FLOOR on real MiniLM (2026-07): distinct-feature inter-cosine peaked at
   // 0.265, so 0.28 preserves separation (0 false merges on the 30-sample fixture) while
   // capturing intra-feature cohesion. The margin is thin and fixture-bound — re-validate
@@ -20,8 +19,12 @@ const DEFAULTS = {
   min_occurrences: 2,
   max_entries: 10000,
   periodic_injection_interval: 20,
+  // embedding_enabled gates the INFRA side only (post-edit embedding compute,
+  // feature clustering, post-compact summary). The embedding cycle-DETECTOR and
+  // its keys (embedding_detector_enabled, embedding_similarity_threshold) were
+  // retired 2026-08-02 — 0 real-world TPs in any era vs 71 classified FPs;
+  // stale user configs still setting those keys are silently ignored.
   embedding_enabled: true,
-  embedding_detector_enabled: false,
   // Seed-note cold-start (SEED-COLDSTART): when a NEW feature node is first born and has
   // no head note yet, enqueue a job for the local LLM to write its "lasting purpose" seed
   // note, breaking the chicken-and-egg where nothing ever authors the first note.
@@ -84,14 +87,12 @@ const DEFAULTS = {
 
 const VALIDATORS = {
   similarity_threshold: (v) => typeof v === 'number' && v >= 0.0 && v <= 1.0,
-  embedding_similarity_threshold: (v) => typeof v === 'number' && v >= 0.0 && v <= 1.0,
   feature_cluster_threshold: (v) => typeof v === 'number' && v >= 0.0 && v <= 1.0,
   window_size: (v) => Number.isInteger(v) && v > 0,
   min_occurrences: (v) => Number.isInteger(v) && v > 0,
   max_entries: (v) => Number.isInteger(v) && v > 0,
   periodic_injection_interval: (v) => Number.isInteger(v) && v >= 0,
   embedding_enabled: (v) => typeof v === 'boolean',
-  embedding_detector_enabled: (v) => typeof v === 'boolean',
   seed_note_enabled: (v) => typeof v === 'boolean',
   sphere_read_resolver_enabled: (v) => typeof v === 'boolean',
   keyword_index_enabled: (v) => typeof v === 'boolean',

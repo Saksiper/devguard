@@ -116,37 +116,6 @@ function buildTestRepeatSection(db, sessionId, result) {
   }
 }
 
-function buildEmbeddingSection(db, sessionId, result) {
-  try {
-    const matches = result.matches || [];
-    if (matches.length === 0) return result.message;
-
-    const allIds = new Set();
-    for (const p of matches) {
-      if (p.a) allIds.add(p.a);
-      if (p.b) allIds.add(p.b);
-    }
-    const changes = db.getChangesByIds([...allIds]);
-    const changeMap = new Map(changes.map(c => [c.id, c]));
-
-    const lines = [`Semantic similarity:`];
-    lines.push('Repeating semantically similar changes:');
-    for (let i = 0; i < Math.min(matches.length, 2); i++) {
-      const p = matches[i];
-      const ca = changeMap.get(p.a);
-      const cb = changeMap.get(p.b);
-      const descA = ca ? (truncate(ca.claude_verdict || ca.description, 40) || '?') : '?';
-      const descB = cb ? (truncate(cb.claude_verdict || cb.description, 40) || '?') : '?';
-      const sim = p.similarity ? `%${(p.similarity * 100).toFixed(0)}` : '';
-      lines.push(`- ${descA} ↔ ${descB} (${sim})`);
-    }
-    return lines.join('\n');
-  } catch (err) {
-    debugLog('message-builder', 'buildEmbeddingSection failed', { error: String(err) });
-    return result.message;
-  }
-}
-
 function buildProtectionSection(db, sessionId, result) {
   try {
     const zones = result.matches || [];
@@ -177,7 +146,6 @@ const SECTION_BUILDERS = {
   error_hash: buildErrorHashSection,
   diff_match: buildDiffMatchSection,
   test_repeat: buildTestRepeatSection,
-  embedding_match: buildEmbeddingSection,
   protection: buildProtectionSection,
 };
 
@@ -269,7 +237,6 @@ module.exports = {
   buildErrorHashSection,
   buildDiffMatchSection,
   buildTestRepeatSection,
-  buildEmbeddingSection,
   buildProtectionSection,
   truncate,
   formatTime,

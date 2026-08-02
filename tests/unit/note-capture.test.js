@@ -434,3 +434,62 @@ describe('note-capture — captureAckCompliance', () => {
     expect(captureAckCompliance(db, { transcriptPath: tp })).toBe(0);
   });
 });
+
+// The Stop/SubagentStop payload carries `last_assistant_message` — the authoritative
+// final text of the turn. Prefer it over re-parsing the transcript; the transcript
+// path stays as the fallback for SessionEnd (no such field) and older clients.
+describe('note-capture — lastAssistantText takes precedence over the transcript', () => {
+  it('captures from lastAssistantText even when the transcript path does not exist', () => {
+    const db = freshDb();
+    const { captureNoteFromTranscript } = loadCapture();
+
+    const id = captureNoteFromTranscript(db, {
+      transcriptPath: path.join(tmpDir, 'no-such-transcript.jsonl'),
+      sessionId: 'sess-1',
+      lastAssistantText: 'Shipped. [DG-NOTE ui_ux/filter] added a debounced filter widget',
+    });
+
+    expect(id).toBeGreaterThan(0);
+    expect(db.getHeadNoteByNode('ui_ux/filter').note_text).toBe('added a debounced filter widget');
+  });
+
+  it('wins over a stale transcript holding a DIFFERENT marker', () => {
+    const db = freshDb();
+    const { captureNoteFromTranscript } = loadCapture();
+    const tp = writeTranscript('Old turn. [DG-NOTE ui_ux/filter] the stale transcript note');
+
+    captureNoteFromTranscript(db, {
+      transcriptPath: tp,
+      sessionId: 'sess-1',
+      lastAssistantText: 'New turn. [DG-NOTE ui_ux/filter] the fresh payload note',
+    });
+
+    expect(db.getHeadNoteByNode('ui_ux/filter').note_text).toBe('the fresh payload note');
+  });
+
+  it('falls back to the transcript when lastAssistantText is absent or empty', () => {
+    const db = freshDb();
+    const { captureNoteFromTranscript } = loadCapture();
+    const tp = writeTranscript('Done. [DG-NOTE ui_ux/filter] captured via the transcript fallback');
+
+    const id = captureNoteFromTranscript(db, { transcriptPath: tp, sessionId: 'sess-1', lastAssistantText: '' });
+
+    expect(id).toBeGreaterThan(0);
+    expect(db.getHeadNoteByNode('ui_ux/filter').note_text).toBe('captured via the transcript fallback');
+  });
+
+  it('captureAckCompliance credits from lastAssistantText without reading the transcript', () => {
+    const db = freshDb();
+    const { captureAckCompliance } = loadCapture();
+    const noteId = seedSurfaced(db, { nodeId: 'ui_ux/filter', sess: 's1' });
+
+    const emitted = captureAckCompliance(db, {
+      transcriptPath: path.join(tmpDir, 'no-such-transcript.jsonl'),
+      sessionId: 's1',
+      lastAssistantText: 'Done.\n[DG-CONTINUE ui_ux/filter] kept the tokenized search.',
+    });
+
+    expect(emitted).toBe(1);
+    expect(db.getNoteEvents({ note_id: noteId, event_type: 'complied' })).toHaveLength(1);
+  });
+});

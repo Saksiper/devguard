@@ -247,14 +247,13 @@ describe('pre-edit.js — pipeline ordering', () => {
 });
 
 describe('pre-edit.js — MIDDLEWARES structure', () => {
-  it('has 5 middlewares with correct IDs (file_match removed in v0.2.2)', () => {
+  it('has 4 middlewares with correct IDs (file_match removed in v0.2.2, cycle:embedding retired 2026-08)', () => {
     const { preEdit } = loadModules();
-    expect(preEdit.MIDDLEWARES).toHaveLength(5);
+    expect(preEdit.MIDDLEWARES).toHaveLength(4);
     expect(preEdit.MIDDLEWARES[0].id).toBe('cycle:error_hash');
     expect(preEdit.MIDDLEWARES[1].id).toBe('cycle:diff_match');
     expect(preEdit.MIDDLEWARES[2].id).toBe('cycle:test_repeat');
-    expect(preEdit.MIDDLEWARES[3].id).toBe('cycle:embedding');
-    expect(preEdit.MIDDLEWARES[4].id).toBe('protect:check');
+    expect(preEdit.MIDDLEWARES[3].id).toBe('protect:check');
   });
 
   it('all middlewares have fn property as function', () => {
@@ -662,192 +661,31 @@ describe('pre-edit.js — hook execution', () => {
   });
 });
 
-describe('pre-edit.js — embeddingMiddleware', () => {
-  function makeNormalizedBuffer(arr) {
-    const f32 = new Float32Array(arr);
-    let norm = 0;
-    for (let i = 0; i < f32.length; i++) norm += f32[i] * f32[i];
-    norm = Math.sqrt(norm);
-    if (norm > 0) for (let i = 0; i < f32.length; i++) f32[i] /= norm;
-    return Buffer.from(f32.buffer);
-  }
-
-  function makeCtx(db, overrides = {}) {
-    return {
-      db,
-      filePath: '/project/app.js',
-      oldString: 'const x = 1;',
-      sessionId: 'test-session',
-      config: { similarity_threshold: 0.85, embedding_similarity_threshold: 0.85, window_size: 10, min_occurrences: 2, block_threshold: 3, embedding_enabled: true, embedding_detector_enabled: true },
-      projectPath: projectDir,
-      lineRanges: null,
-      ...overrides,
-    };
-  }
-
-  it('returns skip when no embeddings in DB', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-    const ctx = makeCtx(db);
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('skip');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
+// cycle:embedding retired (2026-08): 0 real-world TPs ever vs 73 classified FPs (all
+// from its default-ON Apr–Jul 2026 era; gated opt-in 2026-07-01, it never fired again).
+// These specs pin the retirement so a regression can't quietly resurrect the detector.
+// Embedding INFRA (post-edit compute, feature clustering, post-compact summary) stays.
+describe('pre-edit.js — embedding detector retired', () => {
+  it('MIDDLEWARES no longer contains cycle:embedding', () => {
+    const { preEdit } = loadModules();
+    expect(preEdit.MIDDLEWARES.map(m => m.id)).not.toContain('cycle:embedding');
   });
 
-  it('returns skip with only 1 embedding', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-    const emb = makeNormalizedBuffer([1, 2, 3, 4]);
-    const changeId = db.insertChange({ session_id: 'test-session', file: 'a.js', action: 'Edit' });
-    db.updateChangeEmbedding(changeId, emb);
-    const ctx = makeCtx(db);
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('skip');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
+  it('embeddingMiddleware is no longer exported', () => {
+    const { preEdit } = loadModules();
+    expect(preEdit.embeddingMiddleware).toBeUndefined();
   });
 
-  it('warns when >= min_occurrences similar pairs found in the same file', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    const similar = makeNormalizedBuffer([1, 2, 3, 4]);
-    for (let i = 0; i < 3; i++) {
-      const cid = db.insertChange({ session_id: 'test-session', file: 'app.js', action: 'Edit' });
-      db.updateChangeEmbedding(cid, similar);
-    }
-
-    const ctx = makeCtx(db);
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('warn');
-    expect(result.type).toBe('embedding_match');
-    expect(result.level).toBe(3);
-    expect(result.message).toContain('Semantic similarity');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
+  it('CHALLENGE_QUESTIONS has no embedding_match entry', () => {
+    const { preEdit } = loadModules();
+    expect(preEdit.CHALLENGE_QUESTIONS.embedding_match).toBeUndefined();
   });
 
-  it('skips when similar embeddings span different files (feature work, not a cycle)', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    const similar = makeNormalizedBuffer([1, 2, 3, 4]);
-    for (let i = 0; i < 4; i++) {
-      const cid = db.insertChange({ session_id: 'test-session', file: `f${i}.js`, action: 'Edit' });
-      db.updateChangeEmbedding(cid, similar);
-    }
-
-    const ctx = makeCtx(db);
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('skip');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
-  });
-
-  it('skips same-file pairs below embedding_similarity_threshold', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    // cosine([1,0], [0.75, 0.661]) ≈ 0.75 — below the 0.85 embedding threshold
-    const vectors = [
-      makeNormalizedBuffer([1, 0]),
-      makeNormalizedBuffer([0.75, 0.6614]),
-      makeNormalizedBuffer([1, 0]),
-    ];
-    for (const v of vectors) {
-      const cid = db.insertChange({ session_id: 'test-session', file: 'app.js', action: 'Edit' });
-      db.updateChangeEmbedding(cid, v);
-    }
-
-    // similarity_threshold deliberately low: if the middleware wrongly used it,
-    // all 3 pairs would pass and this would warn
-    const ctx = makeCtx(db, { config: { ...makeCtx(db).config, similarity_threshold: 0.70, min_occurrences: 3 } });
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('skip');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
-  });
-
-  it('falls back to similarity_threshold when embedding_similarity_threshold missing', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    const similar = makeNormalizedBuffer([1, 2, 3, 4]);
-    for (let i = 0; i < 3; i++) {
-      const cid = db.insertChange({ session_id: 'test-session', file: 'app.js', action: 'Edit' });
-      db.updateChangeEmbedding(cid, similar);
-    }
-
-    const config = { ...makeCtx(db).config };
-    delete config.embedding_similarity_threshold;
-    const ctx = makeCtx(db, { config });
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('warn');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
-  });
-
-  it('skips when embedding_enabled is false', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    const similar = makeNormalizedBuffer([1, 2, 3, 4]);
-    for (let i = 0; i < 3; i++) {
-      const cid = db.insertChange({ session_id: 'test-session', file: `f${i}.js`, action: 'Edit' });
-      db.updateChangeEmbedding(cid, similar);
-    }
-
-    const ctx = makeCtx(db, { config: { ...makeCtx(db).config, embedding_enabled: false } });
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('skip');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
-  });
-
-  it('skips when all embeddings are dissimilar', () => {
-    const { preEdit, db: dbMod } = loadModules();
-    process.env.CLAUDE_PLUGIN_DATA = tmpDir;
-    const db = dbMod.getDb(projectDir);
-    db.insertSession('test-session');
-
-    const vectors = [
-      makeNormalizedBuffer([1, 0, 0, 0]),
-      makeNormalizedBuffer([0, 1, 0, 0]),
-      makeNormalizedBuffer([0, 0, 1, 0]),
-    ];
-    for (let i = 0; i < vectors.length; i++) {
-      const cid = db.insertChange({ session_id: 'test-session', file: `f${i}.js`, action: 'Edit' });
-      db.updateChangeEmbedding(cid, vectors[i]);
-    }
-
-    const ctx = makeCtx(db);
-    const result = preEdit.embeddingMiddleware(ctx);
-    expect(result.decision).toBe('skip');
-    dbMod.closeDb();
-    delete process.env.CLAUDE_PLUGIN_DATA;
-  });
-
-  it('pickCognitiveLabel returns independence for embedding_match', () => {
+  it('pickCognitiveLabel ignores a legacy embedding_match result (no independence label)', () => {
     const { preEdit } = loadModules();
     const results = [
       { decision: 'warn', level: 3, type: 'embedding_match', confidence: 0.9, matches: [], message: 'test' },
     ];
-    const label = preEdit.pickCognitiveLabel(results);
-    expect(label).toContain('Small variations');
+    expect(preEdit.pickCognitiveLabel(results)).toBeNull();
   });
 });

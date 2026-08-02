@@ -21,7 +21,7 @@ You've probably watched Claude undo a fix it made an hour ago, or loop on the sa
 1. **Remembers decisions per feature.** When you come back to a part of the codebase you've worked on before, DevGuard surfaces the note it left last time (*"last time, filtering was made case-insensitive and sorted ascending"*) so the agent builds on the earlier decision instead of silently contradicting it.
 2. **Interrupts repeating loops.** When the agent is about to retry a failing approach, re-apply a similar fix, or overwrite code that was written to fix an earlier bug, DevGuard injects a short message into its thinking: the *"wait, let me reconsider"* pause.
 
-It's a **hook-based Claude Code plugin**. No edits are ever blocked, nothing leaves your machine, and it works with zero configuration. Real-time nudging works best in the **terminal**; Desktop and web sessions are recovered retrospectively (see "Where It Works Best" below).
+It's a **hook-based Claude Code plugin**. No edits are ever blocked, nothing leaves your machine, and it works with zero configuration. Real-time nudging works best in the **terminal**; Desktop records edits live too, and anything a hook misses is recovered from the transcript afterwards (see "Where It Works Best" below).
 
 ```
 I'm DevGuard, a secondary mechanism set up by the user.
@@ -85,10 +85,9 @@ Before every `Edit`/`Write`, a middleware pipeline checks for repetition, each s
 | 1 | `cycle:error_hash` | Same error recurring this session | <1ms |
 | 2 | `cycle:diff_match` | Similar code changes (Jaccard similarity) | <1ms |
 | 3 | `cycle:test_repeat` | Same test failing repeatedly | <1ms |
-| 4 | `cycle:embedding` | Semantic similarity: "increase timeout" ≈ "extend retry interval" (MiniLM cosine) | <1ms* |
-| 5 | `protect:check` | Git-blame protection zones | <5ms |
+| 4 | `protect:check` | Git-blame protection zones | <5ms |
 
-*\*Pre-computed vectors read from SQLite. The embedding model only loads in PostToolUse (async, off the hot path), never in the pre-edit hook.*
+> **Retired (2026-08):** a fourth stage, `cycle:embedding` (MiniLM semantic similarity), was removed after real-world ground truth: 0 true positives ever against 73 classified false positives. The honest history: it ran default-ON from April to July 2026 (that era produced all of its detections and every classified FP), was then gated opt-in and never fired again — every public release shipped with it off. What it aimed to catch overlaps `cycle:diff_match`. The embedding model itself stays — it powers feature clustering and the post-compact summary, just not a detector.
 
 Detection is **warn-only** and section-aware: editing five different functions in one file won't trip the alarm; a single level only warns, and promotion to a stronger signal requires multiple independent levels agreeing.
 
@@ -127,14 +126,15 @@ DevGuard is hook-based, and Claude Code dispatches hooks differently across surf
 | Surface | Real-time detection | Notes |
 |---------|:-------------------:|-------|
 | **Terminal Claude Code** | ✅ Full | Every edit passes through the pipeline *before* it happens; the thinking trigger and note-surfacing fire live. **This is where DevGuard is strongest.** |
-| **Claude Desktop (Code)** | 🟡 Capture | Current Desktop builds dispatch `SessionStart`/`PostToolUse` (verified live), so edits are recorded and memory accumulates in real time. The pre-edit thinking trigger is not verified on Desktop, so treat live *prevention* as terminal-first. |
+| **Subagents (`Task` tool)** | ✅ Capture | A subagent's `Edit`/`Write` fires the same `PreToolUse`/`PostToolUse` hooks as the main thread (verified live; the payload even names the agent via `agent_id`/`agent_type`), so subagent work lands in memory as it happens. |
+| **Claude Desktop (Code)** | 🟡 Capture | Documented — *"hooks and skills defined in settings apply to both"* ([Desktop docs](https://code.claude.com/docs/en/desktop)) — and verified live: Desktop dispatches `SessionStart`/`PostToolUse`, so edits are recorded and memory accumulates in real time. The pre-edit thinking trigger is not verified on Desktop, so treat live *prevention* as terminal-first. |
 | **claude.ai/code (web)** | ❌ Not verified | No live hook verification yet; web sessions are recovered via transcript backfill below. |
 
-### Transcript Backfill: recovering the blind spots
+### Transcript Backfill: the safety net
 
-So non-terminal work isn't invisible, DevGuard **replays missed edits from Claude Code's transcript logs**. On every terminal `SessionStart` it scans `~/.claude/projects/*.jsonl` (Desktop, web, and subagent sessions included), extracts the `Edit`/`Write`/`MultiEdit` calls no hook captured, and backfills them: attributed to the real project, idempotent (a per-transcript byte cursor plus a unique `tool_use_id` index), and bounded so startup stays fast.
+Hooks cover the surfaces above, so backfill is not how Desktop or subagent work gets recorded — it's the net under **everything a hook can miss**. DevGuard **replays missed edits from Claude Code's transcript logs**: on every terminal `SessionStart` it scans `~/.claude/projects/*.jsonl`, extracts the `Edit`/`Write`/`MultiEdit` calls no hook captured, and backfills them — attributed to the real project, idempotent (a per-transcript byte cursor plus a unique `tool_use_id` index), and bounded so startup stays fast.
 
-**What this buys you:** cycle history, memory, and stats stay complete across terminal/Desktop switches. **What it doesn't:** recovery is *retrospective*; real-time prevention remains terminal-only.
+**What it catches:** sessions from a surface that didn't dispatch hooks (web), a hook that errored or was killed mid-flight, and transcripts from before you installed DevGuard. **What it doesn't:** recovery is *retrospective*; real-time prevention remains terminal-first.
 
 ## ⚙️ Configuration
 
@@ -142,13 +142,13 @@ Create `devguard.config.yaml` in your project root (all settings optional):
 
 ```yaml
 # Detection sensitivity
-similarity_threshold: 0.70       # L2/L3 similarity threshold (0.0-1.0)
+similarity_threshold: 0.70       # L2 Jaccard similarity threshold (0.0-1.0)
 min_occurrences: 2               # Matches before first warning
 window_size: 10                  # Recent changes to analyze
 
 # Behavior
 periodic_injection_interval: 20  # Edits between auto-summaries (0 = disable)
-embedding_enabled: true          # Enable L3 semantic detection
+embedding_enabled: true          # Embedding infra: feature clustering + summaries
 intervention_enabled: true       # false = passive (measure but inject nothing)
 seed_note_enabled: true          # Auto-write a "purpose" note when a new file appears
 
@@ -178,9 +178,9 @@ DevGuard measures itself on two separate axes, kept apart on purpose because the
 
 ### 1. Detection accuracy (controlled)
 
-Across 12 controlled scenarios covering all detection levels, precision and recall are high. **Honest caveat:** these are *designed* scenarios. In real-world use, false positives do occur (most notably cross-file embedding similarity flagging unrelated edits) and thresholds are tuned down as those are found. Treat the controlled numbers as "the detector fires on the patterns it's meant to," not as a real-world false-positive guarantee.
+Across 12 controlled scenarios covering all detection levels, precision and recall are high. **Honest caveat:** these are *designed* scenarios. In real-world use, false positives do occur (historically, most notably the since-retired embedding-similarity detector flagging unrelated edits) and thresholds are tuned down as those are found. Treat the controlled numbers as "the detector fires on the patterns it's meant to," not as a real-world false-positive guarantee.
 
-**Measured reality check** (first labeled dogfood batch, 2026-08: a deterministic 45-event sample of real detection logs): the cross-file embedding-similarity detector's real-world precision was **~0 on this sample**; its warnings fired on distinct forward-progress edits whose descriptions were naturally similar during focused work (most sampled FPs predate a June-2026 scoping fix, but post-fix FPs continued and no era produced a true positive). The protection detector produced the sample's one true positive overall. Gating or retiring the embedding detector is the next tuning target. Synthetic precision and real-world precision are different quantities; don't quote one as the other.
+**Measured reality check** (first labeled dogfood batch, 2026-08: a deterministic 45-event sample of real detection logs): the cross-file embedding-similarity detector's real-world precision was **~0 on this sample**; its warnings fired on distinct forward-progress edits whose descriptions were naturally similar during focused work (most sampled FPs predate a June-2026 scoping fix; after that fix the detector fired only 11 more times in a single ~15-hour window — 4 classified FP, 0 TP — and no era ever produced a true positive). The protection detector produced the sample's one true positive overall. That evidence retired the embedding detector outright (2026-08, see the Cycle Detection section); the embedding model still powers feature clustering. Synthetic precision and real-world precision are different quantities; don't quote one as the other.
 
 ### 2. Intervention effectiveness (blind A/B)
 
@@ -221,7 +221,7 @@ src/
 │   └── stop.js                  # 🧠 Harvest [DG-NOTE] markers into memory
 ├── engine/                      # Core logic modules
 │   ├── db.js                    # SQLite (V17 migrations, multi-tenant)
-│   ├── cycle-detector.js        # L1-L3 detection + test repeat
+│   ├── cycle-detector.js        # L1/L2 detection + test repeat
 │   ├── embedding.js             # MiniLM-L6-v2 (local, lazy download)
 │   ├── feature-classifier.js    # Edit → continent/country node (nearest-centroid)
 │   ├── keyword-index.js         # Learned per-project vocabulary (prompt → feature)

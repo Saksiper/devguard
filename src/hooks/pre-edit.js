@@ -61,42 +61,6 @@ function testRepeatMiddleware(ctx) {
   return checkTestRepeat(ctx.db, ctx.filePath, ctx.sessionId, ctx.config);
 }
 
-function makeResult(decision, level, type, confidence, matches, message) {
-  return { decision, level, type, confidence, matches, message };
-}
-
-function embeddingMiddleware(ctx) {
-  if (!ctx.config.embedding_detector_enabled) return SKIP;
-  if (!ctx.config.embedding_enabled) return SKIP;
-
-  const recent = ctx.db.getRecentEmbeddings(ctx.sessionId, ctx.config.window_size);
-  if (recent.length < 2) return SKIP;
-
-  const { findSimilarPairs } = require('../engine/embedding');
-  // A cycle is rework of the same target. Cross-file similarity during feature
-  // work is shared project vocabulary, not a loop — 21/21 FP warns (2026-06-04)
-  // were cross-file pairs at the shared 0.70 threshold, so pairs are scoped to
-  // the same file and use a stricter embedding-specific threshold.
-  const threshold = ctx.config.embedding_similarity_threshold ?? ctx.config.similarity_threshold;
-  const byFile = new Map();
-  for (const r of recent) {
-    const group = byFile.get(r.file) || [];
-    group.push({ id: r.id, buffer: r.description_embedding });
-    byFile.set(r.file, group);
-  }
-  let pairs = [];
-  for (const group of byFile.values()) {
-    if (group.length >= 2) pairs = pairs.concat(findSimilarPairs(group, threshold));
-  }
-
-  if (pairs.length < ctx.config.min_occurrences) return SKIP;
-
-  const avgSim = pairs.reduce((s, p) => s + p.similarity, 0) / pairs.length;
-  const message = `Semantic similarity: ${pairs.length} similar pairs in last ${recent.length} changes (avg ${(avgSim * 100).toFixed(0)}%).`;
-
-  return makeResult('warn', 3, 'embedding_match', avgSim, pairs, message);
-}
-
 function protectionMiddleware(ctx) {
   if (!ctx.lineRanges || ctx.lineRanges.length === 0) return SKIP;
   if (!hasProtectedCommit(ctx.db, ctx.filePath)) return SKIP;
@@ -115,11 +79,18 @@ function protectionMiddleware(ctx) {
   };
 }
 
+// cycle:embedding retired 2026-08-02: 0 real-world TPs ever vs 73 classified FPs
+// (dogfood ground truth). It ran default-ON from 2026-04-02 to 2026-07-01 — all 639
+// detections and every classified FP come from that era — was gated opt-in on
+// 2026-07-01 (a7aa1e0) and never fired again; every public release shipped with it
+// off. After the 2026-06-10 same-file fix it fired only 11 times in one ~15h window
+// (4 classified FP, 0 TP). Its target signal overlaps cycle:diff_match. Only the
+// DETECTOR died — embeddings are still computed in post-edit and still power
+// feature clustering and the post-compact summary.
 const MIDDLEWARES = [
   { id: 'cycle:error_hash', fn: errorHashMiddleware },
   { id: 'cycle:diff_match', fn: diffMatchMiddleware },
   { id: 'cycle:test_repeat', fn: testRepeatMiddleware },
-  { id: 'cycle:embedding', fn: embeddingMiddleware },
   { id: 'protect:check', fn: protectionMiddleware },
 ];
 
@@ -133,18 +104,15 @@ const COGNITIVE_LABELS = {
 const CHALLENGE_QUESTIONS = {
   error_hash: 'What could be the root cause of this error?',
   diff_match: 'Why would the same approach work this time?',
-  embedding_match: 'Have you tried a semantically different strategy?',
   test_repeat: 'Why is the test failing? Is the issue in the test or the code?',
 };
 
 function pickCognitiveLabel(results, recentLabels) {
   const hasErrorHash = results.some(r => r.type === 'error_hash');
   const hasDiffMatch = results.some(r => r.type === 'diff_match');
-  const hasEmbeddingMatch = results.some(r => r.type === 'embedding_match');
   const multipleSignals = results.filter(r => r.type !== 'protection').length >= 2;
 
   const preferred = [];
-  if (hasEmbeddingMatch) preferred.push('independence');
   if (hasDiffMatch && hasErrorHash) preferred.push('independence');
   if (hasErrorHash && multipleSignals) preferred.push('anchoring');
   if (hasDiffMatch && multipleSignals) preferred.push('sunk_cost');
@@ -360,7 +328,7 @@ function main() {
   }
 }
 
-module.exports = { runPipeline, formatMessage, pickCognitiveLabel, pickChallengeQuestion, MIDDLEWARES, checkPeriodicInjection, embeddingMiddleware, CHALLENGE_QUESTIONS };
+module.exports = { runPipeline, formatMessage, pickCognitiveLabel, pickChallengeQuestion, MIDDLEWARES, checkPeriodicInjection, CHALLENGE_QUESTIONS };
 
 if (require.main === module) {
   main();
