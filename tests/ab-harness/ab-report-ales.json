@@ -1,0 +1,450 @@
+{
+  "meta": {
+    "product": "DevGuard",
+    "experiment_type": "A/B live claude -p (passive vs active intervention)",
+    "honesty_note": "Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.",
+    "measurable_components_note": "Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.",
+    "sphere_mode_note": "Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality. Exception: on control:\"misleading\" tasks the seeded decisions are stale by construction and the consistency checker scores adherence to the CURRENT prompt spec — higher = resisted the note.",
+    "negative_controls_note": "Control tasks (pairs[].control) measure harm/noise, not benefit: \"irrelevant\" seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), \"misleading\" seeds a note contradicting the prompt's current spec (following it is a consistency FAIL), \"none\" seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only (small n, forced-choice judging; stripMarkers may also remove note-echo evidence, biasing controls toward tie). For irrelevant/none controls the consistency score is only a spontaneous-adherence baseline to the reused fixture's hidden conventions (neither arm was told them) — it measures resistance to nothing.",
+    "run_model": "opus",
+    "judge_model": "opus",
+    "permission_mode": "acceptEdits",
+    "bias_mitigation": [
+      "blind-judge",
+      "position-swap",
+      "code-only+strip"
+    ],
+    "isolation": "strategy-B: unique project_path per run + per-pair cleanup"
+  },
+  "generated_at": "2026-08-01T14:16:40.136Z",
+  "parameters": {
+    "tasks_file": "C:\\Users\\umut_\\OneDrive\\Desktop\\Projeler\\devguard\\tests\\ab-harness\\tasks.json",
+    "n_replicas": 1,
+    "only": [
+      "ales-classify",
+      "ales-highlight",
+      "ales-topic-key",
+      "ales-score",
+      "ales-answer"
+    ]
+  },
+  "pairs": [
+    {
+      "task": "ales-classify",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.5076655,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "complied": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.471,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "",
+          "confidence": null,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "ales-highlight",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 7,
+          "costUsd": 0.6109340000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "complied": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.7889825000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B matches the project's established decisions explicitly — half-open semantics (strict `r.start < last.end` merge, so touching ranges like [0,3) and [3,6) stay separate rather than being fused as in A's `start <= last.end`) and true end-to-start marker insertion — while also validating input and documenting the invariants.",
+          "confidence": 0.78,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "A matches all three established conventions explicitly (half-open, container-only via union merge, and true end-to-start insertion) while B rebuilds the string forward and merges merely adjacent half-open ranges (`start <= last.end`), silently fusing two distinct highlights into one.",
+          "confidence": 0.72,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "ales-topic-key",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 5,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 4,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 15,
+          "costUsd": 0.8356540000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 4,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 3,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "surfaced": 1
+          },
+          "numTurns": 13,
+          "costUsd": 0.8095555,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "A",
+          "reason": "",
+          "confidence": null,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "B",
+          "reason": "The two files are otherwise identical, but A's String() coercion on every key field lets a string \"5\" match a numeric 5, loosening the strict exam+section+number composite identity the project's book-import decision requires, while B's raw JSON triple keeps the key exact and returns null for any non-matching composite.",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "passive",
+        "consistent": true
+      }
+    },
+    {
+      "task": "ales-score",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 3,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 2,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.5342735000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 2,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": false
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "complied": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.4983525,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "Both share identical, correct counting logic, but only B applies the project's established floor-at-0 clamp on the net score.",
+          "confidence": null,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Both tally identically, but only A floors the net at 0 with Math.max, matching the project's negative-marking decision; B can return a negative score.",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "ales-answer",
+      "replica": 1,
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.467986,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "complied": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.542228,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 3,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "tie",
+          "reason": "Both implementations are functionally identical for every input — trimmed case-insensitive comparison with blank/nullish treated as 'unanswered' — differing only in cosmetic null-handling style, and neither shows the required verification step.",
+          "confidence": null,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Both implement the required semantics identically, but A handles a null/undefined correctAnswer without producing the string 'null'/'undefined' as the comparison key and expresses the null-and-blank checks in one uniform normalization step, making it marginally more robust and clearer.",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "tie",
+        "consistent": false
+      }
+    }
+  ],
+  "summary": {
+    "total_pairs": 5,
+    "active_wins": 3,
+    "passive_wins": 1,
+    "ties": 1,
+    "inconsistent": 1,
+    "errored_pairs": 0,
+    "active_win_rate": 0.75,
+    "active_win_rate_ci_wilson": [
+      0.3006,
+      0.9544
+    ],
+    "valid_pairs": 5,
+    "test_pass_rate": {
+      "active": 1,
+      "passive": 1
+    },
+    "proxy_means": {
+      "cycleWarn": {
+        "active": 0,
+        "passive": 0
+      },
+      "changeCount": {
+        "active": 2.4,
+        "passive": 2.8
+      },
+      "sameFileMax": {
+        "active": 1.4,
+        "passive": 1.8
+      },
+      "numTurns": {
+        "active": 8,
+        "passive": 8.8
+      }
+    },
+    "consistency": {
+      "active": 3,
+      "passive": 2.2
+    },
+    "surfaced": {
+      "active": 1,
+      "passive": 0
+    }
+  }
+}

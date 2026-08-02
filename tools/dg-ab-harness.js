@@ -11,6 +11,11 @@
 //   node tools/dg-ab-harness.js
 // Env overrides: DG_AB_MODEL, DG_AB_JUDGE_MODEL, DG_AB_REPLICAS, DG_AB_ONLY
 //   (comma task ids), DG_AB_TASKS, DG_AB_REPORT, DG_AB_DB.
+// DG_AB_RESUME=1 resumes an interrupted batch from the report file: valid pairs
+//   are kept, missing/errored (task, replica) items re-run. The report doubles
+//   as a per-pair checkpoint, and two consecutive both-arms-errored pairs (the
+//   usage-limit signature) abort the run with exit code 2 instead of burning
+//   through the remaining bank.
 
 const fs = require('fs');
 const os = require('os');
@@ -152,9 +157,14 @@ function computeSummary(pairs) {
   const s = { total_pairs: pairs.length, active_wins: 0, passive_wins: 0, ties: 0, inconsistent: 0, errored_pairs: 0 };
   // MAJOR-2: a pair where either arm errored/timed out is not a valid comparison —
   // exclude it from win-rate AND from proxy/test means.
+  // Negative-control pairs (p.control) measure harm/noise, not benefit — they are
+  // partitioned out of every headline metric and reported under summary.controls.
   const valid = [];
+  const ctrlValid = [];
+  const ctrlErrored = [];
   for (const p of pairs) {
-    if (p.active.isError || p.passive.isError) { s.errored_pairs++; continue; }
+    if (p.active.isError || p.passive.isError) { s.errored_pairs++; if (p.control) ctrlErrored.push(p); continue; }
+    if (p.control) { ctrlValid.push(p); continue; }
     valid.push(p);
     if (p.verdict.pair_winner === 'active') s.active_wins++;
     else if (p.verdict.pair_winner === 'passive') s.passive_wins++;
@@ -190,7 +200,65 @@ function computeSummary(pairs) {
     active: mean(valid.map((p) => surfacedCount(p, p.active))),
     passive: mean(valid.map((p) => surfacedCount(p, p.passive))),
   };
+  // Controls block: descriptive counts + per-arm means only. Deliberately NO win
+  // rate and NO Wilson CI — at n=2-3 per type a rate would overstate; the readout
+  // is a falsification probe ("k decisive active losses"), not a powered comparison.
+  if (ctrlValid.length || ctrlErrored.length) {
+    s.control_pairs = ctrlValid.length + ctrlErrored.length;
+    // errored_pairs above counts ALL errored pairs (control included); this field
+    // disambiguates so total_pairs = valid_pairs + control_pairs + (errored_pairs - control_errored_pairs).
+    s.control_errored_pairs = ctrlErrored.length;
+    s.controls = {};
+    for (const type of [...new Set([...ctrlValid, ...ctrlErrored].map((p) => p.control))]) {
+      const v = ctrlValid.filter((p) => p.control === type);
+      const c = { pairs: v.length, errored: ctrlErrored.filter((p) => p.control === type).length, active_wins: 0, passive_wins: 0, ties: 0, inconsistent: 0 };
+      for (const p of v) {
+        if (p.verdict.pair_winner === 'active') c.active_wins++;
+        else if (p.verdict.pair_winner === 'passive') c.passive_wins++;
+        else c.ties++;
+        if (p.verdict.consistent === false) c.inconsistent++;
+      }
+      c.numTurns = { active: mean(v.map((p) => p.active.proxies.numTurns)), passive: mean(v.map((p) => p.passive.proxies.numTurns)) };
+      c.costUsd = { active: mean(v.map((p) => p.active.proxies.costUsd)), passive: mean(v.map((p) => p.passive.proxies.costUsd)) };
+      c.testPass = {
+        active: mean(v.map((p) => (p.active.testPass === null ? null : p.active.testPass ? 1 : 0))),
+        passive: mean(v.map((p) => (p.passive.testPass === null ? null : p.passive.testPass ? 1 : 0))),
+      };
+      // For control:'misleading' the consistency checker scores adherence to the
+      // CURRENT prompt spec — higher = resisted the stale note, inverse of the
+      // positive-task reading.
+      c.consistency = { active: mean(v.map((p) => consistencyScore(p.active))), passive: mean(v.map((p) => consistencyScore(p.passive))) };
+      c.surfaced = { active: mean(v.map((p) => surfacedCount(p, p.active))), passive: mean(v.map((p) => surfacedCount(p, p.passive))) };
+      s.controls[type] = c;
+    }
+  }
   return s;
+}
+
+// Load the pairs of an existing report for resume. Missing file = first run of
+// a resumable batch (fine); a corrupt or pair-less file THROWS — silently
+// starting fresh over a half-written checkpoint would duplicate spend.
+function loadCheckpoint(reportPath) {
+  if (!fs.existsSync(reportPath)) return [];
+  const parsed = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  if (!Array.isArray(parsed.pairs)) throw new Error('[ab-harness] resume: existing report has no pairs array — wrong DG_AB_REPORT file?');
+  return parsed.pairs;
+}
+
+function bothArmsErrored(pair) {
+  return !!(pair && pair.active && pair.active.isError && pair.passive && pair.passive.isError);
+}
+
+// Which (task, replica) items still need to run, and which checkpoint pairs to
+// carry into the output: valid pairs are never re-run; errored pairs in the
+// current run list are dropped and re-run; pairs from other batches sharing the
+// file are preserved as-is (valid or errored).
+function planResume(runList, checkpointPairs) {
+  const inRun = new Set(runList.map((r) => `${r.taskId}#${r.replica}`));
+  const errored = (p) => p.active.isError || p.passive.isError;
+  const keepPairs = checkpointPairs.filter((p) => !(errored(p) && inRun.has(`${p.task}#${p.replica}`)));
+  const done = new Set(keepPairs.map((p) => `${p.task}#${p.replica}`));
+  return { keepPairs, toRun: runList.filter((r) => !done.has(`${r.taskId}#${r.replica}`)) };
 }
 
 // Precompute feature-centroid embeddings for keyword-unreachable sphere tasks so
@@ -220,14 +288,30 @@ async function main() {
   if (params.only.length) tasks = tasks.filter((t) => params.only.includes(t.id));
   await precomputeSeedFeatureEmbeddings(tasks);
 
+  // Checkpoint/resume: DG_AB_RESUME=1 loads the existing report, keeps its valid
+  // pairs, and re-runs only missing/errored items — a usage-limit interruption
+  // costs the interrupted pairs, not the whole batch.
+  const byId = new Map(tasks.map((t) => [t.id, t]));
+  const runList = tasks.flatMap((t) => Array.from({ length: params.replicas }, (_, i) => ({ taskId: t.id, replica: i + 1 })));
+  const resume = process.env.DG_AB_RESUME === '1';
+  const plan = resume ? planResume(runList, loadCheckpoint(params.outReport)) : { keepPairs: [], toRun: runList };
+
   console.log(`[ab-harness] ${tasks.length} task(s) x ${params.replicas} replica(s), model=${params.model}, judge=${params.judgeModel}`);
+  if (resume) console.log(`[ab-harness] resume: kept ${plan.keepPairs.length} checkpoint pair(s), ${plan.toRun.length} item(s) to run`);
   console.log(`[ab-harness] base=${params.base}`);
   console.log(`[ab-harness] prod DB=${params.dbPath}`);
 
-  const pairs = [];
+  const pairs = [...plan.keepPairs];
+  // Per-pair checkpoint: a kill, crash, or limit abort never loses completed pairs.
+  const writeCheckpoint = () => fs.writeFileSync(params.outReport, JSON.stringify(buildReport(), null, 2), 'utf8');
+  let ranCount = 0;
+  let limitStreak = 0;
   try {
-    for (const task of tasks) {
-      for (let r = 1; r <= params.replicas; r++) {
+    for (const item of plan.toRun) {
+      const task = byId.get(item.taskId);
+      const r = item.replica;
+      {
+        ranCount++;
         console.log(`\n[ab-harness] === ${task.id} replica ${r} ===`);
         console.log('  passive arm...');
         const passive = runOneArm(task, 'passive', r, params);
@@ -246,16 +330,26 @@ async function main() {
         console.log(`  -> winner=${verdict.pair_winner} consistent=${verdict.consistent} | test p=${passive.testPass} a=${active.testPass} | cons p=${passive.consistency.score}/${passive.consistency.total} a=${active.consistency.score}/${active.consistency.total} | err p=${passive.isError} a=${active.isError}`);
         pairs.push({
           task: task.id, replica: r,
+          control: task.control || undefined,
           seeded: !!(task.seedNotes && task.seedNotes.length),
           surface_warning: surfaceWarn || undefined,
           passive: { proxies: passive.proxies, testPass: passive.testPass, consistency: passive.consistency, isError: passive.isError },
           active: { proxies: active.proxies, testPass: active.testPass, consistency: active.consistency, isError: active.isError },
           verdict,
         });
-        // MAJOR-5: 0 DB changes in the first pair => likely wrong prod DB (getDbPath
+        writeCheckpoint();
+        // MAJOR-5: 0 DB changes in the first RAN pair => likely wrong prod DB (getDbPath
         // mtime mismatch); DB proxies + cleanup would be silently wrong.
-        if (pairs.length === 1 && ((passive.proxies.changeCount || 0) + (active.proxies.changeCount || 0)) === 0) {
+        if (ranCount === 1 && ((passive.proxies.changeCount || 0) + (active.proxies.changeCount || 0)) === 0) {
           console.warn('[ab-harness] WARNING: 0 DB changes in first pair — likely reading the wrong devguard.db (getDbPath mtime mismatch). DB proxies/cleanup may target the wrong DB; set DG_AB_DB explicitly.');
+        }
+        // Two consecutive pairs where BOTH arms errored is the usage-limit
+        // signature (normal failures hit one arm); stop burning the bank.
+        limitStreak = passive.isError && active.isError ? limitStreak + 1 : 0;
+        if (limitStreak >= 2) {
+          console.error('[ab-harness] ABORT: 2 consecutive pairs with both arms errored — usage limit suspected. Checkpoint saved; re-run the same command with DG_AB_RESUME=1 once the limit clears.');
+          process.exitCode = 2;
+          break;
         }
       }
     }
@@ -265,26 +359,30 @@ async function main() {
     cleanupPrefix(params.dbPath, normalizeBasePrefix(params.base));
   }
 
-  const report = {
-    meta: {
-      product: 'DevGuard',
-      experiment_type: 'A/B live claude -p (passive vs active intervention)',
-      honesty_note: 'Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.',
-      measurable_components_note: 'Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms\' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.',
-      sphere_mode_note: 'Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality.',
-      run_model: params.model, judge_model: params.judgeModel,
-      permission_mode: 'acceptEdits',
-      bias_mitigation: ['blind-judge', 'position-swap', 'code-only+strip'],
-      isolation: 'strategy-B: unique project_path per run + per-pair cleanup',
-    },
-    generated_at: new Date().toISOString(),
-    parameters: { tasks_file: params.tasksFile, n_replicas: params.replicas, only: params.only },
-    pairs,
-    summary: computeSummary(pairs),
-  };
-  fs.writeFileSync(params.outReport, JSON.stringify(report, null, 2), 'utf8');
+  // Hoisted above: writeCheckpoint() serializes this after every pair.
+  function buildReport() {
+    return {
+      meta: {
+        product: 'DevGuard',
+        experiment_type: 'A/B live claude -p (passive vs active intervention)',
+        honesty_note: 'Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.',
+        measurable_components_note: 'Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms\' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.',
+        sphere_mode_note: 'Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality. Exception: on control:"misleading" tasks the seeded decisions are stale by construction and the consistency checker scores adherence to the CURRENT prompt spec — higher = resisted the note.',
+        negative_controls_note: 'Control tasks (pairs[].control) measure harm/noise, not benefit: "irrelevant" seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), "misleading" seeds a note contradicting the prompt\'s current spec (following it is a consistency FAIL), "none" seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only (small n, forced-choice judging; stripMarkers may also remove note-echo evidence, biasing controls toward tie). For irrelevant/none controls the consistency score is only a spontaneous-adherence baseline to the reused fixture\'s hidden conventions (neither arm was told them) — it measures resistance to nothing.',
+        run_model: params.model, judge_model: params.judgeModel,
+        permission_mode: 'acceptEdits',
+        bias_mitigation: ['blind-judge', 'position-swap', 'code-only+strip'],
+        isolation: 'strategy-B: unique project_path per run + per-pair cleanup',
+      },
+      generated_at: new Date().toISOString(),
+      parameters: { tasks_file: params.tasksFile, n_replicas: params.replicas, only: params.only, resumed: resume || undefined },
+      pairs,
+      summary: computeSummary(pairs),
+    };
+  }
+  writeCheckpoint();
   console.log(`\n[ab-harness] report -> ${params.outReport}`);
-  console.log('[ab-harness] summary:', JSON.stringify(report.summary, null, 2));
+  console.log('[ab-harness] summary:', JSON.stringify(computeSummary(pairs), null, 2));
 }
 
 function normalizeBasePrefix(base) {
@@ -293,4 +391,4 @@ function normalizeBasePrefix(base) {
 
 if (require.main === module) main().catch((e) => { console.error(e); process.exit(1); });
 
-module.exports = { parseArgs, computeSummary, wilson, combinedCode, escapeLikePrefix, sphereSurfaceWarning };
+module.exports = { parseArgs, computeSummary, wilson, combinedCode, escapeLikePrefix, sphereSurfaceWarning, loadCheckpoint, planResume, bothArmsErrored };

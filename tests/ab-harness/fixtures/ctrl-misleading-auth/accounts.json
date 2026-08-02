@@ -1,0 +1,5 @@
+[
+  { "username": "alice", "passwordHash": "576e9682d8ac48cfdda038e0325b6004bc5502ee792effe92962c793d4b38eab" },
+  { "username": "bob", "passwordHash": "376d5ddd292cfee269ecf5f684a811dbe8967c876d14e30875ce433904ccad73" },
+  { "username": "carol", "passwordHash": "9fad442b7dae145c57a0cf437d9c37786d1dac2bba8c4971ac02142873e33b92" }
+]

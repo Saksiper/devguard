@@ -1,0 +1,1234 @@
+{
+  "meta": {
+    "product": "DevGuard",
+    "experiment_type": "A/B live claude -p (passive vs active intervention)",
+    "honesty_note": "Proves output-quality effect of DevGuard intervention via blind pairwise judge. Not a substitute for real long-horizon usage.",
+    "measurable_components_note": "Cycle-mode tasks measure pre-edit cycle warnings (in-session history). Sphere-mode tasks seed a prior feature note into BOTH arms' DB rows, so the sphere read-gate is exercised; only the active arm has it surfaced.",
+    "sphere_mode_note": "Sphere tasks measure decision-consistency transport (the memory channel): adherence to seeded prior decisions (consistency score) plus blind quality judgment with the decisions given to the judge as neutral project context. Not a proxy for general coding quality. Exception: on control:\"misleading\" tasks the seeded decisions are stale by construction and the consistency checker scores adherence to the CURRENT prompt spec — higher = resisted the note.",
+    "negative_controls_note": "Control tasks (pairs[].control) measure harm/noise, not benefit: \"irrelevant\" seeds an off-topic note that still surfaces (deltas = noise cost; no active advantage expected), \"misleading\" seeds a note contradicting the prompt's current spec (following it is a consistency FAIL), \"none\" seeds nothing (pure hook overhead). Controls are excluded from the headline win rate; see summary.controls. Judge outcomes on controls are descriptive only (small n, forced-choice judging; stripMarkers may also remove note-echo evidence, biasing controls toward tie). For irrelevant/none controls the consistency score is only a spontaneous-adherence baseline to the reused fixture's hidden conventions (neither arm was told them) — it measures resistance to nothing.",
+    "run_model": "opus",
+    "judge_model": "opus",
+    "permission_mode": "acceptEdits",
+    "bias_mitigation": [
+      "blind-judge",
+      "position-swap",
+      "code-only+strip"
+    ],
+    "isolation": "strategy-B: unique project_path per run + per-pair cleanup"
+  },
+  "generated_at": "2026-08-01T14:42:34.446Z",
+  "parameters": {
+    "tasks_file": "C:\\Users\\umut_\\OneDrive\\Desktop\\Projeler\\devguard\\tests\\ab-harness\\tasks.json",
+    "n_replicas": 2,
+    "only": [
+      "ctrl-irrelevant-filter",
+      "ctrl-irrelevant-search",
+      "ctrl-irrelevant-auth",
+      "ctrl-none-filter",
+      "ctrl-none-search",
+      "ctrl-misleading-filter",
+      "ctrl-misleading-search",
+      "ctrl-misleading-auth"
+    ]
+  },
+  "pairs": [
+    {
+      "task": "ctrl-irrelevant-filter",
+      "replica": 1,
+      "control": "irrelevant",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.48909400000000003,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "complied": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.5339435,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "tie",
+          "reason": "Both files implement identical filter semantics (nullish-guarded status/from/to/title with AND composition and inclusive bounds) with equivalent clarity; B's extra `criteria || {}` is dead after the default parameter for `null` only, a negligible difference.",
+          "confidence": 0.82,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "tie",
+          "reason": "Both files implement identical, correct filter semantics (nullish-guarded AND combination, exact status, inclusive ts bounds, substring title) with equivalent clarity; A's extra `criteria || {}` guard only covers an explicit `null` argument and is too marginal to decide the comparison.",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "tie",
+        "consistent": true
+      }
+    },
+    {
+      "task": "ctrl-irrelevant-filter",
+      "replica": 2,
+      "control": "irrelevant",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.5153915,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.5008365,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "",
+          "confidence": null,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Both implement the semantics correctly, but A's `!== undefined` guards handle a `null` criteria value as an intentional filter rather than silently ignoring it (B's `== null` treats `{status: null}` as absent), and A's early-return structure is clearer to extend, while B's extra `|| {}` after a default parameter is redundant.",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "active",
+        "consistent": true
+      }
+    },
+    {
+      "task": "ctrl-irrelevant-search",
+      "replica": 1,
+      "control": "irrelevant",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 8,
+          "costUsd": 0.5087505,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 2,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": true,
+            "C3": false
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 PASS\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "surfaced": 1
+          },
+          "numTurns": 6,
+          "costUsd": 0.5362450000000001,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 1,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "A",
+          "reason": "A handles a non-array `notes` input and implements order-independent multi-term AND matching over title+body, which is more sensible search behavior than B's single literal-phrase substring, while matching B on case-insensitivity, empty/whitespace query, and copy-on-return semantics.",
+          "confidence": 0.66,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "A",
+          "reason": "Solution A's single-field substring matching is simpler and avoids B's cross-field concatenation, which produces false positives by matching a term that spans the title/body boundary, though B's array guard and multi-term AND are reasonable touches.",
+          "confidence": 0.55,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "tie",
+        "consistent": false
+      }
+    },
+    {
+      "task": "ctrl-irrelevant-search",
+      "replica": 2,
+      "control": "irrelevant",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 6,
+          "costUsd": 0.47345550000000003,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 1,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "surfaced": 1
+          },
+          "numTurns": 7,
+          "costUsd": 0.542875,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 2,
+          "total": 3,
+          "checks": {
+            "C1": true,
+            "C2": false,
+            "C3": true
+          },
+          "output": "CHECK C1 PASS\nCHECK C2 FAIL\nCHECK C3 PASS\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "A",
+          "reason": "A returns all notes for an empty/whitespace query and guards against non-array input and null notes, whereas B returns an empty array for an empty query (a less sensible, arguably wrong no-match semantic) and throws on non-array input or null entries.",
+          "confidence": 0.78,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "B",
+          "reason": "B is more robust and better-specified: it guards against a non-array `notes` input and per-note null/undefined entries, and returns a defensive copy of all notes for an empty query (a more sensible semantic than A's empty-result behavior, which silently hides all data).",
+          "confidence": 0.68,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "passive",
+        "consistent": true
+      }
+    },
+    {
+      "task": "ctrl-irrelevant-auth",
+      "replica": 1,
+      "control": "irrelevant",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 2,
+          "distinctFilesEdited": 2,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 10,
+          "costUsd": 1.4011345000000002,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 1,
+          "distinctFilesEdited": 1,
+          "sameFileEditsMax": 1,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "complied": 1,
+            "layered": 1,
+            "surfaced": 1
+          },
+          "numTurns": 9,
+          "costUsd": 0.91758,
+          "isError": false
+        },
+        "testPass": true,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": false
+      },
+      "verdict": {
+        "round1": {
+          "winner": "B",
+          "reason": "B is functionally equivalent to A but adds an input type guard so non-string arguments return null instead of risking a hashPassword throw, making it marginally more robust with no cost in clarity.",
+          "confidence": 0.62,
+          "armAtA": "passive",
+          "armAtB": "active"
+        },
+        "round2": {
+          "winner": "tie",
+          "reason": "",
+          "confidence": null,
+          "armAtA": "active",
+          "armAtB": "passive"
+        },
+        "pair_winner": "tie",
+        "consistent": false
+      }
+    },
+    {
+      "task": "ctrl-irrelevant-auth",
+      "replica": 2,
+      "control": "irrelevant",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-none-filter",
+      "replica": 1,
+      "control": "none",
+      "seeded": false,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-none-filter",
+      "replica": 2,
+      "control": "none",
+      "seeded": false,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-none-search",
+      "replica": 1,
+      "control": "none",
+      "seeded": false,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-none-search",
+      "replica": 2,
+      "control": "none",
+      "seeded": false,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-misleading-filter",
+      "replica": 1,
+      "control": "misleading",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-misleading-filter",
+      "replica": 2,
+      "control": "misleading",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-misleading-search",
+      "replica": 1,
+      "control": "misleading",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-misleading-search",
+      "replica": 2,
+      "control": "misleading",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-misleading-auth",
+      "replica": 1,
+      "control": "misleading",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    },
+    {
+      "task": "ctrl-misleading-auth",
+      "replica": 2,
+      "control": "misleading",
+      "seeded": true,
+      "passive": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {},
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "active": {
+        "proxies": {
+          "changeCount": 0,
+          "distinctFilesEdited": 0,
+          "sameFileEditsMax": 0,
+          "cycleWarnCount": 0,
+          "noteEvents": {
+            "ignored": 1,
+            "surfaced": 1
+          },
+          "numTurns": 1,
+          "costUsd": 0,
+          "isError": true
+        },
+        "testPass": false,
+        "consistency": {
+          "score": 0,
+          "total": 3,
+          "checks": {
+            "C1": false,
+            "C2": false,
+            "C3": false
+          },
+          "output": "CHECK C1 FAIL\nCHECK C2 FAIL\nCHECK C3 FAIL\n"
+        },
+        "isError": true
+      },
+      "verdict": {
+        "pair_winner": "tie",
+        "consistent": false,
+        "round1": null,
+        "round2": null,
+        "skipped": "arm errored/timed out"
+      }
+    }
+  ],
+  "summary": {
+    "total_pairs": 16,
+    "active_wins": 0,
+    "passive_wins": 0,
+    "ties": 0,
+    "inconsistent": 0,
+    "errored_pairs": 11,
+    "active_win_rate": null,
+    "active_win_rate_ci_wilson": [
+      0,
+      0
+    ],
+    "valid_pairs": 0,
+    "test_pass_rate": {
+      "active": null,
+      "passive": null
+    },
+    "proxy_means": {
+      "cycleWarn": {
+        "active": null,
+        "passive": null
+      },
+      "changeCount": {
+        "active": null,
+        "passive": null
+      },
+      "sameFileMax": {
+        "active": null,
+        "passive": null
+      },
+      "numTurns": {
+        "active": null,
+        "passive": null
+      }
+    },
+    "consistency": {
+      "active": null,
+      "passive": null
+    },
+    "surfaced": {
+      "active": null,
+      "passive": null
+    },
+    "control_pairs": 16,
+    "control_errored_pairs": 11,
+    "controls": {
+      "irrelevant": {
+        "pairs": 5,
+        "errored": 1,
+        "active_wins": 1,
+        "passive_wins": 1,
+        "ties": 3,
+        "inconsistent": 2,
+        "numTurns": {
+          "active": 6.8,
+          "passive": 7.2
+        },
+        "costUsd": {
+          "active": 0.606,
+          "passive": 0.678
+        },
+        "testPass": {
+          "active": 1,
+          "passive": 1
+        },
+        "consistency": {
+          "active": 0.6,
+          "passive": 0.6
+        },
+        "surfaced": {
+          "active": 1,
+          "passive": 0
+        }
+      },
+      "none": {
+        "pairs": 0,
+        "errored": 4,
+        "active_wins": 0,
+        "passive_wins": 0,
+        "ties": 0,
+        "inconsistent": 0,
+        "numTurns": {
+          "active": null,
+          "passive": null
+        },
+        "costUsd": {
+          "active": null,
+          "passive": null
+        },
+        "testPass": {
+          "active": null,
+          "passive": null
+        },
+        "consistency": {
+          "active": null,
+          "passive": null
+        },
+        "surfaced": {
+          "active": null,
+          "passive": null
+        }
+      },
+      "misleading": {
+        "pairs": 0,
+        "errored": 6,
+        "active_wins": 0,
+        "passive_wins": 0,
+        "ties": 0,
+        "inconsistent": 0,
+        "numTurns": {
+          "active": null,
+          "passive": null
+        },
+        "costUsd": {
+          "active": null,
+          "passive": null
+        },
+        "testPass": {
+          "active": null,
+          "passive": null
+        },
+        "consistency": {
+          "active": null,
+          "passive": null
+        },
+        "surfaced": {
+          "active": null,
+          "passive": null
+        }
+      }
+    }
+  }
+}

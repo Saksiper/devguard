@@ -974,6 +974,182 @@
         "rubric": "Project context: this codebase has established answer-checking decisions — comparison is case-insensitive and trims surrounding whitespace, and a blank/whitespace-only answer is 'unanswered' (never 'wrong'). Consistency with these decisions is a primary quality criterion, alongside correctness and clarity."
       },
       "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-irrelevant-filter",
+      "name": "NEGATIVE CONTROL (irrelevant note): habit-log filter with an off-topic CSV-export note",
+      "mode": "control",
+      "control": "irrelevant",
+      "fixtureDir": "fixtures/sphere-filter",
+      "entryFiles": ["filter.js", "habits.js"],
+      "prompt": "This small habit-log module (habits.js) stores entries of shape { id, title, ts, status } where ts is an epoch-milliseconds timestamp and status is 'active' | 'done' | 'skipped'. Add a filter feature: implement filterEntries(entries, criteria) in a new file filter.js, where criteria may contain status (exact match), from and to (timestamp bounds on entry.ts), and title (substring match on entry.title). Criteria fields combine with AND; missing fields are ignored. Export filterEntries from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "data/csv-dump",
+          "file": "habits.js",
+          "seedFeatureText": "filter habit log entries by status, time range and title",
+          "text": "Established export decisions: CSV exports use SEMICOLON delimiters (comma-delimited output broke Excel imports for EU-locale users); dates are written as ISO-8601 strings, never raw numeric values (spreadsheets rendered them as scientific notation); the header row always uses lowercase column names (a mixed-case header silently broke the reporting importer's column lookup)."
+        }
+      ],
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness of the requested filter semantics (status exact match, from/to bounds on entry.ts, title substring match, AND combination, missing fields ignored), edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-irrelevant-search",
+      "name": "NEGATIVE CONTROL (irrelevant note): notes search with an off-topic backup-rotation note",
+      "mode": "control",
+      "control": "irrelevant",
+      "fixtureDir": "fixtures/sphere-search",
+      "entryFiles": ["search.js", "notes.js"],
+      "prompt": "This small notes module (notes.js) stores notes of shape { id, title, body, ts } where ts is an epoch-milliseconds timestamp. Add a search feature: implement searchNotes(notes, query) in a new file search.js, returning the notes that match the query. Export searchNotes from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "infra/backup",
+          "file": "notes.js",
+          "seedFeatureText": "search notes by words appearing in the note title",
+          "text": "Established backup decisions: nightly backups are written as YYYYMMDD-stamped .bak files and pruned to the 14 most recent (disk filled up on small installs before pruning existed); the dump is written to a temp path then renamed atomically (a crash mid-write once corrupted the newest backup); restores never run automatically — the CLI demands an explicit --restore flag (an auto-restore once clobbered fresher data)."
+        }
+      ],
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness of the requested search behavior, sensible matching and result construction, edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-irrelevant-auth",
+      "name": "NEGATIVE CONTROL (irrelevant note): login with an off-topic CLI-theme note",
+      "mode": "control",
+      "control": "irrelevant",
+      "fixtureDir": "fixtures/sphere-auth",
+      "entryFiles": ["auth.js", "users.js"],
+      "prompt": "This project has an existing user store: users.js loads users.json and exposes findUser(username) and hashPassword(password) (sha256 hex). Add a login feature: implement login(username, password) in a new file auth.js, verifying the password against the stored hash and returning a session token on success. Export login from auth.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/theme",
+          "file": "users.js",
+          "seedFeatureText": "log a user in by verifying a password and returning a session token",
+          "text": "Established theme decisions: colored output honors the NO_COLOR environment variable and falls back to plain text (colored escapes broke log scraping in CI); the default look is light with an opt-in --dark flag (dark-by-default was reverted after readability complaints on pale terminals); accent colors are configured as hex strings in settings, not ANSI indexes (indexes rendered differently across emulators)."
+        }
+      ],
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness of the requested login flow (password verification against the stored hash, a session token returned on success, failures handled sensibly), edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-none-filter",
+      "name": "NEGATIVE CONTROL (no note): todo filter with hooks on and an empty memory",
+      "mode": "control",
+      "control": "none",
+      "fixtureDir": "fixtures/sphere-filter-todos",
+      "entryFiles": ["filter.js", "todos.js"],
+      "prompt": "Add a filter feature to this small todo-list module (todos.js), which stores todos of shape { id, title, done, priority, due } where done is a boolean, priority is an integer from 1 (highest) to 3 (lowest), and due is either an epoch-milliseconds timestamp or null when no due date is set. Implement filterTodos(todos, criteria) in a new file filter.js, where criteria may contain done (boolean exact match), dueBefore (a timestamp bound), and title (a partial text match against entry.title). Criteria fields combine with AND; missing fields are ignored. Export filterTodos from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness of the requested filter semantics (done exact match, dueBefore bound, title partial match, AND combination, missing fields ignored), edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-none-search",
+      "name": "NEGATIVE CONTROL (no note): recipe search with hooks on and an empty memory",
+      "mode": "control",
+      "control": "none",
+      "fixtureDir": "fixtures/sphere-search-recipes",
+      "entryFiles": ["search.js", "recipes.js"],
+      "prompt": "Add a search feature to this small recipes module (recipes.js), which stores recipes of shape { id, title, ingredients }. Implement searchRecipes(recipes, query) in a new file search.js, returning the recipes that match query. Export searchRecipes from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness of the requested search behavior, edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-misleading-filter",
+      "name": "NEGATIVE CONTROL (misleading note): event filter whose seeded decisions were superseded",
+      "mode": "sphere",
+      "control": "misleading",
+      "fixtureDir": "fixtures/ctrl-misleading-filter",
+      "entryFiles": ["filter.js", "events.js"],
+      "prompt": "Add a filter feature to this calendar events module: events.js stores events of shape { id, title, startTs, endTs, cancelled } where startTs and endTs are epoch-millisecond timestamps and cancelled is a boolean. Implement filterEvents(events, criteria) in a new file filter.js, where criteria may contain from and to (bounds on when an event STARTS: an event matches only if it starts inside the window, from <= startTs < to) and title (substring match on event.title). Criteria fields combine with AND; missing fields are ignored. Cancelled events are treated like any other event — the new agenda view renders them struck-through, so they must be INCLUDED in results. Results are returned sorted DESCENDING by event.startTs (newest first). Note: these requirements changed recently — the old overlap-based window matching, the old cancelled-event exclusion, and the old ascending sort were all superseded by the current spec above. Export filterEvents from filter.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/filter",
+          "file": "events.js",
+          "seedFeatureText": "filter calendar events by time window and title",
+          "text": "Established filter decisions: the from/to window uses OVERLAP semantics — an event matches if it overlaps the window at all (startTs < to AND endTs > from), not just if it starts inside it; a starts-inside-only version was fixed after it silently dropped events that were already in progress when the window began. Cancelled events are excluded from results by default unless criteria.includeCancelled === true; an earlier version that always returned cancelled events was reverted because the day view was showing meetings users had explicitly cancelled. Results are returned sorted ascending by event.startTs; a version that preserved insertion order instead was replaced because the calendar view renders events chronologically and depends on that order."
+        }
+      ],
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness against the current requirements stated in the task — the from/to window matches only events that START inside it (from <= startTs < to), cancelled events are included in results, results are sorted descending by startTs, title is a substring match, criteria combine with AND and missing fields are ignored — plus edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-misleading-search",
+      "name": "NEGATIVE CONTROL (misleading note): docs search whose seeded decisions were superseded",
+      "mode": "sphere",
+      "control": "misleading",
+      "fixtureDir": "fixtures/ctrl-misleading-search",
+      "entryFiles": ["search.js", "docs.js"],
+      "prompt": "Add a search feature to this project's existing docs module: docs.js stores markdown docs of shape { id, title, headings }, where headings is an array of heading-text strings. Implement searchDocs(docs, query) in a new file search.js, returning the docs that match the query. A word matches a doc if it appears as a substring of the title or of any heading. A query with multiple words matches only docs where EVERY word matches (AND across words). A leading '#' on the query is stripped and the remainder is searched normally — the heading browser was retired, so '#' is no longer special. An empty or whitespace-only query returns ALL docs (the browser now shows the full list by default). Note: these requirements changed recently — the old headings-only '#' mode, the old OR-across-words matching, and the old empty-query-returns-nothing rule were all superseded by the current spec above. Export searchDocs from search.js. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "ui_ux/search",
+          "file": "docs.js",
+          "seedFeatureText": "search markdown docs by words in the title and headings",
+          "text": "Established search decisions: a query starting with '#' searches HEADINGS ONLY — e.g. '#setup' matches docs with a 'setup' heading (this was fixed after '#tag'-style queries wrongly matched on the title too); a plain query with multiple words uses OR-ACROSS-WORDS semantics — it matches a doc if ANY word in the query matches the title or a heading, not only when EVERY word matches (an earlier AND-across-words version made users miss docs whenever they added one extra, more specific word alongside a word that did not appear verbatim); an empty or whitespace-only query returns an empty array, not all docs — a version that fell through to 'return all' was reverted because the doc browser rendered every doc as a false 'match'."
+        }
+      ],
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness against the current requirements stated in the task — every query word must match the title or a heading (AND across words), a leading '#' is stripped and searched normally, an empty or whitespace-only query returns all docs — plus edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
+    },
+    {
+      "id": "ctrl-misleading-auth",
+      "name": "NEGATIVE CONTROL (misleading note): session login whose seeded decisions were superseded",
+      "mode": "sphere",
+      "control": "misleading",
+      "fixtureDir": "fixtures/ctrl-misleading-auth",
+      "entryFiles": ["auth.js", "accounts.js"],
+      "prompt": "Login support needs to be added to this small account system. accounts.js already loads a JSON list of accounts (each { username, passwordHash }, the hash being sha256 hex) and exposes findAccount(username) and hashPassword(password). Implement login(username, password) and isValid(token) together in a new file named auth.js, exporting both functions: login returns a session record { token, expiresAt } on success (expiresAt marks the moment the session stops being valid) or a falsy value on failure, and isValid(token) returns true or false for whether a token currently identifies a valid session. Current requirements from this quarter's security review: tokens are formatted as 'sid_' followed by 64 hex characters from crypto.randomBytes(32); sessions expire exactly 5 minutes after issuance; concurrent sessions are allowed — logging in again as the same user must NOT invalidate previously issued tokens (multi-device support). Note: these requirements changed recently — the old 'tk.' token format, the old 30-minute expiry, and the old single-active-session rule were all superseded by the current spec above. After implementing, verify the behavior by writing and running a small check; iterate until it is correct.",
+      "seedNotes": [
+        {
+          "nodeId": "security/auth",
+          "file": "accounts.js",
+          "seedFeatureText": "log an account in and validate session tokens",
+          "text": "Established session decisions: tokens are formatted as 'tk.' followed by exactly 32 lowercase alphanumeric characters (an earlier UUID-based token was replaced because the API gateway's request parser expects this exact shape and rejected anything else); sessions expire exactly 30 minutes after issuance (a longer default was reverted after it left stale sessions active well past the security review's window); logging in again as the same user invalidates any previous session token so only one session stays active per account (concurrent sessions were removed after they caused stale-cart bugs when two tabs held different tokens for the same account)."
+        }
+      ],
+      "allowedTools": ["Read", "Edit", "Write", "Bash"],
+      "test": { "cmd": "node test.js", "file": "test.js" },
+      "consistencyTest": { "cmd": "node consistency.js", "file": "consistency.js" },
+      "judge": {
+        "rubric": "Quality criteria: correctness against the current requirements stated in the task — tokens are 'sid_' plus 64 hex characters from crypto.randomBytes(32), sessions expire 5 minutes after issuance, and concurrent sessions are allowed (a new login must not invalidate previously issued tokens) — plus correctness of the login flow, edge-case handling, robustness, and clarity."
+      },
+      "timeoutMs": 360000
     }
   ]
 }
