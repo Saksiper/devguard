@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Saksiper/devguard/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Saksiper/devguard/ci.yml?style=flat-square&label=CI&logo=github" alt="CI" /></a>
-  <img src="https://img.shields.io/badge/tests-1389-brightgreen?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-1483-brightgreen?style=flat-square" alt="Tests" />
   <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" />
   <img src="https://img.shields.io/badge/node-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node" />
   <img src="https://img.shields.io/badge/Claude_Code-plugin-7c3aed?style=flat-square" alt="Claude Code Plugin" />
