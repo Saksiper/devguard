@@ -31,6 +31,17 @@ function freshDb() {
   return proxy;
 }
 
+// insertErrorOutput takes no timestamp (DB default), so age it in place.
+function ageErrorRows(sessionId, minutesAgo) {
+  const Database = require('better-sqlite3');
+  const handle = new Database(path.join(tmpDir, 'devguard.db'));
+  const ts = new Date(Date.now() - minutesAgo * 60000)
+    .toISOString().replace('T', ' ').slice(0, 19);
+  handle.prepare('UPDATE error_outputs SET timestamp = ? WHERE session_id = ?')
+    .run(ts, sessionId);
+  handle.close();
+}
+
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'devguard-pc-test-'));
   process.env.CLAUDE_PLUGIN_DATA = tmpDir;
@@ -86,6 +97,49 @@ describe('post-compact.js — buildSummary', () => {
     const summary = buildSummary(proxy, 'test-session');
     expect(summary).toContain('TypeError');
     expect(summary).toContain('Last error');
+  });
+
+  it('shows the error age and repeat count, not a raw prefix', () => {
+    const proxy = freshDb();
+    const { buildSummary } = loadPostCompact();
+    for (let i = 0; i < 2; i++) {
+      proxy.insertErrorOutput({
+        error_string: 'banner line\nTypeError: Cannot read property of null\n    at foo',
+        error_hash: 'samehash',
+        session_id: 'test-session',
+      });
+    }
+    const summary = buildSummary(proxy, 'test-session');
+    expect(summary).toContain('TypeError: Cannot read property of null');
+    expect(summary).toContain('2x');
+    expect(summary).toMatch(/Last error \(/);
+    // The stdout banner must not be what the reader sees.
+    expect(summary).not.toContain('banner line');
+  });
+
+  it('omits a stale error: the measured KOAV case (3 days old)', () => {
+    const proxy = freshDb();
+    const { buildSummary } = loadPostCompact();
+    proxy.insertErrorOutput({
+      error_string: 'SyntaxError: Invalid or unexpected token',
+      error_hash: 'stale1',
+      session_id: 'test-session',
+    });
+    ageErrorRows('test-session', 3 * 24 * 60);
+    const summary = buildSummary(proxy, 'test-session');
+    expect(summary === null || !summary.includes('Last error')).toBe(true);
+  });
+
+  it('omits an error with no recognizable failure line', () => {
+    const proxy = freshDb();
+    const { buildSummary } = loadPostCompact();
+    proxy.insertErrorOutput({
+      error_string: '--- MEMORY.md ---',
+      error_hash: 'noise1',
+      session_id: 'test-session',
+    });
+    const summary = buildSummary(proxy, 'test-session');
+    expect(summary === null || !summary.includes('Last error')).toBe(true);
   });
 
   it('includes repeated file edits in summary', () => {

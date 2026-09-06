@@ -2,6 +2,7 @@
 
 const { debugLog } = require('./debug-log');
 const { buildContextSummary } = require('./context-summarizer');
+const { extractErrorEssence } = require('./error-digest');
 
 const MAX_DESC_LEN = 80;
 const MAX_ERROR_LEN = 150;
@@ -36,7 +37,13 @@ function buildErrorHashSection(db, sessionId, result) {
     const errors = db.getErrorOutputs({ session_id: sessionId, error_hash: firstHash, limit: 5 });
     if (errors.length === 0) return result.message;
 
-    const errorPreview = truncate(errors[0].error_string, MAX_ERROR_LEN) || 'unknown error';
+    // The failure line lives at the END of a failed command's output; truncating
+    // from the front showed tool banners instead of the cause. Fall back to the
+    // raw preview when nothing matches — unlike the session summary, this section
+    // is already anchored to a CONFIRMED repeat, so it stays useful either way.
+    const errorPreview = extractErrorEssence(errors[0].error_string)
+      || truncate(errors[0].error_string, MAX_ERROR_LEN)
+      || 'unknown error';
     const lines = [`Recurring error:`];
     lines.push(`This error (${errorPreview}) occurred ${matches.length} times.`);
 
