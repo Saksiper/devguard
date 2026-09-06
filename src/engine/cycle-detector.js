@@ -2,6 +2,7 @@
 
 const { debugLog } = require('./debug-log');
 const { getAdaptiveMinOccurrences, getSubcategory } = require('./adaptive-threshold');
+const { isErrorFresh } = require('./error-digest');
 
 const SKIP = { decision: 'skip', level: 0, type: null, confidence: 0, matches: [], message: '' };
 
@@ -39,6 +40,17 @@ function checkErrorHash(db, sessionId, config) {
 
   const hash = recent[0].error_hash;
   if (!hash) return SKIP;
+
+  // Sessions can live for days (measured: one ran 2026-09-02 -> 09-06 across three
+  // resumes). Without an age gate the newest row is treated as "the error we are
+  // stuck on" no matter how old it is, so a days-old failure keeps re-arming this
+  // detector against work it has nothing to do with.
+  if (!isErrorFresh(recent[0].timestamp)) {
+    debugLog('cycle-detector', 'checkErrorHash: latest error is stale, skipping', {
+      hash: hash.substring(0, 8), timestamp: recent[0].timestamp,
+    });
+    return SKIP;
+  }
 
   const all = db.getErrorOutputs({ session_id: sessionId, error_hash: hash });
   const count = all.length;

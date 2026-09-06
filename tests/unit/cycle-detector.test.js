@@ -28,6 +28,17 @@ const DEFAULT_CONFIG = {
   max_entries: 10000,
 };
 
+// insertErrorOutput takes no timestamp (DB default), so age it in place.
+function ageErrorRows(sessionId, minutesAgo) {
+  const Database = require('better-sqlite3');
+  const handle = new Database(path.join(tmpDir, 'devguard.db'));
+  const ts = new Date(Date.now() - minutesAgo * 60000)
+    .toISOString().replace('T', ' ').slice(0, 19);
+  handle.prepare('UPDATE error_outputs SET timestamp = ? WHERE session_id = ?')
+    .run(ts, sessionId);
+  handle.close();
+}
+
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'devguard-cycle-test-'));
   process.env.CLAUDE_PLUGIN_DATA = tmpDir;
@@ -145,6 +156,31 @@ describe('checkErrorHash', () => {
     const result = cd.checkErrorHash(proxy, 'sess-1', DEFAULT_CONFIG);
     expect(result.decision).toBe('warn');
     expect(result.level).toBe(1);
+  });
+
+  it('returns skip when the latest error is stale (measured: 4-day session, 3-day-old error)', () => {
+    const { db, cd } = loadModules();
+    const proxy = db.getDb('/test/project');
+    proxy.insertSession('sess-1');
+    for (let i = 0; i < 3; i++) {
+      proxy.insertErrorOutput({ error_string: 'fail', error_hash: 'hash-abc', session_id: 'sess-1' });
+    }
+    // Same rows that warn above — only their age changes.
+    ageErrorRows('sess-1', 3 * 24 * 60);
+    const result = cd.checkErrorHash(proxy, 'sess-1', DEFAULT_CONFIG);
+    expect(result.decision).toBe('skip');
+  });
+
+  it('still warns for a recent error just inside the age window', () => {
+    const { db, cd } = loadModules();
+    const proxy = db.getDb('/test/project');
+    proxy.insertSession('sess-1');
+    for (let i = 0; i < 2; i++) {
+      proxy.insertErrorOutput({ error_string: 'fail', error_hash: 'hash-abc', session_id: 'sess-1' });
+    }
+    ageErrorRows('sess-1', 30);
+    const result = cd.checkErrorHash(proxy, 'sess-1', DEFAULT_CONFIG);
+    expect(result.decision).toBe('warn');
   });
 
   it('returns warn (not block) when error hash appears 3+ times', () => {

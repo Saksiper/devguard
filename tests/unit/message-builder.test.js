@@ -62,6 +62,42 @@ describe('formatTime', () => {
 // buildFileMatchSection removed in v0.2.2 — see [[file_match useless]] memory.
 
 describe('buildErrorHashSection', () => {
+  it('shows the failure line, not the stdout banner that precedes it', () => {
+    // Measured on real rows: the cause sits at the END of a failed command's
+    // output, so truncating from the front surfaced tool banners instead.
+    const noisy = [
+      '9.7.1 dist/index.umd.cjs ./dist/index.mjs',
+      '    at build (file:///C:/tmp/x.mjs:20:18)',
+      "TypeError: Cannot read properties of undefined (reading 'slice')",
+      '',
+      'Node.js v24.12.0',
+    ].join('\n');
+    const db = makeDb({
+      getErrorOutputs: () => [{ id: 1, error_string: noisy, change_id: null, timestamp: '2026-09-06T10:00:00Z' }],
+    });
+    const result = {
+      type: 'error_hash',
+      matches: [{ id: 1, error_hash: 'abc12345', timestamp: '2026-09-06T10:00:00Z' }],
+      message: 'fallback',
+    };
+    const section = buildErrorHashSection(db, 'sess', result);
+    expect(section).toContain("TypeError: Cannot read properties of undefined (reading 'slice')");
+    expect(section).not.toContain('9.7.1 dist/index.umd.cjs');
+  });
+
+  it('falls back to the raw preview when no failure line is recognizable', () => {
+    const db = makeDb({
+      getErrorOutputs: () => [{ id: 1, error_string: 'weird tool output', change_id: null, timestamp: '2026-09-06T10:00:00Z' }],
+    });
+    const result = {
+      type: 'error_hash',
+      matches: [{ id: 1, error_hash: 'abc12345', timestamp: '2026-09-06T10:00:00Z' }],
+      message: 'fallback',
+    };
+    const section = buildErrorHashSection(db, 'sess', result);
+    expect(section).toContain('weird tool output');
+  });
+
   it('builds rich message with error details', () => {
     const db = makeDb({
       getErrorOutputs: () => [

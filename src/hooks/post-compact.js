@@ -5,18 +5,14 @@ const path = require('path');
 const { readInput, respond } = require('../engine/hook-io');
 const { debugLog, createTimer } = require('../engine/debug-log');
 const { getDb, closeDb } = require('../engine/db');
+const {
+  extractErrorEssence, isErrorFresh, formatAge, parseDbTs,
+} = require('../engine/error-digest');
 
 // Nothing ever closes an issue today, so without an age window a months-old row
 // is re-injected into every session forever (measured live: a 2026-05-23
 // manual-test issue still surfacing in July).
 const SUMMARY_ISSUE_MAX_AGE_DAYS = 7;
-
-function parseDbTs(s) {
-  if (!s) return null;
-  const iso = String(s).replace(' ', 'T');
-  const d = new Date(iso.endsWith('Z') || iso.includes('+') ? iso : iso + 'Z');
-  return Number.isNaN(d.getTime()) ? null : d.getTime();
-}
 
 function buildSummary(db, sessionId) {
   const lines = ['DevGuard Session Summary:'];
@@ -49,10 +45,27 @@ function buildSummary(db, sessionId) {
     lines.push(`- Protected fixes: ${zoneList} — do not modify`);
   }
 
+  // A stale or shapeless error anchors reasoning instead of informing it. Measured
+  // 2026-09-06: a 4-day session surfaced a 3-day-old `node -e` escaping bug as its
+  // "last error", and a real diagnosis was built on it — the wrong bug got a fix
+  // while the actual one survived. The old preview also cut from the FRONT, so what
+  // showed up was the command's stdout banner, not its failure. Show the failure
+  // line with age and repeat count, or show nothing.
   const errors = db.getErrorOutputs({ session_id: sessionId, limit: 1 });
-  if (errors.length > 0 && errors[0].error_string) {
-    const errPreview = errors[0].error_string.substring(0, 100).replace(/\n/g, ' ');
-    lines.push(`- Last error: ${errPreview}`);
+  const lastError = errors[0];
+  if (lastError && lastError.error_string && isErrorFresh(lastError.timestamp)) {
+    const essence = extractErrorEssence(lastError.error_string);
+    if (essence) {
+      let count = 1;
+      try {
+        const sameHash = db.getErrorOutputs({
+          session_id: sessionId, error_hash: lastError.error_hash,
+        });
+        count = sameHash.length || 1;
+      } catch { /* non-fatal — report it as a single occurrence */ }
+      const meta = [formatAge(lastError.timestamp), `${count}x`].filter(Boolean).join(', ');
+      lines.push(`- Last error (${meta}): ${essence}`);
+    }
   }
 
   const changes = db.getChanges({ session_id: sessionId, limit: 100 });
