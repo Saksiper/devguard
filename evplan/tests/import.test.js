@@ -71,3 +71,61 @@ describe('model içe aktarma', () => {
     expect(r.passage).not.toBeNull();
   });
 });
+
+describe('model içe aktarma: antre, sürgülü kapı, ölçülmemiş alan', () => {
+  // Antre (-2.6…0) + oda (0…4). Odanın antreye cep sürgülü kapısı, antrenin daire kapısı, odanın
+  // ölçülmemiş koridora açılan kapısı. Antrenin odaya bitişik kenarı çizilmez (odanın duvarı orada).
+  const m = {
+    _meta: { name: 'T', measurement_sources: 'test.' },
+    rooms: [
+      {
+        id: 'oda',
+        name: 'Oda',
+        ceiling_height: 2.7,
+        polygon: [[0, 0], [4, 0], [4, 3], [0, 3]],
+        openings: [
+          { type: 'sürgülü kapı', label: 'Cep sürgülü kapı', edge: 3, offset_from_edge_start: 1, width: 1.36, head: 2.15, pocket: true },
+          { type: 'kapı', label: 'Kapı (koridora)', edge: 1, offset_from_edge_start: 1, width: 0.9, head: 2.1, hinge_at: 'start', swings: 'odanın içine' },
+        ],
+        radiators: [{ label: 'Petek', edge: 0, center_offset_from_edge_start: 2, width: 0.6, height: 0.6, bottom: 0.12, depth_from_wall: 0.135 }],
+      },
+      {
+        id: 'antre',
+        name: 'Antre',
+        ceiling_height: 2.6,
+        polygon: [[-2.6, 0], [-0.1, 0], [-0.1, 3], [-2.6, 3]],
+        walls_not_drawn: [1],
+        openings: [{ type: 'kapı', label: 'Giriş kapısı (çelik, kapalı)', edge: 0, offset_from_edge_start: 0.8, width: 0.95, head: 2.12, closed: true }],
+      },
+    ],
+    missing: ['Banyo / tuvalet'],
+  };
+  const { plan } = convertModel(m);
+  const door = (re) => plan.openings.find((o) => re.test(o.name));
+
+  it('cep sürgülü kapı açılma alanı olmayan kapı olur', () => {
+    const d = door(/sürgülü/);
+    expect(d).toMatchObject({ type: 'door', swing: 'none', sliding: 'pocket', width: 136 });
+    expect(buildPlanModel(plan).openings.find((o) => o.id === d.id).leaves).toEqual([]);
+  });
+
+  it('daire kapısı teslimat kapısı; ölçülmemiş alana açılan kapı ayrıca giriş', () => {
+    const giris = door(/Giriş/);
+    expect(plan.access.entranceDoor).toBe(giris.id);
+    expect(giris).toMatchObject({ closed: true, leafMaterial: 'steel', entrance: true });
+    expect(door(/koridora/).entrance).toBe(true);
+    expect(door(/sürgülü/).entrance).toBeUndefined(); // öbür yanı antre
+    const model = buildPlanModel(plan);
+    expect(model.deliveryDoor.id).toBe(giris.id);
+    expect(model.entrances.map((o) => o.id)).toEqual([giris.id, door(/koridora/).id]);
+  });
+
+  it('çizilmeyen kenar, petek çıkıntısı ve eksikler listesi', () => {
+    expect(plan.walls.some((w) => w.id === 'antre-2')).toBe(false);
+    expect(plan.walls.some((w) => w.id === 'antre-1')).toBe(true);
+    const p = plan.fixtures.find((f) => f.type === 'radiator');
+    expect(p.d + 4.5).toBeCloseTo(13.5); // duvardan toplam 13,5 cm
+    expect(plan.meta.missing).toEqual(['Banyo / tuvalet']);
+    expect(validatePlan(plan).errors).toEqual([]);
+  });
+});

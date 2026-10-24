@@ -320,3 +320,74 @@ export function buildRug(it) {
   g.add(inner);
   return done(g);
 }
+
+/** Dönen berjer: siyah yuvarlak döner taban, yuvarlatılmış gövde, kolçaklar, minder, hafif yatık sırt. */
+export function buildSwivel(it) {
+  const S = it.shape ?? {};
+  const g = new THREE.Group();
+  const f = fabric(it.color);
+  const black = matte(S.base ?? '#1c1c1e', 0.4, 0.6);
+  const W = it.w;
+  const D = it.d;
+  const A = S.armWidth ?? 15;
+  g.add(cyl(29, 30, 2, black, 0, 1, 0, 40));
+  g.add(cyl(3.5, 4.5, 19, black, 0, 11.5, 0));
+  g.add(rbox(W, 3, D, 1.2, f, 0, 22.5, 0));
+  for (const sx of [-1, 1]) g.add(rbox(A, 38, D, 3, f, sx * (W / 2 - A / 2), 43, 0));
+  g.add(rbox(W - 2 * A, 19, D - 2, 2, f, 0, 33.5, 1));
+  g.add(rbox(W - 2 * A - 1, 7, D - 22.5, 4, f, 0, 46.5, -D / 2 + 22 + (D - 22.5) / 2));
+  const back = rbox(W - 2 * A + 4, it.h - 24, 22, 5, f, 0, 24 + (it.h - 24) / 2, -D / 2 + 11);
+  back.rotation.x = -0.09;
+  g.add(back);
+  return done(g);
+}
+
+/** Tek şaseli (iki uçta panel ayaklı) yemek masası: tabla, ayak panelleri, taban ve üst kayıt. */
+export function buildTrestle(it) {
+  const g = new THREE.Group();
+  const m = wood(it.color, 120, 60);
+  const t = 3.5;
+  const inset = it.shape?.inset ?? 42;
+  g.add(rbox(it.w, t, it.d, 0.8, m, 0, it.h - t / 2, 0));
+  for (const sx of [-1, 1]) {
+    const x = sx * (it.w / 2 - inset);
+    g.add(rbox(6, it.h - t - 3, it.d - 28, 0.5, m, x, 3 + (it.h - t - 3) / 2, 0));
+    g.add(rbox(8, 3, it.d - 20, 0.6, m, x, 1.5, 0));
+  }
+  g.add(rbox(it.w - 2 * inset, 6, 5, 0.4, m, 0, 12, 0));
+  g.add(box(it.w - 2 * inset, 5.5, 4, m, 0, it.h - t - 2.75, 0));
+  return done(g);
+}
+
+/** Yuvarlak oturaklı ahşap sandalye: dört ayak, deri minder, oturağı arkadan saran kavisli sırt. */
+export function buildBentwood(it) {
+  const S = it.shape ?? {};
+  const g = new THREE.Group();
+  const m = wood(it.color, 40, 60);
+  const leather = new THREE.MeshStandardMaterial({ color: col(S.seat ?? '#6b4a33'), roughness: 0.5 });
+  const r = Math.min(it.w, it.d) / 2 - 3;
+  const sh = it.dims?.seatHeight ?? 45;
+  const lx = it.w / 2 - 13;
+  const lz = it.d / 2 - 11;
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(cyl(1.5, 1.8, sh - 4, m, sx * lx, (sh - 4) / 2, sz * lz, 14));
+  g.add(cyl(r, r, 3, m, 0, sh - 2.5, 0, 40));
+  g.add(cyl(r + 1, r + 1, 4.5, leather, 0, sh + 1.25, 0, 40));
+  // Sırt: oturağın arka yarısını saran halka dilimi; yanlarda ve arkada ince dikmeler.
+  const R = r + 3.5;
+  const shape = new THREE.Shape();
+  const a0 = Math.PI * 0.92;
+  const a1 = Math.PI * 2.08;
+  shape.absarc(0, 0, R, a0, a1, false);
+  shape.absarc(0, 0, R - 1.6, a1, a0, true);
+  const band = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: 12, bevelEnabled: false, curveSegments: 32 }), m);
+  band.rotation.x = Math.PI / 2; // şekil (x, y) → dünya (x, z); kalınlık aşağı (sin < 0 tarafı = arka)
+  band.position.y = it.h;
+  band.castShadow = band.receiveShadow = true;
+  g.add(band);
+  for (const a of [Math.PI, Math.PI * 1.25, Math.PI * 1.5, Math.PI * 1.75, Math.PI * 2]) {
+    const x = Math.cos(a) * (R - 0.8);
+    const z = Math.sin(a) * (R - 0.8); // band ile aynı yön: şekil y'si dünyada +z
+    g.add(cyl(1.1, 1.1, it.h - 12 - sh, m, x, sh + (it.h - 12 - sh) / 2, z, 10));
+  }
+  return done(g);
+}

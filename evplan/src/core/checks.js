@@ -292,15 +292,15 @@ export function runChecks(model, items, { passage = true } = {}) {
     if (it.flatpack || it.entry?.delivered) continue;
     const [a, b, c] = [it.w, it.d, it.h].sort((p, q) => p - q);
     const room = roomAt(model, [it.x, it.y]);
-    const roomDoors = room ? model.entrances.filter((d) => doorTouchesRoom(d, room)) : [];
-    const doors = [...new Set([ent, ...roomDoors].filter(Boolean))];
-    for (const d of doors) {
-      if (!fits(a, b, d))
-        push('warn', 'delivery', `${it.name} (kesit ${Math.round(a)}×${Math.round(b)} cm) ${d.name ?? d.id} (${Math.round(d.width)}×${Math.round(d.height)}) kapısından düz geçmeyebilir.`, {
-          items: [it.uid],
-          at: d.center,
-        });
-    }
+    const warnDoor = (d) =>
+      push('warn', 'delivery', `${it.name} (kesit ${Math.round(a)}×${Math.round(b)} cm) ${d.name ?? d.id} (${Math.round(d.width)}×${Math.round(d.height)}) kapısından düz geçmeyebilir.`, {
+        items: [it.uid],
+        at: d.center,
+      });
+    if (ent && !fits(a, b, ent)) warnDoor(ent);
+    // Odaya giriş: odanın camsız kapılarından en az biri yetmeli (en genişi denenir).
+    const roomDoors = room ? model.doors.filter((d) => d !== ent && !d.glazed && doorTouchesRoom(d, room)) : [];
+    if (roomDoors.length && !roomDoors.some((d) => fits(a, b, d))) warnDoor(roomDoors.reduce((p, q) => (q.width > p.width ? q : p)));
     if (lift && lift.cabinWidth) {
       const cab = [lift.cabinWidth, lift.cabinDepth, lift.cabinHeight].sort((p, q) => p - q);
       const straight = a <= cab[0] && b <= cab[1] && c <= cab[2];

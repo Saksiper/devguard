@@ -263,6 +263,551 @@
    "group": "Koltuklar"
   },
   {
+   "id": "normod-klem-2",
+   "name": "Klem ikili koltuk",
+   "brand": "Normod",
+   "category": "Gerçek ürünler",
+   "w": 198,
+   "d": 91,
+   "h": 84,
+   "color": "#a7a895",
+   "url": "https://normod.com/products/klem-ikili-koltuk-silindir-ahsap-ayak-fitilli-kadife",
+   "source": "normod.com ürün verisi (Ürün Ölçüleri, varyantlar), 25.10.2026; renkler Klem üçlüden",
+   "dims": {
+    "seatWidth": 154,
+    "seatDepth": 59,
+    "seatHeight": 43,
+    "legHeight": 16
+   },
+   "material": "Fitilli kadife, %100 polyester; masif kayın ayak",
+   "use": {
+    "front": 45
+   },
+   "options": [
+    {
+     "name": "Kumaş",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kemik",
+       "color": "#d6d5d2"
+      },
+      {
+       "name": "Sisli Yeşil",
+       "color": "#a7a895"
+      },
+      {
+       "name": "Polen Sarı",
+       "color": "#baa362"
+      },
+      {
+       "name": "Sütlü Kahve",
+       "color": "#8f7a6d"
+      },
+      {
+       "name": "Kiremit",
+       "color": "#561a11"
+      }
+     ]
+    },
+    {
+     "name": "Ayak",
+     "part": "legs",
+     "values": [
+      {
+       "name": "Açık",
+       "color": "#b5814d"
+      },
+      {
+       "name": "Koyu",
+       "color": "#493e3b"
+      },
+      {
+       "name": "Siyah",
+       "color": "#191919"
+      }
+     ]
+    },
+    {
+     "name": "Sırt Minderi",
+     "part": "backStyle",
+     "values": [
+      {
+       "name": "Rahat Dolgu",
+       "value": "soft"
+      },
+      {
+       "name": "Kalıcı Form",
+       "value": "firm"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Kumaş": "Sisli Yeşil",
+    "Ayak": "Açık",
+    "Sırt Minderi": "Kalıcı Form"
+   },
+   "variants": {
+    "Kemik / Açık / Rahat Dolgu": {
+     "id": 43056525639922,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Kemik / Açık / Kalıcı Form": {
+     "id": 44578551202034,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Kemik / Koyu / Rahat Dolgu": {
+     "id": 43056525443314,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Kemik / Koyu / Kalıcı Form": {
+     "id": 44578551234802,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Kemik / Siyah / Rahat Dolgu": {
+     "id": 43056525836530,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Kemik / Siyah / Kalıcı Form": {
+     "id": 44578551267570,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Sisli Yeşil / Açık / Rahat Dolgu": {
+     "id": 43056525672690,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Sisli Yeşil / Açık / Kalıcı Form": {
+     "id": 44578551300338,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Sisli Yeşil / Koyu / Rahat Dolgu": {
+     "id": 43056525476082,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Sisli Yeşil / Koyu / Kalıcı Form": {
+     "id": 44578551333106,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Sisli Yeşil / Siyah / Rahat Dolgu": {
+     "id": 43056525869298,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Sisli Yeşil / Siyah / Kalıcı Form": {
+     "id": 44578551365874,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Polen Sarı / Açık / Rahat Dolgu": {
+     "id": 43056525738226,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Polen Sarı / Açık / Kalıcı Form": {
+     "id": 44578551496946,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Polen Sarı / Koyu / Rahat Dolgu": {
+     "id": 43056525541618,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Polen Sarı / Koyu / Kalıcı Form": {
+     "id": 44578551529714,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Polen Sarı / Siyah / Rahat Dolgu": {
+     "id": 43056525934834,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Polen Sarı / Siyah / Kalıcı Form": {
+     "id": 44578551562482,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Sütlü Kahve / Açık / Rahat Dolgu": {
+     "id": 43056525770994,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Sütlü Kahve / Açık / Kalıcı Form": {
+     "id": 44578551595250,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Sütlü Kahve / Koyu / Rahat Dolgu": {
+     "id": 43056525574386,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Sütlü Kahve / Koyu / Kalıcı Form": {
+     "id": 44578551628018,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Sütlü Kahve / Siyah / Rahat Dolgu": {
+     "id": 43056525967602,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Sütlü Kahve / Siyah / Kalıcı Form": {
+     "id": 44578551660786,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Kiremit / Açık / Rahat Dolgu": {
+     "id": 51893030912367,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Kiremit / Açık / Kalıcı Form": {
+     "id": 51893030945135,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Kiremit / Koyu / Rahat Dolgu": {
+     "id": 51893030977903,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Kiremit / Koyu / Kalıcı Form": {
+     "id": 51893031010671,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    },
+    "Kiremit / Siyah / Rahat Dolgu": {
+     "id": 51893031043439,
+     "price": 41330,
+     "sku": "NM-5033-105-103"
+    },
+    "Kiremit / Siyah / Kalıcı Form": {
+     "id": 51893031076207,
+     "price": 43780,
+     "sku": "NM-5033-105-103-B"
+    }
+   },
+   "shape": {
+    "type": "sofa",
+    "fabric": "corduroy",
+    "armWidth": 22,
+    "armTop": 65,
+    "armBottom": 15,
+    "armRadius": 10,
+    "baseBottom": 16,
+    "baseTop": 25,
+    "seatCushions": 2,
+    "backCushions": 2,
+    "backThickness": 20,
+    "backRecline": 8,
+    "backFrame": 10,
+    "legDiameter": 5.5,
+    "legInset": [
+     33,
+     11
+    ],
+    "note": "Şekil ürün fotoğraflarından; G×D×Y ve oturum ölçüleri üreticiden. Kolçak yüksekliği (≈65 cm) ve minder kalınlıkları fotoğraftan tahmini."
+   },
+   "group": "Koltuklar"
+  },
+  {
+   "id": "normod-klem-kose-290",
+   "name": "Klem köşe koltuk 290×290",
+   "brand": "Normod",
+   "category": "Gerçek ürünler",
+   "w": 290,
+   "d": 290,
+   "h": 84,
+   "color": "#a7a895",
+   "url": "https://normod.com/products/klem-290-x-290-moduler-kose-silindir-ahsap-ayak-fitilli-kadife",
+   "source": "normod.com ürün verisi (Ürün Ölçüleri, varyantlar), 25.10.2026; renkler Klem üçlüden",
+   "dims": {
+    "seatWidth": 238,
+    "seatDepth": 59,
+    "seatHeight": 43,
+    "legHeight": 16
+   },
+   "material": "Fitilli kadife, %100 polyester; masif kayın ayak",
+   "use": {
+    "front": 45
+   },
+   "options": [
+    {
+     "name": "Kumaş",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kemik",
+       "color": "#d6d5d2"
+      },
+      {
+       "name": "Sisli Yeşil",
+       "color": "#a7a895"
+      },
+      {
+       "name": "Polen Sarı",
+       "color": "#baa362"
+      },
+      {
+       "name": "Sütlü Kahve",
+       "color": "#8f7a6d"
+      },
+      {
+       "name": "Kiremit",
+       "color": "#561a11"
+      }
+     ]
+    },
+    {
+     "name": "Ayak",
+     "part": "legs",
+     "values": [
+      {
+       "name": "Açık",
+       "color": "#b5814d"
+      },
+      {
+       "name": "Koyu",
+       "color": "#493e3b"
+      },
+      {
+       "name": "Siyah",
+       "color": "#191919"
+      }
+     ]
+    },
+    {
+     "name": "Sırt Minderi",
+     "part": "backStyle",
+     "values": [
+      {
+       "name": "Rahat Dolgu",
+       "value": "soft"
+      },
+      {
+       "name": "Kalıcı Form",
+       "value": "firm"
+      }
+     ]
+    },
+    {
+     "name": "Köşe",
+     "part": "corner",
+     "values": [
+      {
+       "name": "Sol arka",
+       "value": "left"
+      },
+      {
+       "name": "Sağ arka",
+       "value": "right"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Kumaş": "Sisli Yeşil",
+    "Ayak": "Açık",
+    "Sırt Minderi": "Kalıcı Form",
+    "Köşe": "Sol arka"
+   },
+   "variants": {
+    "Kemik / Koyu / Rahat Dolgu": {
+     "id": 43056462561522,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Sisli Yeşil / Koyu / Rahat Dolgu": {
+     "id": 43056462594290,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Polen Sarı / Koyu / Rahat Dolgu": {
+     "id": 43056462659826,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Sütlü Kahve / Koyu / Rahat Dolgu": {
+     "id": 43056462692594,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Kemik / Açık / Rahat Dolgu": {
+     "id": 43056462758130,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Sisli Yeşil / Açık / Rahat Dolgu": {
+     "id": 43056462790898,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Polen Sarı / Açık / Rahat Dolgu": {
+     "id": 43056462856434,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Sütlü Kahve / Açık / Rahat Dolgu": {
+     "id": 43056462889202,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Kemik / Siyah / Rahat Dolgu": {
+     "id": 43056462954738,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Sisli Yeşil / Siyah / Rahat Dolgu": {
+     "id": 43056462987506,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Polen Sarı / Siyah / Rahat Dolgu": {
+     "id": 43056463053042,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Sütlü Kahve / Siyah / Rahat Dolgu": {
+     "id": 43056463085810,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Kemik / Koyu / Kalıcı Form": {
+     "id": 44575169609970,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Sisli Yeşil / Koyu / Kalıcı Form": {
+     "id": 44575169642738,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Polen Sarı / Koyu / Kalıcı Form": {
+     "id": 44575169708274,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Sütlü Kahve / Koyu / Kalıcı Form": {
+     "id": 44575169741042,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Kemik / Açık / Kalıcı Form": {
+     "id": 44575169806578,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Sisli Yeşil / Açık / Kalıcı Form": {
+     "id": 44575169839346,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Polen Sarı / Açık / Kalıcı Form": {
+     "id": 44575169904882,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Sütlü Kahve / Açık / Kalıcı Form": {
+     "id": 44575169937650,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Kemik / Siyah / Kalıcı Form": {
+     "id": 44575170003186,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Sisli Yeşil / Siyah / Kalıcı Form": {
+     "id": 44575170035954,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Polen Sarı / Siyah / Kalıcı Form": {
+     "id": 44575170101490,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Sütlü Kahve / Siyah / Kalıcı Form": {
+     "id": 44575170134258,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Kiremit / Koyu / Rahat Dolgu": {
+     "id": 51893023867247,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Kiremit / Açık / Rahat Dolgu": {
+     "id": 51893023900015,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Kiremit / Siyah / Rahat Dolgu": {
+     "id": 51893023932783,
+     "price": 104380,
+     "sku": "NM-5048-105-103"
+    },
+    "Kiremit / Koyu / Kalıcı Form": {
+     "id": 51893023965551,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Kiremit / Açık / Kalıcı Form": {
+     "id": 51893023998319,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    },
+    "Kiremit / Siyah / Kalıcı Form": {
+     "id": 51893024031087,
+     "price": 112680,
+     "sku": "NM-5048-105-103-B"
+    }
+   },
+   "shape": {
+    "type": "sofaL",
+    "fabric": "corduroy",
+    "armWidth": 22,
+    "armTop": 65,
+    "armBottom": 15,
+    "armRadius": 10,
+    "baseBottom": 16,
+    "baseTop": 25,
+    "seatCushions": 2,
+    "backCushions": 2,
+    "backThickness": 20,
+    "backRecline": 8,
+    "backFrame": 10,
+    "legDiameter": 5.5,
+    "legInset": [
+     33,
+     11
+    ],
+    "note": "Köşe modülü arkada; köşe tarafı \"Köşe\" seçeneğiyle. Modül düzeni üreticide yok, fotoğraftan tahmini; dış ölçüler üreticiden.",
+    "wing": 91
+   },
+   "group": "Koltuklar",
+   "variantOptions": [
+    "Kumaş",
+    "Ayak",
+    "Sırt Minderi"
+   ],
+   "notes": "Taban iki kanat: arka 290 × 91, yan 91 × 199 cm; aradaki köşe içi boş (orta sehpa girebilir). Modüler: parçalar ayrı gelir, bu yüzden kapı/asansör kontrolü yapılmaz (en büyük modülün ölçüsü üreticide yok).",
+   "flatpack": true
+  },
+  {
    "id": "ikea-besta-300",
    "name": "BESTÅ TV ünitesi 300 cm",
    "brand": "IKEA",
@@ -363,7 +908,7 @@
    "articleNo": "295.150.65",
    "source": "ikea.com.tr ürün sayfası (Ebatlar, İçerdiği ürünler), 24.10.2026; renkler ürün görselinden örneklendi",
    "material": "Meşe kaplama",
-   "notes": "İçerik: TONSTAD TV sehpası 178×37×55 + sürgü kapaklı dolap 82×37×120; görselde sol dolap camlı vitrin (menteşeli kabul edildi — teyit edilmeli). Genişliklerin toplamı 341,8 cm.",
+   "notes": "İçerik: cam sürgü kapaklı dolap 82×37×120 + TONSTAD TV sehpası 178×37×55 + sürgü kapaklı dolap 82×37×120. Parçaların sırası görselden; genişliklerin toplamı 341,8 cm.",
    "shape": {
     "type": "cabinets",
     "carcass": "#c29f7a",
@@ -374,13 +919,13 @@
    },
    "modules": [
     {
-     "name": "vitrin 81,8×37×120",
+     "name": "cam sürgü kapaklı dolap 82×37×120",
      "w": 81.8,
      "h": 119.9,
      "plinth": 5,
      "fronts": [
       {
-       "type": "glass",
+       "type": "slidingGlass",
        "h": 112,
        "count": 2
       }
@@ -419,6 +964,132 @@
     }
    ],
    "maxTopLoad": 30
+  },
+  {
+   "id": "ikea-tonstad-sehpa-178",
+   "name": "TONSTAD TV sehpası 178 cm",
+   "brand": "IKEA",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 178.4,
+   "d": 37.2,
+   "h": 54.9,
+   "color": "#c5a37f",
+   "price": 18999,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/tonstad-mese-kaplama-178x37x55-cm-tv-sehpasi-00489302",
+   "articleNo": "004.893.02",
+   "source": "ikea.com.tr ürün sayfası, 25.10.2026 (kullanıcının güncel model verisi)",
+   "material": "Meşe kaplama",
+   "shape": {
+    "type": "cabinets",
+    "carcass": "#c29f7a",
+    "front": "#c8a682",
+    "frame": "#bf9c77",
+    "interior": "#a98763",
+    "plinth": "#a8875f"
+   },
+   "modules": [
+    {
+     "w": 178.4,
+     "h": 54.9,
+     "plinth": 5,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 36,
+       "count": 2
+      },
+      {
+       "type": "open",
+       "h": 12,
+       "count": 1
+      }
+     ]
+    }
+   ],
+   "maxTopLoad": 30,
+   "notes": "70 inç / 30 kg televizyona kadar. TONSTAD TV ünitesinin ortasındaki sehpanın tek satılanı; kapak düzeni tahmini."
+  },
+  {
+   "id": "ikea-tonstad-cam-82",
+   "name": "TONSTAD cam sürgü kapaklı dolap",
+   "brand": "IKEA",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 81.7,
+   "d": 37.2,
+   "h": 119.9,
+   "color": "#c5a37f",
+   "price": 17999,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/tonstad-mese-kaplama-82x37x120-cm-surgu-kapakli-dolap-00489284",
+   "articleNo": "004.892.84",
+   "source": "ikea.com.tr ürün sayfası, 25.10.2026 (kullanıcının güncel model verisi)",
+   "material": "Meşe kaplama",
+   "shape": {
+    "type": "cabinets",
+    "carcass": "#c29f7a",
+    "front": "#c8a682",
+    "frame": "#bf9c77",
+    "interior": "#a98763",
+    "plinth": "#a8875f"
+   },
+   "modules": [
+    {
+     "w": 81.7,
+     "h": 119.9,
+     "plinth": 5,
+     "fronts": [
+      {
+       "type": "slidingGlass",
+       "h": 112,
+       "count": 2
+      }
+     ]
+    }
+   ],
+   "notes": "Sertleştirilmiş cam sürgü kapaklar, 2 hareketli raf."
+  },
+  {
+   "id": "ikea-tonstad-surgu-82",
+   "name": "TONSTAD sürgü kapaklı dolap",
+   "brand": "IKEA",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 81.7,
+   "d": 37.2,
+   "h": 119.9,
+   "color": "#c5a37f",
+   "price": 16999,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/tonstad-mese-kaplama-82x37x120-cm-surgu-kapakli-dolap-10489231",
+   "articleNo": "104.892.31",
+   "source": "ikea.com.tr ürün sayfası, 25.10.2026 (kullanıcının güncel model verisi)",
+   "material": "Meşe kaplama",
+   "shape": {
+    "type": "cabinets",
+    "carcass": "#c29f7a",
+    "front": "#c8a682",
+    "frame": "#bf9c77",
+    "interior": "#a98763",
+    "plinth": "#a8875f"
+   },
+   "modules": [
+    {
+     "w": 81.7,
+     "h": 119.9,
+     "plinth": 5,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 112,
+       "count": 2
+      }
+     ]
+    }
+   ],
+   "notes": "Meşe kaplama sürgü kapaklar, 2 ayarlanabilir + 1 sabit raf."
   },
   {
    "id": "ikea-lanesund-322",
@@ -1031,6 +1702,108 @@
    }
   },
   {
+   "id": "ikea-stockholm-2025-takim",
+   "name": "STOCKHOLM 2025 yemek takımı (masa + 6 sandalye)",
+   "brand": "IKEA",
+   "group": "Masalar",
+   "category": "Gerçek ürünler",
+   "w": 230,
+   "d": 216,
+   "h": 75,
+   "color": "#c69a66",
+   "price": 121993,
+   "url": "https://www.ikea.com.tr/urun/stockholm-2025-mese-kaplama-mese-deri-6-sandalyeli-yemek-masasi-takimi-29579986",
+   "source": "ikea.com.tr takım sayfası (kullanıcının güncel model verisi), 25.10.2026",
+   "set": [
+    [
+     "ikea-stockholm-2025-masa-230",
+     0,
+     0,
+     0
+    ],
+    [
+     "ikea-stockholm-2025-sandalye",
+     -72,
+     -62,
+     0
+    ],
+    [
+     "ikea-stockholm-2025-sandalye",
+     0,
+     -62,
+     0
+    ],
+    [
+     "ikea-stockholm-2025-sandalye",
+     72,
+     -62,
+     0
+    ],
+    [
+     "ikea-stockholm-2025-sandalye",
+     -72,
+     62,
+     180
+    ],
+    [
+     "ikea-stockholm-2025-sandalye",
+     0,
+     62,
+     180
+    ],
+    [
+     "ikea-stockholm-2025-sandalye",
+     72,
+     62,
+     180
+    ]
+   ],
+   "notes": "Takım olarak eklenir (masa + 6 sandalye); sonra her parça ayrı taşınır."
+  },
+  {
+   "id": "ikea-stockholm-2025-masa-230",
+   "name": "STOCKHOLM 2025 yemek masası 230×90",
+   "brand": "IKEA",
+   "group": "Masalar",
+   "category": "Gerçek ürünler",
+   "w": 230,
+   "d": 90,
+   "h": 75,
+   "color": "#c69a66",
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/stockholm-2025-mese-kaplama-mese-deri-6-sandalyeli-yemek-masasi-takimi-29579986",
+   "source": "ikea.com.tr takım sayfası (kullanıcının güncel model verisi), 25.10.2026",
+   "material": "Meşe kaplama tabla, masif meşe şase",
+   "use": {
+    "front": 0
+   },
+   "shape": {
+    "type": "trestle",
+    "note": "Tek parça alt şase (≈70 cm); ayak biçimi görselden tahmini."
+   }
+  },
+  {
+   "id": "ikea-stockholm-2025-sandalye",
+   "name": "STOCKHOLM 2025 sandalye (deri oturak)",
+   "brand": "IKEA",
+   "group": "Sandalyeler",
+   "category": "Gerçek ürünler",
+   "w": 56,
+   "d": 50,
+   "h": 74,
+   "color": "#c69a66",
+   "movable": true,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/stockholm-2025-mese-kaplama-mese-deri-6-sandalyeli-yemek-masasi-takimi-29579986",
+   "source": "ikea.com.tr takım sayfası (kullanıcının güncel model verisi), 25.10.2026",
+   "material": "Meşe çerçeve, yuvarlak deri oturak",
+   "shape": {
+    "type": "bentwood",
+    "seat": "#6b4a33",
+    "note": "Eğik ahşap tarzı; oranlar görselden."
+   }
+  },
+  {
    "id": "kanepe-3",
    "name": "3'lü kanepe",
    "category": "Salon",
@@ -1077,6 +1850,26 @@
    }
   },
   {
+   "id": "donen-berjer",
+   "name": "Dönen berjer",
+   "category": "Gerçek ürünler",
+   "group": "Koltuklar",
+   "w": 88,
+   "d": 80,
+   "h": 88,
+   "color": "#c9b28f",
+   "source": "kullanıcının paylaştığı ürün ekran görüntüsü (88 × 80 × 88 cm), 25.10.2026; marka/bağlantı yok",
+   "material": "Kum rengi keten görünümlü kumaş, siyah döner metal ayak",
+   "use": {
+    "front": 45
+   },
+   "shape": {
+    "type": "swivel",
+    "base": "#1c1c1e",
+    "note": "Kol, oturma ve sırt oranları görselden tahmini."
+   }
+  },
+  {
    "id": "orta-sehpa",
    "name": "Orta sehpa",
    "category": "Salon",
@@ -1092,6 +1885,24 @@
     "top": 3,
     "leg": 4,
     "shelf": 12
+   }
+  },
+  {
+   "id": "yan-sehpa",
+   "name": "Yan sehpa",
+   "category": "Salon",
+   "group": "Sehpalar",
+   "w": 45,
+   "d": 45,
+   "h": 50,
+   "color": "#9c6e45",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "table",
+    "leg": 3.5,
+    "top": 2.5,
+    "inset": 3
    }
   },
   {
@@ -1303,6 +2114,21 @@
    }
   },
   {
+   "id": "cift-yatak-180",
+   "name": "Çift kişilik yatak (180×200)",
+   "category": "Yatak odası",
+   "group": "Yataklar",
+   "w": 188,
+   "d": 212,
+   "h": 110,
+   "color": "#c9c2b5",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "bed"
+   }
+  },
+  {
    "id": "calisma-masasi",
    "name": "Çalışma masası",
    "category": "Çalışma",
@@ -1397,6 +2223,21 @@
    }
   },
   {
+   "id": "yemek-masasi-4",
+   "name": "Yemek masası (4 kişilik)",
+   "category": "Salon",
+   "group": "Masalar",
+   "w": 140,
+   "d": 80,
+   "h": 75,
+   "color": "#9c6e45",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "table"
+   }
+  },
+  {
    "id": "ayakkabilik",
    "name": "Ayakkabılık",
    "category": "Hol",
@@ -1418,6 +2259,67 @@
    }
   },
   {
+   "id": "gardirop-3",
+   "name": "Gardırop (3 kapaklı)",
+   "category": "Yatak odası",
+   "group": "Dolap ve raflar",
+   "w": 150,
+   "d": 60,
+   "h": 236,
+   "color": "#efece6",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "case",
+    "fronts": "doors",
+    "count": 3,
+    "plinth": 8
+   },
+   "frontDoors": {
+    "count": 3
+   }
+  },
+  {
+   "id": "gardirop-2",
+   "name": "Gardırop (2 kapaklı)",
+   "category": "Yatak odası",
+   "group": "Dolap ve raflar",
+   "w": 100,
+   "d": 60,
+   "h": 236,
+   "color": "#efece6",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "case",
+    "fronts": "doors",
+    "count": 2,
+    "plinth": 8
+   },
+   "frontDoors": {
+    "count": 2
+   }
+  },
+  {
+   "id": "bufe",
+   "name": "Konsol / büfe",
+   "category": "Salon",
+   "group": "Dolap ve raflar",
+   "w": 180,
+   "d": 45,
+   "h": 80,
+   "color": "#9c6e45",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "case",
+    "fronts": "doors",
+    "count": 3,
+    "wood": true,
+    "legs": 14
+   }
+  },
+  {
    "id": "hali-200x290",
    "name": "Halı 200×290",
    "category": "Salon",
@@ -1433,6 +2335,40 @@
    "shape": {
     "type": "rug"
    }
+  },
+  {
+   "id": "hali-200x300",
+   "name": "Halı 200×300",
+   "category": "Salon",
+   "group": "Halılar",
+   "w": 300,
+   "d": 200,
+   "h": 1,
+   "color": "#cfc6b5",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "rug"
+   },
+   "collides": false,
+   "flatpack": true
+  },
+  {
+   "id": "hali-160x230",
+   "name": "Halı 160×230",
+   "category": "Salon",
+   "group": "Halılar",
+   "w": 230,
+   "d": 160,
+   "h": 1,
+   "color": "#cfc6b5",
+   "assumed": true,
+   "url": null,
+   "shape": {
+    "type": "rug"
+   },
+   "collides": false,
+   "flatpack": true
   }
  ]
 }

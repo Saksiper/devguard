@@ -48,9 +48,9 @@ export function convertModel(M, sourceName = 'model.json') {
   const r1 = (v) => Math.round(v * 10) / 10;
 
   const T = cm(M._meta?.wall_thickness_assumed ?? 0.1);
-  const corridorMissing = (M.missing ?? []).some((m) => /koridor|antre/i.test(m.name ?? ''));
+  const nameOf = (m) => (typeof m === 'string' ? m : (m?.name ?? ''));
   const FLOOR = (txt = '') => (/seramik|fayans|karo/i.test(txt) ? 'seramik' : /parke|laminat/i.test(txt) ? 'parke' : 'parke');
-  const DECOR = new Set(['oven', 'ovenGlass', 'hob', 'steel']); // başka kutunun üstünde/içinde ince yüzeyler
+  const DECOR = new Set(['oven', 'ovenGlass', 'hob', 'steel', 'seam']); // başka kutunun üstünde/içinde ince yüzeyler
 
   // Komşu odaya taşmasın: duvar kalınlığı, kenarın dışındaki en yakın odaya olan boşlukla sınırlanır.
   function raySeg(o, d, a, b) {
@@ -80,6 +80,8 @@ export function convertModel(M, sourceName = 'model.json') {
 
   const walls = [];
   const openings = [];
+  let entranceDoor = null;
+  const inAnyRoom = (p) => allPolys.some((q) => inside(p, q));
   const rooms = [];
   const fixtures = [];
   const notes = [];
@@ -95,14 +97,17 @@ export function convertModel(M, sourceName = 'model.json') {
       floor: FLOOR(r.floor),
       floorNote: r.floor,
       ceilingHeight: H,
-      magicplan: r.magicplan,
+      reference: r.reference_size ?? r.magicplan,
+      status: r.status,
       source: r.sources,
       notes: r.notes,
     });
     for (const n of r.notes ?? []) notes.push(`${r.name}: ${n}`);
+    const skip = new Set(r.walls_not_drawn ?? []); // komşu odanın duvarıyla çakışan kenar: duvar çizilmez
     const E = poly.map((_, i) => edgeOf(poly, i));
     const others = allPolys.filter((q) => q !== allPolys[M.rooms.indexOf(r)]);
     E.forEach((e, i) => {
+      if (skip.has(i)) return;
       const gap = outwardGap(e, others);
       const t = Math.max(1, Math.min(T, Math.floor(gap * 10) / 10));
       if (t < T) thin.push(`${r.name} ${i + 1}. kenar: komşuya boşluk ${r1(gap)} cm → duvar ${t} cm çizildi`);
@@ -126,22 +131,32 @@ export function convertModel(M, sourceName = 'model.json') {
       const off = cm(o.offset_from_edge_start);
       const width = cm(o.width);
       const head = cm(o.head ?? r.ceiling_height);
-      if (o.type === 'kapı') {
+      if (o.type === 'kapı' || /sürgü/i.test(o.type)) {
         k++;
+        const sliding = /sürgü/i.test(o.type);
+        // Kapının öbür tarafı modelde yoksa (ölçülmemiş koridor, merdiven sahanlığı) oradan "girilir".
+        const beyond = at(e, off + width / 2, -(T + 30));
+        const id = `${r.id}-kapi${k}`;
+        if (/giriş|daire kapı/i.test(o.label ?? '') && !entranceDoor) entranceDoor = id;
         openings.push({
-          id: `${r.id}-kapi${k}`,
+          id,
           name: `${r.name}: ${o.label}`,
           type: 'door',
           wall,
           offset: off,
           width,
           height: head,
-          hinge: o.hinge_at ?? 'start',
-          swing: /dışına/i.test(o.swings ?? '') ? e.side : e.inSide,
+          ...(sliding
+            ? { swing: 'none', sliding: o.pocket ? 'pocket' : true }
+            : { hinge: o.hinge_at ?? 'start', swing: /dışına/i.test(o.swings ?? '') ? e.side : e.inSide }),
           glassLeaf: !!o.glass_leaf,
-          entrance: corridorMissing ? true : undefined,
+          ...(o.closed ? { closed: true } : {}),
+          ...(/çelik/i.test(o.label ?? '') ? { leafMaterial: 'steel' } : {}),
+          entrance: inAnyRoom(beyond) ? undefined : true,
           source: o.source,
-          note: 'genişlik Magicplan açıklığı; net geçiş (kasa içi) ölçülmedi',
+          note: sliding
+            ? `sürgülü${o.pocket ? ' (cep: kanat duvarın içine kayar)' : ''}; açılma alanı yok`
+            : 'genişlik Magicplan açıklığı; net geçiş (kasa içi) ölçülmedi',
         });
         continue;
       }
@@ -204,7 +219,8 @@ export function convertModel(M, sourceName = 'model.json') {
     for (const [q, f] of (r.radiators ?? []).entries()) {
       const e = E[f.edge];
       const gap = cm(f.wall_gap ?? 0.045);
-      const dep = cm(f.depth ?? 0.09);
+      // depth_from_wall: duvardan petek önüne toplam çıkıntı (boşluk dahil).
+      const dep = f.depth_from_wall !== undefined ? r1(cm(f.depth_from_wall) - gap) : cm(f.depth ?? 0.09);
       const [x, y] = at(e, cm(f.center_offset_from_edge_start), gap + dep / 2);
       fixtures.push({
         id: `${r.id}-petek${q + 1}`,
@@ -255,6 +271,8 @@ export function convertModel(M, sourceName = 'model.json') {
         d: r1(cm(x.z1) - cm(x.z0)),
         h: r1(cm(x.y1) - cm(x.y0)),
         z: cm(x.y0),
+        // Kaynak "obstacle" yalnızca yerde engel demek; burada yükseklikli kontrol yapıldığı için
+        // ince süs yüzeyleri dışındaki her şey (üst dolap, tezgâh) çakışır.
         collides: !DECOR.has(b.material),
       });
     }
@@ -282,7 +300,7 @@ export function convertModel(M, sourceName = 'model.json') {
         id: `${r.id}-lamba${q + 1}`,
         type: 'lamp',
         shape: 'cylinder',
-        name: 'Sarkıt lamba (konum tahmini)',
+        name: r.lights_source && /tahmin/i.test(r.lights_source) ? 'Sarkıt lamba (konum tahmini)' : 'Sarkıt lamba',
         x: cm(l.x),
         y: cm(l.z),
         w: 35,
@@ -308,7 +326,7 @@ export function convertModel(M, sourceName = 'model.json') {
       floor: 'dis',
       ceiling: false,
       assumed: true,
-      source: b.source,
+      source: b.source ?? b.note,
     });
     const E = poly.map((_, i) => edgeOf(poly, i));
     for (const i of b.railing_edges ?? [])
@@ -349,7 +367,11 @@ export function convertModel(M, sourceName = 'model.json') {
       ? { city: loc.city, lat: loc.lat, lon: loc.lon, utcOffset: loc.utcOffset ?? 3, northAngle: north ?? 0, ...(north === null ? { assumed: true } : {}) }
       : null;
 
-  const missing = (M.missing ?? []).map((m) => m.name + (m.note ? ` — ${m.note}` : ''));
+  const missing = (M.missing ?? []).map((m) => nameOf(m) + (m?.note ? ` — ${m.note}` : ''));
+  const recess = cs.facade_recess;
+  if (recess) notes.push(`Cephe girintisi ${cm(recess.value_m)} cm: ${recess.note}`);
+  const open = openings.filter((o) => o.entrance && o.id !== entranceDoor);
+  const entrance = openings.find((o) => o.id === entranceDoor);
   const plan = {
     meta: {
       name: M._meta?.name ?? 'Ev',
@@ -357,11 +379,13 @@ export function convertModel(M, sourceName = 'model.json') {
       units: 'cm',
       importedFrom: sourceName,
       imported: new Date().toISOString().slice(0, 10),
-      note: `Kaynak: ${Object.entries(M._meta?.source_legend ?? {})
-        .map(([k, v]) => `${k} = ${v}`)
-        .join(
-          '; ',
-        )}. Duvar kalınlığı ${T} cm varsayım.${corridorMissing ? ' Koridor/antre ölçülmediği için odaların koridora açılan kapıları "giriş" sayıldı; odalar arası geçiş henüz kontrol edilemiyor.' : ''}`,
+      note: `Kaynak: ${
+        M._meta?.source_legend
+          ? Object.entries(M._meta.source_legend)
+              .map(([k, v]) => `${k} = ${v}`)
+              .join('; ')
+          : String(M._meta?.measurement_sources ?? 'belirtilmedi').replace(/\.$/, '')
+      }. Duvar kalınlığı ${T} cm varsayım.${open.length ? ` Ölçülmemiş bir alana açılan kapılar (${open.map((o) => o.name).join(', ')}) "giriş" sayıldı; o taraftaki geçiş henüz kontrol edilemiyor.` : ''}`,
       missing,
       notes,
       thinWalls: thin,
@@ -381,9 +405,11 @@ export function convertModel(M, sourceName = 'model.json') {
     rooms,
     fixtures,
     access: {
-      entranceDoor: null,
+      entranceDoor,
       elevator: null,
-      note: 'Daire giriş kapısı ve asansör ölçülmedi; teslimat kontrolü yalnızca oda kapılarıyla yapılıyor.',
+      note: entrance
+        ? `Daire kapısı: ${entrance.name} (${entrance.width} cm). Asansör ölçülmedi.`
+        : 'Daire giriş kapısı ve asansör ölçülmedi; teslimat kontrolü yalnızca oda kapılarıyla yapılıyor.',
     },
     splat: null,
   };

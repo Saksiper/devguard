@@ -228,7 +228,12 @@ export function buildPlanModel(plan) {
   // odaların koridora açılan kapılarının hepsi giriş sayılabilir (geçiş analizi her birinden başlar).
   const flagged = openings.filter((o) => o.type === 'door' && o.entrance);
   const explicit = openings.find((o) => o.id === plan.access?.entranceDoor);
-  const entrances = explicit ? [explicit] : flagged.length ? flagged : openings.filter((o) => o.type === 'door').slice(0, 1);
+  // Daire kapısı belliyse önce o; ölçülmemiş alana açılan kapılar da geçiş analizine kaynak olarak eklenir.
+  const entrances = explicit
+    ? [explicit, ...flagged.filter((o) => o !== explicit)]
+    : flagged.length
+      ? flagged
+      : openings.filter((o) => o.type === 'door').slice(0, 1);
   const entrance = entrances[0];
   const deliveryDoor = explicit ?? (flagged.length === 1 ? flagged[0] : null);
 

@@ -37,6 +37,8 @@ const MATERIAL_COLORS = {
   ovenGlass: 0x0e0e10,
   hob: 0x121214,
   steel: 0xc4c8cc,
+  cream: 0xece3cc, // krem parlak kapak (antre gardırobu)
+  seam: 0x2f2a26, // kapak arası derz
 };
 // Yüzey özellikleri (pürüzlülük / metal) — renkler yukarıda.
 const SURFACE = {
@@ -49,6 +51,8 @@ const SURFACE = {
   ovenGlass: { roughness: 0.05 },
   hob: { roughness: 0.06 },
   steel: { roughness: 0.28, metalness: 0.9 },
+  cream: { roughness: 0.18 },
+  seam: { roughness: 0.9 },
   radiator: { roughness: 0.4 },
   lamp: { roughness: 0.9 },
 };
@@ -68,6 +72,7 @@ export const MAT = {
   frame: std(0xf7f7f5, { roughness: 0.4 }), // PVC doğrama (varsayım: beyaz)
   casing: std(0xf3f1ec, { roughness: 0.45 }), // kapı pervazı ve süpürgelik (varsayım: beyaz)
   handle: std(0xb9bcc0, { roughness: 0.25, metalness: 0.9 }),
+  steelDoor: std(0x5b5752, { roughness: 0.45, metalness: 0.35 }), // çelik daire kapısı (renk varsayım)
   cord: std(0x222222, { roughness: 0.6 }),
   bulb: new THREE.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffe2b0, emissiveIntensity: 0.6 }),
 };
@@ -325,11 +330,11 @@ export function buildHouse(model) {
       if (op.type === 'door' && op.glazed && op.leaves.length) {
         // Camlı kapı/balkon kapısı: kapalı cam olarak çizilir (planda açılma yayı yine görünür).
       } else if (op.type === 'door') {
-        // Kanat açık (openAngle) konumda çizilir.
-        const a = ((leaf.a0 + leaf.sign * leaf.openAngle) * Math.PI) / 180;
+        // Kanat açık (openAngle) konumda çizilir; "closed" kapılar (ör. daire kapısı) kapalı.
+        const a = ((leaf.a0 + (op.closed ? 0 : leaf.sign * leaf.openAngle)) * Math.PI) / 180;
         const dir = [Math.cos(a), Math.sin(a)];
         const end = [leaf.hinge[0] + dir[0] * leaf.radius, leaf.hinge[1] + dir[1] * leaf.radius];
-        const door = new THREE.Mesh(unitBox, op.glassLeaf ? MAT.frosted : MAT.door);
+        const door = new THREE.Mesh(unitBox, op.glassLeaf ? MAT.frosted : op.leafMaterial === 'steel' ? MAT.steelDoor : MAT.door);
         const mid = [(leaf.hinge[0] + end[0]) / 2, (leaf.hinge[1] + end[1]) / 2];
         door.position.copy(v3(mid[0], mid[1], op.height / 2));
         door.scale.set(leaf.radius * CM, (op.height - 1) * CM, 0.04);
@@ -376,7 +381,7 @@ export function buildHouse(model) {
       geo = shadeGeo;
       mat = std(0xf3ead8, { roughness: 0.9, side: THREE.DoubleSide, emissive: 0xfff0d0, emissiveIntensity: 0.12 });
     }
-    if ((f.material === 'cab' || f.material === 'white') && f.d >= 20 && f.h >= 30) {
+    if ((f.material === 'cab' || f.material === 'white') && f.d >= 20 && f.h >= 30 && !/panel|kaplama/i.test(f.name ?? '')) {
       // Ön yüz: oda tarafına bakan yan (merkezle aynı odada kalan yön).
       const room = inRoom([f.x, f.y]);
       const a = (f.rot * Math.PI) / 180;

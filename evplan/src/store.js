@@ -5,7 +5,7 @@
 // değişiklikler "(yerel kopya)" adıyla ayrı yerleşim olarak korunur.
 
 import { newUid, pointInRect, resolveItem, stackItems, tvSpot } from './core/items.js';
-import { toWorld } from './core/geom.js';
+import { normAngle, toWorld } from './core/geom.js';
 
 const VERSION = 1;
 
@@ -283,6 +283,26 @@ export class Store extends EventTarget {
     this._recordSpot(uid);
     this._changed('commit', { uid });
     return uid;
+  }
+
+  /**
+   * Takım (ör. masa + 6 sandalye): katalogdaki set listesindeki parçalar tek adımda, takımın merkezine göre
+   * eklenir; sonra her parça ayrı taşınır. set: [[ref, dx, dy, rot], …] (cm, takımın yerel ekseninde).
+   */
+  addSet(c, x, y, rot = 0) {
+    this._snapshot();
+    const uids = [];
+    for (const [ref, dx, dy, r = 0] of c.set) {
+      const [wx, wy] = toWorld([dx, dy], x, y, rot);
+      const uid = newUid();
+      this.active.items.push({ uid, ref, x: Math.round(wx * 10) / 10, y: Math.round(wy * 10) / 10, rot: normAngle(rot + r) });
+      uids.push(uid);
+    }
+    this.selection = uids[0];
+    this._resolved = null;
+    this._recordSpot(uids[0]);
+    this._changed('commit', { uid: uids[0] });
+    return uids;
   }
 
   /**

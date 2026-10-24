@@ -93,9 +93,13 @@ npm run import -- public/data/ev/source/model.json public/data/ev
 
 Dönüşüm kuralları: duvarlar her odanın dışına `wall_thickness_assumed` kalınlıkta çizilir, ama komşu odaya
 taşmaz (boşluk küçükse inceltilir ve not düşülür). Camlar kanatlara bölünür: açılan kanatlar camlı kapı
-(içe açıldığı ve menteşe tarafı **tahmin**), sabitler pencere. Koridor/antre ölçülmemişse odaların koridora
-açılan kapıları "giriş" sayılır; geçiş analizi her birinden başlar. Tavan kirişi, sarkıt lambalar ve ankastre
-dolaplar yükseklikleriyle sabit engel olur (üst dolap/kiriş planda kesik çizgi).
+(içe açıldığı ve menteşe tarafı **tahmin**), sabitler pencere. `sürgülü kapı` açılma alanı olmayan kapı olur
+(`pocket: true` → cep sürgülü). Etiketinde "Giriş" geçen kapı daire kapısıdır (teslimat kontrolü ondan);
+öbür tarafı modelde olmayan (ölçülmemiş koridora/sahanlığa açılan) kapılar da "giriş" sayılır ve geçiş analizi
+her birinden başlar. `walls_not_drawn` kenarlarına duvar çizilmez (komşu odanın duvarı oradadır); petekte
+`depth_from_wall` duvardan toplam çıkıntıdır. `closed: true` kapı kapalı çizilir. Tavan kirişi, sarkıt lambalar
+ve ankastre dolaplar yükseklikleriyle sabit engel olur (üst dolap/kiriş planda kesik çizgi). Modeldeki
+`furniture.default_layout` elle `layouts/` altına çevrilir (cid → katalog `id`).
 
 Hatalı bir alan olursa uygulama açılışta Türkçe hata listesi gösterir (ör. "openings[3] (K-banyo):
 duvar I-koridor-alt 900 cm; açıklık 880–950 cm aralığı duvarın dışına taşıyor").
@@ -167,6 +171,9 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
     "onTop": true,                        // TV gibi: altındaki mobilyanın üstüne oturur (z otomatik)
     "weight": 15.5, "maxTopLoad": 40,     // kg: eşyanın ağırlığı / üst tablanın taşıyabileceği
     "group": "Televizyon",                // katalog türü ("Yerine dene" ve son konum bu türe göre)
+    "set": [["masa-id", 0, 0, 0], ["sandalye-id", -72, -62, 0]],  // takım: parçalar [ref, dx, dy, açı] tek adımda eklenir
+    "shape": { "type": "sofaL", "wing": 91 },  // L köşe koltuk: taban iki kanat; köşe yönü seçeneği part "corner"
+    "variantOptions": ["Kumaş", "Ayak"],  // mağaza varyantını belirleyen seçenekler (diğerleri yalnızca yerleşim)
     "assumed": true                       // ölçü örnek/varsayım
   }
 ]}

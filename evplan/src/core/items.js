@@ -18,10 +18,12 @@ export function resolveChoice(base, entryChoice) {
   const choice = { ...(base.defaultOptions ?? {}), ...(entryChoice ?? {}) };
   const parts = {};
   const picked = [];
+  // variantOptions: mağaza varyantını belirleyen seçenekler (ör. köşe yönü varyant değil, yerleşim seçimi).
+  const keyed = new Set(base.variantOptions ?? base.options.map((o) => o.name));
   for (const opt of base.options) {
     const v = opt.values.find((x) => x.name === choice[opt.name]) ?? opt.values[0];
     choice[opt.name] = v.name;
-    picked.push(v.name);
+    if (keyed.has(opt.name)) picked.push(v.name);
     if (opt.part) parts[opt.part] = v.color ?? v.value;
   }
   const variant = base.variants?.[picked.join(' / ')] ?? null;
@@ -195,9 +197,25 @@ export function moduleItems(it) {
   });
 }
 
-/** Mobilyanın çakışma kutuları: modüllüyse her modül, değilse kendisi. */
+/**
+ * L köşe koltuğun tabanı iki kanat: arkada tam genişlik × kanat derinliği, köşe tarafında kanat eni × kalan derinlik.
+ * Köşe içi boş kalır (orta sehpa girebilir). parts.corner: 'left' (sol arka, varsayılan) | 'right'.
+ */
+export function wingItems(it) {
+  const B = it.shape.wing ?? 91;
+  const sx = it.parts?.corner === 'right' ? 1 : -1;
+  const box = (lx, ly, w, d, i) => {
+    const [x, y] = toWorld([lx, ly], it.x, it.y, it.rot);
+    return { ...it, x, y, w, d, use: null, frontDoors: null, drawers: null, wingIndex: i };
+  };
+  return [box(0, -it.d / 2 + B / 2, it.w, B, 0), box(sx * (it.w / 2 - B / 2), B / 2, B, it.d - B, 1)];
+}
+
+/** Mobilyanın çakışma kutuları: modüllüyse her modül, L koltukta iki kanat, değilse kendisi. */
 export function itemBoxes(it) {
-  return it.modules ? moduleItems(it) : [it];
+  if (it.modules) return moduleItems(it);
+  if (it.shape?.type === 'sofaL') return wingItems(it);
+  return [it];
 }
 
 /** TV'nin oturacağı yer (yerel koordinat): modüllü ünitede en alçak modüllerin en genişinin ortası. */

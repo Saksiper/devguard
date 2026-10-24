@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { frontLeaves, moduleItems, resolveItem, stackItems, tvSpot } from '../src/core/items.js';
+import { frontLeaves, itemBoxes, moduleItems, resolveItem, stackItems, tvSpot } from '../src/core/items.js';
 import { buildPlanModel } from '../src/core/plan.js';
 import { runChecks } from '../src/core/checks.js';
 import { Store } from '../src/store.js';
@@ -123,5 +123,31 @@ describe('gerçek ürünler', () => {
     s.setHidden('t', true);
     s.undo();
     expect(s.hiddenEntries()).toEqual([]);
+  });
+
+  it('Klem köşe: taban iki kanat (köşe içi boş), köşe yönü varyantı değiştirmez', () => {
+    const at = (corner) =>
+      resolveItem({ uid: 'k', ref: 'normod-klem-kose-290', x: 300, y: 300, rot: 0, choice: { Köşe: corner, Kumaş: 'Kemik', Ayak: 'Koyu', 'Sırt Minderi': 'Kalıcı Form' } }, byId);
+    const L = at('Sol arka');
+    const [back, side] = itemBoxes(L);
+    expect([back.w, back.d, back.y]).toEqual([290, 91, 300 - 145 + 45.5]);
+    expect([side.w, side.d, side.x]).toEqual([91, 199, 300 - 145 + 45.5]);
+    expect(itemBoxes(at('Sağ arka'))[1].x).toBe(300 + 145 - 45.5);
+    expect(L.variant?.price).toBe(112680);
+    // Köşe içine konan orta sehpa koltukla çakışmaz.
+    const r = runChecks(buildPlanModel(room), [L, resolveItem({ uid: 's', ref: 'orta-sehpa', x: 330, y: 330, rot: 0 }, byId)], { passage: false });
+    expect(r.issues.filter((i) => i.kind === 'collision')).toEqual([]);
+  });
+
+  it('takım (masa + 6 sandalye) tek adımda eklenir, sandalyeler masaya döner', () => {
+    const s = new Store({ plan: { meta: { name: 'x' } }, catalog: cat, fileLayouts: [{ id: 'l', name: 'L', items: [] }] });
+    const set = byId.get('ikea-stockholm-2025-takim');
+    const uids = s.addSet(set, 300, 250, 90);
+    expect(uids).toHaveLength(7);
+    const chairs = s.items().filter((i) => i.ref === 'ikea-stockholm-2025-sandalye');
+    expect(chairs).toHaveLength(6);
+    expect(new Set(chairs.map((c) => c.rot))).toEqual(new Set([90, 270]));
+    s.undo();
+    expect(s.items()).toHaveLength(0);
   });
 });

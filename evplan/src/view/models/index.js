@@ -1,12 +1,26 @@
 // Katalogdaki shape.type → parametrik model kurucu.
-import { buildSofa } from './sofa.js';
+import { buildSofa, buildSofaL } from './sofa.js';
 import { buildCabinets } from './cabinets.js';
 import { buildTv } from './tv.js';
 import { buildTambour } from './tambour.js';
-import { buildBed, buildCase, buildChair, buildFridge, buildOfficeChair, buildRug, buildShelf, buildTable, buildWasher } from './generic.js';
+import {
+  buildBed,
+  buildBentwood,
+  buildCase,
+  buildChair,
+  buildFridge,
+  buildOfficeChair,
+  buildRug,
+  buildShelf,
+  buildSwivel,
+  buildTable,
+  buildTrestle,
+  buildWasher,
+} from './generic.js';
 
 export const MODEL_BUILDERS = {
   sofa: buildSofa,
+  sofaL: buildSofaL,
   cabinets: buildCabinets,
   tv: buildTv,
   tambour: buildTambour,
@@ -19,6 +33,9 @@ export const MODEL_BUILDERS = {
   fridge: buildFridge,
   washer: buildWasher,
   rug: buildRug,
+  swivel: buildSwivel,
+  trestle: buildTrestle,
+  bentwood: buildBentwood,
 };
 
 export function buildModel(it) {

@@ -69,7 +69,7 @@ export class Panel {
   }
 
   thumb(c, choice, cb) {
-    requestThumb(c, choice, cb);
+    requestThumb(c, choice, cb, this.store.catalogById);
   }
 
   isMobile() {
@@ -308,7 +308,7 @@ export class Panel {
 
   /** Aynı türden ürünler: dokununca seçili mobilyanın yerine konur (konum korunur). */
   renderAlts(it, el) {
-    const list = this.store.catalog.items.filter((c) => (it.group ? c.group === it.group : c.category === it.category) && c.id !== it.ref);
+    const list = this.store.catalog.items.filter((c) => !c.set && (it.group ? c.group === it.group : c.category === it.category) && c.id !== it.ref);
     if (!list.length) {
       el.innerHTML = '<p class="note">Bu türde başka ürün yok. Katalog sekmesinden ekleyebilirsiniz.</p>';
       return;
@@ -325,10 +325,10 @@ export class Panel {
       <img class="thumb" alt="" data-thumb="${esc(c.id)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
       <div class="card-body">
         <div class="card-title">${brandPrefix(c) ? `<span class="brand">${esc(c.brand)}</span> ` : ''}${esc(c.name)}</div>
-        <div class="meta">${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : ''}</div>
+        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : ''}</div>
         ${swatches ? `<div class="swatches mini">${swatches.values.map((v) => `<span title="${esc(v.name)}" style="background:${esc(v.color)}"></span>`).join('')}</div>` : ''}
         <div class="card-actions">
-          ${mode === 'swap' || sel ? `<button class="primary" data-swap="${esc(c.id)}" ${sel ? '' : 'disabled'}>Yerine dene</button>` : ''}
+          ${(mode === 'swap' || sel) && !c.set ? `<button class="primary" data-swap="${esc(c.id)}" ${sel ? '' : 'disabled'}>Yerine dene</button>` : ''}
           ${mode === 'add' ? `<button data-add="${esc(c.id)}">Ekle</button>` : ''}
           ${c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">Ürün ↗</a>` : ''}
         </div>
@@ -356,6 +356,11 @@ export class Panel {
     // Aynı türden bir mobilya daha önce yerleştirildiyse yeni ürün onun son bırakıldığı yerde çıkar.
     const spot = this.store.spotFor(c);
     const p = spot ?? this.viewer.placementFor(c);
+    if (c.set) {
+      this.store.addSet(c, p.x, p.y, p.rot);
+      if (this.isMobile()) this.el.panel.classList.add('collapsed');
+      return this.toast(`${c.name}: ${c.set.length} parça eklendi. Her parçayı ayrı taşıyabilirsin.`, 6000);
+    }
     this.store.add(ref, p.x, p.y, p.rot);
     if (!this.isMobile()) this.showTab('selected');
     else this.el.panel.classList.add('collapsed');
@@ -371,7 +376,7 @@ export class Panel {
   cycle(dir) {
     const it = this.store.selection ? this.store.item(this.store.selection) : null;
     if (!it) return;
-    const list = this.store.catalog.items.filter((c) => (it.group ? c.group === it.group : c.category === it.category));
+    const list = this.store.catalog.items.filter((c) => !c.set && (it.group ? c.group === it.group : c.category === it.category));
     if (list.length < 2) return this.toast('Bu türde başka ürün yok.');
     const i = list.findIndex((c) => c.id === it.ref);
     const next = list[(i + dir + list.length) % list.length];

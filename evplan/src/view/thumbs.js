@@ -28,9 +28,16 @@ function setup() {
   return ctx;
 }
 
-function render(it) {
+function render(it, parts) {
   const { renderer, scene, camera } = setup();
-  let obj = buildModel(it);
+  let obj = parts ? new THREE.Group() : buildModel(it);
+  for (const p of parts ?? []) {
+    const m = buildModel(p.it);
+    if (!m) continue;
+    m.position.set(p.dx / 100, 0, p.dy / 100);
+    m.rotation.y = (-p.rot * Math.PI) / 180;
+    obj.add(m);
+  }
   if (!obj) {
     obj = new THREE.Mesh(
       new THREE.BoxGeometry(it.w / 100, Math.max(it.h, 1) / 100, it.d / 100),
@@ -67,7 +74,7 @@ function pump() {
     const job = queue.shift();
     if (job) {
       try {
-        const url = cache.get(job.key) ?? render(job.it);
+        const url = cache.get(job.key) ?? render(job.it, job.parts);
         cache.set(job.key, url);
         job.cb(url);
       } catch {
@@ -81,10 +88,14 @@ function pump() {
 }
 
 /** Katalog ürününün küçük görselini ister; hazır olunca cb(dataUrl) çağrılır. */
-export function requestThumb(catalogItem, choice, cb) {
+export function requestThumb(catalogItem, choice, cb, catalogById = null) {
   const it = resolveItem({ uid: 'thumb', ref: catalogItem.id, x: 0, y: 0, rot: 0, choice }, new Map([[catalogItem.id, catalogItem]]));
   const key = `${catalogItem.id}|${JSON.stringify(it.parts ?? {})}`;
   if (cache.has(key)) return cb(cache.get(key));
-  queue.push({ key, it, cb });
+  // Takım: parçaların modelleri yerel konumlarıyla.
+  const parts = catalogItem.set && catalogById
+    ? catalogItem.set.map(([ref, dx, dy, rot = 0]) => ({ it: resolveItem({ uid: 't', ref, x: 0, y: 0, rot: 0 }, catalogById), dx, dy, rot }))
+    : null;
+  queue.push({ key, it, cb, parts });
   pump();
 }
