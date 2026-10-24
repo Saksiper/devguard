@@ -9,13 +9,14 @@ import { Viewer } from './view/viewer.js';
 import { Panel } from './ui/panel.js';
 
 // Veri seti: ?veri=demo ile örnek daire; varsayılan olarak data/ev/ varsa o, yoksa demo.
+// window.__EVPLAN_DATA__ verilmişse (tek dosyalık sürüm) veri dosyaları okunmaz.
 const SETS = ['ev', 'demo'];
 async function pickDataSet() {
   const want = new URLSearchParams(location.search).get('veri');
   const order = want ? [want, ...SETS.filter((s) => s !== want)] : SETS;
   for (const s of order) {
     try {
-      const res = await fetch(`./data/${s}/plan.json`, { method: 'HEAD', cache: 'no-cache' });
+      const res = await fetch(`./data/${s}/plan.json`, { cache: 'no-cache' });
       if (res.ok) return s;
     } catch {
       /* sıradakini dene */
@@ -95,16 +96,25 @@ async function boot() {
   let plan;
   let catalog;
   let index;
-  const set = await pickDataSet();
-  const DATA = `./data/${set}/`;
-  try {
-    [plan, catalog, index] = await Promise.all([
-      getJSON(`${DATA}plan.json`),
-      getJSON(`${DATA}furniture.json`).catch(() => getJSON('./data/furniture.json')),
-      getJSON(`${DATA}layouts/index.json`).catch(() => ({ layouts: [] })),
-    ]);
-  } catch (e) {
-    return fatal('Veri yüklenemedi', [e.message, `Veri seti: data/${set}/`]);
+  let embeddedLayouts = null;
+  const EMBED = window.__EVPLAN_DATA__;
+  if (EMBED) {
+    ({ plan, catalog } = EMBED);
+    embeddedLayouts = EMBED.layouts ?? [];
+    index = { layouts: [] };
+  } else {
+    const set = await pickDataSet();
+    const DATA = `./data/${set}/`;
+    try {
+      [plan, catalog, index] = await Promise.all([
+        getJSON(`${DATA}plan.json`),
+        getJSON(`${DATA}furniture.json`).catch(() => getJSON('./data/furniture.json')),
+        getJSON(`${DATA}layouts/index.json`).catch(() => ({ layouts: [] })),
+      ]);
+    } catch (e) {
+      return fatal('Veri yüklenemedi', [e.message, `Veri seti: data/${set}/`]);
+    }
+    index.base = DATA;
   }
   const vp = validatePlan(plan);
   const vc = validateCatalog(catalog);
@@ -112,9 +122,11 @@ async function boot() {
 
   const fileLayouts = [];
   const layoutProblems = [];
-  for (const f of index.layouts ?? []) {
+  const layoutSources = embeddedLayouts ?? (index.layouts ?? []).map((f) => ({ file: f }));
+  for (const src of layoutSources) {
+    const f = src.file ?? `${src.id}.json`;
     try {
-      const l = await getJSON(`${DATA}layouts/${f}`);
+      const l = src.file ? await getJSON(`${index.base}layouts/${f}`) : structuredClone(src);
       l.id = l.id ?? f.replace(/\.json$/, '');
       const v = validateLayout(l, catalog);
       if (v.errors.length) layoutProblems.push(...v.errors);
@@ -154,7 +166,7 @@ async function boot() {
     }
     return rows;
   };
-  const panel = new Panel({ store, viewer, model, fileLayouts, toast, compare });
+  const panel = new Panel({ store, viewer, model, fileLayouts, toast, compare, embedded: !!EMBED });
   if (vp.warnings.length || layoutProblems.length) toast([...vp.warnings, ...layoutProblems].slice(0, 3).join(' · '), 8000);
 
   // Kontroller: sürüklerken hızlı (geçiş analizi hariç), bırakınca tam (worker'da).

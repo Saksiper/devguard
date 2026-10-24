@@ -17,7 +17,8 @@ function download(name, text) {
 }
 
 export class Panel {
-  constructor({ store, viewer, model, fileLayouts, toast, compare }) {
+  constructor({ store, viewer, model, fileLayouts, toast, compare, embedded = false }) {
+    this.embedded = embedded;
     this.store = store;
     this.viewer = viewer;
     this.model = model;
@@ -282,11 +283,17 @@ export class Panel {
         <button data-a="new">Boş yerleşim</button>
         <button data-a="rename">Yeniden adlandır</button>
       </div>
-      <div class="row">
-        <button data-a="export">JSON indir</button>
-        <button data-a="import">JSON yükle</button>
-        <button data-a="share">Paylaşım linki</button>
+      <div class="row" id="rename-row" hidden>
+        <input id="rename-input" type="text" value="${esc(l.name)}" aria-label="Yeni ad" style="flex:2;min-width:0;border:1px solid var(--line);border-radius:7px;padding:6px 7px">
+        <button data-a="rename-ok" class="primary">Kaydet</button>
       </div>
+      <div class="row">
+        ${this.embedded ? '' : '<button data-a="export">JSON indir</button>'}
+        <button data-a="copyjson">JSON kopyala</button>
+        <button data-a="import">JSON yükle</button>
+        ${this.embedded ? '' : '<button data-a="share">Paylaşım linki</button>'}
+      </div>
+      <div class="row" id="copy-row" hidden><textarea id="copy-out" readonly rows="4" style="width:100%;font:11px ui-monospace,monospace"></textarea></div>
       <div class="row">
         ${l.source === 'file' && l.modified ? '<button data-a="reset">Dosyadaki haline dön</button>' : ''}
         ${l.source !== 'file' ? '<button data-a="delete" class="danger">Sil</button>' : ''}
@@ -302,10 +309,16 @@ export class Panel {
       copy: () => s.createLayout(`${l.name} (kopya)`, l.id),
       new: () => s.createLayout('Yeni yerleşim'),
       rename: () => {
-        const n = prompt('Yeni ad', l.name);
-        if (n) s.renameLayout(l.id, n.trim());
+        const row = this.el.layouts.querySelector('#rename-row');
+        row.hidden = false;
+        row.querySelector('input').focus();
+      },
+      'rename-ok': () => {
+        const n = this.el.layouts.querySelector('#rename-input').value.trim();
+        if (n) s.renameLayout(l.id, n);
       },
       export: () => download(`${l.id}.json`, s.exportLayout(l.id)),
+      copyjson: () => this.copyText(s.exportLayout(l.id), 'Yerleşim JSON\'u panoya kopyalandı.'),
       import: () => {
         const inp = document.createElement('input');
         inp.type = 'file';
@@ -323,16 +336,17 @@ export class Panel {
       share: async () => {
         const token = await encodeShare(l);
         const url = `${location.origin}${location.pathname}#y=${token}`;
-        try {
-          await navigator.clipboard.writeText(url);
-          this.toast('Link panoya kopyalandı. Telefonda açınca bu yerleşim yüklenir.');
-        } catch {
-          prompt('Linki kopyalayın:', url);
-        }
+        this.copyText(url, 'Link panoya kopyalandı. Telefonda açınca bu yerleşim yüklenir.');
       },
       reset: () => s.resetLayout(l.id, file),
       delete: () => {
-        if (confirm(`"${l.name}" silinsin mi?`)) s.deleteLayout(l.id);
+        // İki adımlı silme (tarayıcı onay pencereleri her ortamda çalışmıyor).
+        const b = this.el.layouts.querySelector('button[data-a="delete"]');
+        if (b.dataset.armed) s.deleteLayout(l.id);
+        else {
+          b.dataset.armed = '1';
+          b.textContent = `Eminim, "${l.name}" silinsin`;
+        }
       },
       compare: async () => {
         this.el.layouts.querySelector('#cmp-out').innerHTML = '<p class="note">Hesaplanıyor…</p>';
@@ -354,6 +368,24 @@ export class Panel {
         this.viewer.setGhost(cb.checked && lay ? s.resolveLayout(lay) : null);
         this.ghostId = cb.checked ? cb.dataset.ghost : null;
       });
+    }
+  }
+
+  /** Panoya kopyala; izin yoksa metni seçili bir kutuda göster. */
+  copyText(text, okMsg) {
+    const show = () => {
+      const row = this.el.layouts.querySelector('#copy-row');
+      if (!row) return;
+      row.hidden = false;
+      const ta = row.querySelector('textarea');
+      ta.value = text;
+      ta.select();
+      this.toast('Kopyalama izni yok; metin aşağıda seçili.');
+    };
+    try {
+      navigator.clipboard.writeText(text).then(() => this.toast(okMsg), show);
+    } catch {
+      show();
     }
   }
 

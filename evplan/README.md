@@ -29,6 +29,7 @@ npm run dev       # http://localhost:5173 — aynı Wi-Fi'daki telefondan: http:
 npm test          # çekirdek hesap testleri
 npm run check     # tüm yerleşimleri komut satırında kontrol et (--veri demo)
 npm run import -- <model.json> <klasör>   # oda-poligonu modelini plan.json'a çevir
+node scripts/build-artifact.mjs ev <klasör> "Başlık"   # veri gömülü tek sayfalık önizleme (build sonrası)
 npm run build     # dist/ (statik site; GitHub Pages'e konabilir)
 ```
 
