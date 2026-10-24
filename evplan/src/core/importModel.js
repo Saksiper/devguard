@@ -334,6 +334,21 @@ export function convertModel(M, sourceName = 'model.json') {
       });
   }
 
+  // Konum ve yön (güneş için): "+x = kuzey" gibi eksen tarifinden kuzeyin plan açısı.
+  const AZ = { kuzey: 0, 'doğu': 90, 'güney': 180, 'batı': 270 };
+  const azOf = (t) => {
+    const k = Object.keys(AZ).find((n) => String(t ?? '').toLocaleLowerCase('tr').includes(`= ${n}`));
+    return k === undefined ? null : AZ[k];
+  };
+  const cs = M._meta?.coordinate_system ?? {};
+  const raw = azOf(cs.x) !== null ? -azOf(cs.x) : azOf(cs.z) !== null ? 90 - azOf(cs.z) : null;
+  const north = raw === null ? null : (raw + 360) % 360;
+  const loc = M._meta?.location;
+  const site =
+    loc && Number.isFinite(loc.lat) && Number.isFinite(loc.lon)
+      ? { city: loc.city, lat: loc.lat, lon: loc.lon, utcOffset: loc.utcOffset ?? 3, northAngle: north ?? 0, ...(north === null ? { assumed: true } : {}) }
+      : null;
+
   const missing = (M.missing ?? []).map((m) => m.name + (m.note ? ` — ${m.note}` : ''));
   const plan = {
     meta: {
@@ -360,6 +375,7 @@ export function convertModel(M, sourceName = 'model.json') {
       gridStep: 2,
     },
     defaults: { wallThickness: T, doorHeight: 210 },
+    ...(site ? { site } : {}),
     walls,
     openings,
     rooms,

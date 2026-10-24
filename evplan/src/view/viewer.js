@@ -4,8 +4,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { CM, applyCut, buildHouse, label, polyFill, polyLine, v3 } from './house.js';
-import { FurnitureView } from './furniture.js';
+import { CM, applyCut, buildHouse, label, polyFill, polyLine, setRealistic, v3 } from './house.js';
+import { FurnitureView, PICK_LAYER } from './furniture.js';
 import { WalkControls } from './walk.js';
 import { buildObstacles, itemDistances, sideDistance } from '../core/checks.js';
 import { footprint, sideFrame } from '../core/items.js';
@@ -51,6 +51,9 @@ export class Viewer extends EventTarget {
 
     this.house = buildHouse(model);
     this.scene.add(this.house.root);
+    this.daylight = null; // gün ışığı (gökyüzü, alan ışıkları) ilk HD 3D/yürü kullanımında yüklenir
+    const now = new Date();
+    this.sunTime = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate(), hour: 14 };
     this.furniture = new FurnitureView(this.scene);
     this.overlay = new THREE.Group();
     this.overlayLabels = new THREE.Group();
@@ -113,15 +116,32 @@ export class Viewer extends EventTarget {
     }
   }
 
+  /** Son işlem zinciri (AO + SMAA). İlk istekte ayrı parça olarak yüklenir; hazır olana kadar null döner. */
+  _post() {
+    if (this.composer || this._postLoading) return this.composer ?? null;
+    this._postLoading = import('./post.js')
+      .then(({ createComposer }) => {
+        const { composer, ao } = createComposer(this.renderer, this.scene, this.perspCam, this.container.clientWidth || 1, this.container.clientHeight || 1);
+        this.composer = composer;
+        this.aoPass = ao;
+      })
+      .catch(() => {
+        this.ao = false; // yüklenemezse AO'suz devam
+      });
+    return null;
+  }
+
   _resize() {
     const w = this.container.clientWidth || 1;
     const h = this.container.clientHeight || 1;
     this.renderer.setSize(w, h);
+    this.composer?.setSize(w, h);
     this.labelRenderer.setSize(w, h);
     this.aspect = w / h;
     this.perspCam.aspect = this.aspect;
     this.perspCam.updateProjectionMatrix();
     this._updatePlanFrustum();
+    this.photo?.reset();
   }
 
   _updatePlanFrustum() {
@@ -156,6 +176,19 @@ export class Viewer extends EventTarget {
   }
 
   setMode(mode) {
+    const prev = this.mode;
+    // 3D kamerası yürüyüşle paylaşılır: 3D'den çıkarken bakış saklanır, dönünce geri gelir.
+    if (prev === 'orbit' && mode !== 'orbit') this._orbitSaved = { pos: this.perspCam.position.clone(), target: this.orbitControls.target.clone() };
+    if (mode === 'orbit' && prev !== 'orbit') {
+      if (this._orbitSaved) {
+        this.perspCam.position.copy(this._orbitSaved.pos);
+        this.orbitControls.target.copy(this._orbitSaved.target);
+      } else {
+        this.orbitControls.target.copy(this.center);
+        this.perspCam.position.set(this.center.x + this.extent * 0.15, this.extent * 1.05, this.center.z + this.extent * 0.95);
+      }
+      this.orbitControls.update();
+    }
     this.mode = mode;
     const plan = mode === 'plan';
     const walk = mode === 'walk';
@@ -163,6 +196,9 @@ export class Viewer extends EventTarget {
     this.orbitControls.enabled = mode === 'orbit';
     this.walk.setEnabled(walk);
     applyCut(this.house, plan ? PLAN_CUT : mode === 'orbit' && this.orbitCut ? ORBIT_CUT : null);
+    setRealistic(this.house, !plan);
+    this.furniture.zonesSelectedOnly = walk;
+    this.furniture.drawZones(this.store.items(), this.store.selection);
     this.house.ceilings.visible = walk;
     this.house.planMarks.visible = !walk;
     this.house.aboveMarks.visible = plan;
@@ -172,6 +208,7 @@ export class Viewer extends EventTarget {
     this.marker.visible = walk;
     this.renderer.setClearColor(walk ? 0xdfe7ef : 0xe9e7e2);
     if (walk) this._updateWalkWorld();
+    this._applyLighting();
     this.renderer.domElement.style.cursor = walk ? 'grab' : 'default';
     this.dispatchEvent(new CustomEvent('mode', { detail: mode }));
   }
@@ -181,7 +218,7 @@ export class Viewer extends EventTarget {
     this.hq = hq;
     const r = this.renderer;
     r.shadowMap.enabled = hq;
-    r.shadowMap.type = THREE.PCFSoftShadowMap;
+    r.shadowMap.type = THREE.PCFShadowMap;
     r.toneMapping = hq ? THREE.NeutralToneMapping : THREE.NoToneMapping;
     if (hq && !this.envTex) {
       const pm = new THREE.PMREMGenerator(r);
@@ -189,28 +226,102 @@ export class Viewer extends EventTarget {
       pm.dispose();
     }
     this.scene.environment = hq ? this.envTex : null;
-    this.scene.environmentIntensity = 0.55;
-    this.hemi.intensity = hq ? 1.7 : 2.4;
-    const b = this.model.bounds;
     const sun = this.sun;
     sun.castShadow = hq;
-    sun.intensity = hq ? 2.2 : 1.3;
-    // Güneş cephe tarafından (planın sağ üstü) içeri vursun.
-    sun.position.set(this.center.x + this.extent * 0.6, this.extent * 0.9, this.center.z - this.extent * 0.25);
-    sun.target.position.copy(this.center);
-    const half = this.extent * 0.75;
-    Object.assign(sun.shadow.camera, { left: -half, right: half, top: half, bottom: -half, near: 0.5, far: this.extent * 3 });
-    sun.shadow.camera.updateProjectionMatrix();
     sun.shadow.mapSize.set(2048, 2048);
     sun.shadow.bias = -0.0004;
     sun.shadow.normalBias = 0.02;
-    sun.shadow.radius = 4;
+    sun.shadow.radius = 3;
+    this._applyLighting();
     for (const m of this.house.walls.children) m.castShadow = m.receiveShadow = true;
     for (const m of this.house.fixtures.children) m.castShadow = m.receiveShadow = true;
     for (const m of this.house.floors.children) m.receiveShadow = true;
     this.scene.traverse((o) => {
       if (o.material) for (const mat of [].concat(o.material)) mat.needsUpdate = true;
     });
+  }
+
+  /**
+   * Işık düzeni. HD ve 3D/yürü: gerçek gün ışığı (konuma ve saate göre güneş, gökyüzü, pencereden gök ışığı).
+   * Aksi hâlde sabit, düz aydınlatma (plan okunurluğu için).
+   */
+  _applyLighting() {
+    const want = !!this.hq && this.mode !== 'plan';
+    if (want && !this.daylight) this._loadDaylight();
+    const real = want && !!this.daylight;
+    this.realLight = real;
+    this.daylight?.setEnabled(real, real && this.mode === 'walk');
+    // Uzak pus: dışarıdaki zemin ufukta gökyüzüne karışsın (iç mekân mesafelerinde etkisiz).
+    this.scene.fog = real && this.mode === 'walk' ? (this._fog ??= new THREE.Fog(0xdfe6ee, 30, 150)) : null;
+    this.renderer.toneMappingExposure = real ? 1.08 : 1;
+    for (const c of this.house.ceilings.children) c.castShadow = true;
+    const sun = this.sun;
+    if (real) {
+      this.daylight.set(this.sunTime);
+      this.daylight.placeSun(this.center, this.extent);
+      this.scene.environmentIntensity = this.mode === 'walk' ? 0.35 : 0.5;
+      return;
+    }
+    this.hemi.color.setHex(0xffffff);
+    this.hemi.groundColor.setHex(0xa8a29e);
+    this.hemi.intensity = this.hq ? 1.7 : 2.4;
+    sun.color.setHex(0xffffff);
+    sun.intensity = this.hq ? 2.2 : 1.3;
+    // Güneş cephe tarafından (planın sağ üstü) içeri vursun.
+    sun.position.set(this.center.x + this.extent * 0.6, this.extent * 0.9, this.center.z - this.extent * 0.25);
+    sun.target.position.copy(this.center);
+    const half = this.extent * 0.75;
+    Object.assign(sun.shadow.camera, { left: -half, right: half, top: half, bottom: -half, near: 0.5, far: this.extent * 3 });
+    sun.shadow.camera.updateProjectionMatrix();
+    this.scene.environmentIntensity = 0.55;
+  }
+
+  _loadDaylight() {
+    this._daylightLoading ??= import('./daylight.js').then(({ Daylight }) => {
+      this.daylight = new Daylight(this.scene, this.model, this.sun, this.hemi);
+      this._applyLighting();
+      this.dispatchEvent(new CustomEvent('lighting'));
+    });
+  }
+
+  /**
+   * Foto modu (ışın izleme): kamera durur, kare bekledikçe netleşir. Yalnızca 3D ve yürü modunda.
+   * Döner: başlatma sözü (kütüphane ayrı parça olarak yüklenir).
+   */
+  async startPhoto() {
+    if (this.photo || this.mode === 'plan') return;
+    const { PhotoMode } = await import('./photo.js');
+    if (this.photo || this.mode === 'plan') return;
+    this.walk.setEnabled(false);
+    this.orbitControls.enabled = false;
+    const p = new PhotoMode(this);
+    p.start();
+    this.photo = p;
+    this.dispatchEvent(new CustomEvent('photo', { detail: { on: true, samples: 0 } }));
+  }
+
+  stopPhoto() {
+    if (!this.photo) return;
+    this.photo.stop();
+    this.photo = null;
+    this.setMode(this.mode);
+    this.refresh();
+    this.dispatchEvent(new CustomEvent('photo', { detail: { on: false } }));
+  }
+
+  /** Foto modunda bir sonraki karenin PNG'si (cb(dataUrl)). */
+  photoSnapshot(cb) {
+    this._snapCb = cb;
+  }
+
+  /** Güneş saati/tarihi: { y, m, d, hour }. Döner: güneşin konumu. */
+  setSunTime(t) {
+    this.sunTime = { ...this.sunTime, ...t };
+    if (this.realLight) {
+      this.daylight.set(this.sunTime);
+      this.daylight.placeSun(this.center, this.extent);
+    }
+    return this.daylight?.pos;
   }
 
   toggleCut() {
@@ -316,6 +427,7 @@ export class Viewer extends EventTarget {
   _bindPointer() {
     const dom = this.renderer.domElement;
     const ray = new THREE.Raycaster();
+    ray.layers.enable(PICK_LAYER);
     const floor = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     const ndc = new THREE.Vector2();
     const pointers = new Map();
@@ -480,6 +592,7 @@ export class Viewer extends EventTarget {
     const r = this.renderer.domElement.getBoundingClientRect();
     const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster();
+    ray.layers.enable(PICK_LAYER);
     ray.setFromCamera(ndc, this.camera);
     const targets = [...this.house.walls.children, ...this.house.fixtures.children, ...this.house.floors.children, ...this.furniture.pickables()].filter(
       (o) => o.visible && o.parent?.visible !== false,
@@ -596,6 +709,21 @@ export class Viewer extends EventTarget {
   }
 
   _frame() {
+    if (this.photo) {
+      // Mini plan çizimi görüş alanını köşeye bırakmış olabilir; foto tüm tuvale çizilir.
+      this.renderer.setScissorTest(false);
+      this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight);
+      const n = this.photo.render();
+      if (this._snapCb) {
+        this._snapCb(this.photo.snapshot());
+        this._snapCb = null;
+      }
+      if (n !== this._photoN) {
+        this._photoN = n;
+        this.dispatchEvent(new CustomEvent('photo', { detail: { on: true, samples: n, done: this.photo.done } }));
+      }
+      return;
+    }
     this._updateLabels();
     this.clock.update();
     const dt = Math.min(0.05, this.clock.getDelta());
@@ -606,12 +734,15 @@ export class Viewer extends EventTarget {
       this.marker.rotation.y = (-this.walk.yaw * Math.PI) / 180 - Math.PI / 2;
     } else if (this.mode === 'orbit') this.orbitControls.update();
 
+    if (this.realLight && this.daylight.outside) this.daylight.follow(this.camera);
     const r = this.renderer;
     const w = this.container.clientWidth;
     const h = this.container.clientHeight;
     r.setScissorTest(false);
     r.setViewport(0, 0, w, h);
-    r.render(this.scene, this.camera);
+    const post = this.realLight && this.ao !== false ? this._post() : null;
+    if (post) post.render();
+    else r.render(this.scene, this.camera);
     this.labelRenderer.render(this.scene, this.camera);
 
     if (this.mode === 'walk' && this.minimap !== false) {
@@ -628,6 +759,7 @@ export class Viewer extends EventTarget {
       cam.updateProjectionMatrix();
       const ceil = this.house.ceilings.visible;
       this.house.ceilings.visible = false;
+      if (this.daylight) this.daylight.sky.visible = this.daylight.ground.visible = false;
       applyCut(this.house, PLAN_CUT);
       r.setScissorTest(true);
       r.setScissor(w - size - 10, 10, size, size);
@@ -636,6 +768,7 @@ export class Viewer extends EventTarget {
       r.setScissorTest(false);
       applyCut(this.house, null);
       this.house.ceilings.visible = ceil;
+      if (this.daylight) this.daylight.sky.visible = this.daylight.ground.visible = this.daylight.outside;
     }
   }
 }

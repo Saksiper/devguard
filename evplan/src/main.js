@@ -219,7 +219,9 @@ async function boot() {
   // Mod düğmeleri ve görünüm araçları.
   const modeBtns = document.querySelectorAll('.modes button');
   const setMode = (m) => {
+    if (viewer.photo) viewer.stopPhoto();
     viewer.setMode(m);
+    document.getElementById('stage').dataset.mode = m;
     for (const b of modeBtns) b.classList.toggle('active', b.dataset.mode === m);
     document.getElementById('walk-help').hidden = m !== 'walk';
     document.getElementById('btn-cut').hidden = m !== 'orbit';
@@ -269,6 +271,120 @@ async function boot() {
       /* depolama yok */
     }
   });
+  // Güneş: saat ve tarih (evin konumuna göre). Ayar tarayıcıda hatırlanır.
+  const sunBtn = document.getElementById('btn-sun');
+  const sunPop = document.getElementById('sun-pop');
+  const sunHour = document.getElementById('sun-hour');
+  const sunDate = document.getElementById('sun-date');
+  const WIND = ['kuzeyde', 'kuzeydoğuda', 'doğuda', 'güneydoğuda', 'güneyde', 'güneybatıda', 'batıda', 'kuzeybatıda'];
+  const pad = (n) => String(n).padStart(2, '0');
+  const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  };
+  let sunState = { date: today(), hour: 14 };
+  try {
+    sunState = { ...sunState, ...JSON.parse(localStorage.getItem('evplan:sun') ?? '{}') };
+  } catch {
+    /* depolama yok */
+  }
+  const applySun = () => {
+    const [y, m, d] = sunState.date.split('-').map(Number);
+    const pos = viewer.setSunTime({ y, m, d, hour: sunState.hour });
+    sunHour.value = sunState.hour;
+    sunDate.value = sunState.date;
+    const h = Math.floor(sunState.hour);
+    document.getElementById('sun-clock').textContent = `${pad(h)}:${pad(Math.round((sunState.hour - h) * 60))}`;
+    const info = document.getElementById('sun-info');
+    if (!pos) return (info.textContent = '');
+    const site = model.plan.site;
+    const where = site ? `${site.city ?? 'Ev'}${site.assumed ? ' (yön varsayım)' : ''}` : 'Konum yok: İstanbul ve plan sağı = kuzey varsayıldı';
+    if (pos.elevation < -0.5) info.textContent = `${where}: güneş batmış; sarkıt lambalar yanıyor.`;
+    else {
+      const lit = viewer.daylight?.sunlitRooms() ?? [];
+      info.textContent = `${where}: güneş ${Math.round(pos.elevation)}° yükseklikte, ${WIND[Math.round(pos.azimuth / 45) % 8]}. ${lit.length ? `Şu an güneş alan: ${lit.join(', ')}.` : 'Şu an hiçbir cama doğrudan güneş vurmuyor.'}`;
+    }
+    try {
+      localStorage.setItem('evplan:sun', JSON.stringify(sunState));
+    } catch {
+      /* depolama yok */
+    }
+  };
+  const syncSunBtn = () => {
+    sunBtn.hidden = !hq || viewer.mode === 'plan';
+    if (sunBtn.hidden) sunPop.hidden = true;
+    sunBtn.classList.toggle('active', !sunPop.hidden);
+  };
+  sunBtn.addEventListener('click', () => {
+    sunPop.hidden = !sunPop.hidden;
+    syncSunBtn();
+    applySun();
+  });
+  sunHour.addEventListener('input', () => {
+    sunState.hour = Number(sunHour.value);
+    applySun();
+  });
+  sunDate.addEventListener('change', () => {
+    if (sunDate.value) sunState.date = sunDate.value;
+    applySun();
+  });
+  for (const b of sunPop.querySelectorAll('[data-season]')) {
+    b.addEventListener('click', () => {
+      const y = new Date().getFullYear();
+      sunState.date = { today: today(), summer: `${y}-06-21`, winter: `${y}-12-21` }[b.dataset.season];
+      applySun();
+    });
+  }
+  viewer.addEventListener('mode', syncSunBtn);
+  viewer.addEventListener('lighting', applySun);
+  hqBtn.addEventListener('click', () => {
+    syncSunBtn();
+    applySun();
+  });
+  syncSunBtn();
+  applySun();
+  // Foto modu: ışın izleme. Kamera durur; bekledikçe netleşir.
+  const photoBtn = document.getElementById('btn-photo');
+  const photoHud = document.getElementById('photo-hud');
+  const photoStatus = document.getElementById('photo-status');
+  const syncPhotoBtn = () => {
+    photoBtn.hidden = viewer.mode === 'plan';
+  };
+  photoBtn.addEventListener('click', () => {
+    if (viewer.photo) return viewer.stopPhoto();
+    store.select(null);
+    photoStatus.textContent = 'Foto hazırlanıyor…';
+    photoHud.hidden = false;
+    viewer.startPhoto().catch((e) => {
+      photoHud.hidden = true;
+      toast(`Foto modu açılamadı: ${e?.message ?? e}`);
+    });
+  });
+  viewer.addEventListener('photo', (e) => {
+    const { on, samples, done } = e.detail;
+    photoHud.hidden = !on;
+    photoBtn.classList.toggle('active', on);
+    for (const id of ['walk-help', 'hud-tl']) document.getElementById(id).style.visibility = on ? 'hidden' : '';
+    if (on)
+      photoStatus.textContent = done
+        ? `Foto hazır (${samples} örnek).`
+        : samples
+          ? `Işın izleme: ${samples} örnek · bekledikçe netleşir`
+          : 'Foto hazırlanıyor…';
+  });
+  document.getElementById('photo-close').addEventListener('click', () => viewer.stopPhoto());
+  const embedded = !!window.__EVPLAN_DATA__;
+  document.getElementById('photo-save').hidden = embedded; // gömülü önizlemede indirme izni yok
+  document.getElementById('photo-save').addEventListener('click', () =>
+    viewer.photoSnapshot((url) => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${model.meta.name ?? 'ev'}-foto.png`;
+      a.click();
+    }),
+  );
+  viewer.addEventListener('mode', syncPhotoBtn);
+  syncPhotoBtn();
   document.getElementById('btn-tape').addEventListener('click', (e) => {
     const on = !viewer.tapeOn;
     viewer.setTape(on);
@@ -292,6 +408,7 @@ async function boot() {
       e.preventDefault();
       return store.redo();
     }
+    if (k === 'Escape' && viewer.photo) return viewer.stopPhoto();
     const it = store.selection ? store.item(store.selection) : null;
     if (!it) return;
     // Silme ve seçimi bırakma her modda (yürürken de) çalışır.

@@ -5,36 +5,10 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { rowColumns } from '../../core/items.js';
-
-let grainTexture = null;
-function grainTex() {
-  if (grainTexture) return grainTexture;
-  const c = document.createElement('canvas');
-  c.width = c.height = 256;
-  const x = c.getContext('2d');
-  x.fillStyle = '#f2f2f2';
-  x.fillRect(0, 0, 256, 256);
-  // Dikey lifler: rastgele ama tekrarlanabilir (sabit tohum).
-  let seed = 7;
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  for (let i = 0; i < 90; i++) {
-    const px = rnd() * 256;
-    const wdt = 0.6 + rnd() * 2.4;
-    const v = Math.round(205 + rnd() * 40);
-    x.strokeStyle = `rgba(${v - 30},${v - 34},${v - 40},${0.18 + rnd() * 0.25})`;
-    x.lineWidth = wdt;
-    x.beginPath();
-    for (let y = 0; y <= 256; y += 16) x.lineTo(px + Math.sin(y / 40 + i) * 2.2, y);
-    x.stroke();
-  }
-  grainTexture = new THREE.CanvasTexture(c);
-  grainTexture.wrapS = grainTexture.wrapT = THREE.RepeatWrapping;
-  grainTexture.colorSpace = THREE.SRGBColorSpace;
-  return grainTexture;
-}
+import { woodGrain } from '../textures.js';
 
 function woodMat(color, wCm, hCm) {
-  const t = grainTex().clone();
+  const t = woodGrain().clone();
   t.repeat.set(Math.max(0.3, wCm / 70), Math.max(0.3, hCm / 140));
   t.needsUpdate = true;
   return new THREE.MeshStandardMaterial({ color: new THREE.Color(color), map: t, roughness: 0.62 });

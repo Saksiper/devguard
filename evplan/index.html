@@ -47,6 +47,11 @@
           </div>
           <button id="hidden-pill" hidden title="Gizlenen mobilyaları geri göster"></button>
           </div>
+          <div id="photo-hud" hidden>
+            <span id="photo-status"></span>
+            <button id="photo-save">Kaydet</button>
+            <button id="photo-close">Kapat</button>
+          </div>
           <div id="walk-help" hidden>
             <span class="desk">WASD / oklar: yürü · sürükle: bak · Shift: hızlı</span>
             <span class="touch">Sol yarı: yürü · sağ yarı: bak</span>
@@ -62,6 +67,21 @@
             <button id="btn-tape" title="Mezura: iki noktaya dokun">Ölç</button>
             <button id="btn-hq" title="Gerçekçi görünüm: gölge ve ortam ışığı">HD</button>
             <button id="btn-tv" class="active" title="Televizyonları göster / gizle">TV</button>
+            <button id="btn-sun" title="Güneş: saat ve tarih (gerçek konuma göre)">☀</button>
+            <button id="btn-photo" title="Foto: ışın izlemeli gerçekçi kare (kamera durur, bekledikçe netleşir)">Foto</button>
+          </div>
+          <div id="sun-pop" hidden>
+            <div class="sun-row">
+              <input id="sun-hour" type="range" min="5" max="22" step="0.25" aria-label="Saat" />
+              <b id="sun-clock"></b>
+            </div>
+            <div class="sun-row">
+              <input id="sun-date" type="date" aria-label="Tarih" />
+              <button data-season="today">Bugün</button>
+              <button data-season="summer">Yaz</button>
+              <button data-season="winter">Kış</button>
+            </div>
+            <p id="sun-info"></p>
           </div>
         </div>
       </main>

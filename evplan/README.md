@@ -48,6 +48,12 @@ Not: npm 10.9'daki bir hata yüzünden `npm install` (kilit dosyası yeniden ç�
   önünüze) koyar; aynı türden bir mobilya daha önce kullanıldıysa **son bırakıldığı yere** (arka kenarı hizalı) gelir.
   Seçili mobilya varken "Yerine dene" ve çubuktaki ◀ ▶ aynı türün ürünlerini sırayla aynı yerde dener; üstündeki TV
   yeni üniteye taşınır.
+- **Gerçekçi görünüm (HD, 3D ve Yürü)**: meşe parke / seramik dokusu, süpürgelik, kapı kasası ve kolu, PVC
+  doğrama, petek dilimleri, ankastre kapak bölmeleri; köşe ve temas gölgesi (N8AO). Işık evin **gerçek konumuna ve
+  cephe yönüne** göre (`plan.json` → `site`): güneş saat/tarihe göre gölgeli vurur, pencerelerden gök ışığı girer,
+  akşam sarkıt lambalar yanar. **☀** düğmesi saat ve tarihi seçer, o an hangi odanın güneş aldığını yazar.
+- **Foto** (3D ve Yürü): o anki bakıştan **ışın izlemeli** (path tracing) kare. Kamera durur, ışık duvar ve
+  tavandan seker; bekledikçe netleşir (telefonda ~1 dakika, bilgisayarda birkaç saniye). Kapat / Esc ile çıkılır.
 - **Gizle** (çubukta ya da H): mobilya çizilmez ve kontrollere girmez; sol üstteki "N gizli · göster" geri getirir.
   Sağdaki **TV** düğmesi tüm televizyonları birlikte gizler/gösterir. **Sil** (Del) her modda çalışır; Ctrl+Z geri alır.
 - Üstte duran eşyalar (TV): yüksekliği altındaki üniteye göre otomatik; ayaklardan biri boşta kalırsa ya da
@@ -166,6 +172,15 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
 ]}
 ```
 
+### `plan.json` → `site` (gün ışığı için)
+
+```json
+"site": { "city": "Ankara", "lat": 39.93, "lon": 32.85, "utcOffset": 3, "northAngle": 0 }
+```
+
+`northAngle`: kuzeyin plandaki yönü (derece; 0 = planın sağı, 90 = aşağısı). İçe aktarıcı bunu modeldeki
+`coordinate_system` tarifinden ("+x = kuzey") çıkarır. Alan yoksa İstanbul ve "sağ = kuzey" varsayılır.
+
 ### `layouts/*.json`
 
 ```json
@@ -182,6 +197,7 @@ eklenebilir; `"choice": {"Kumaş": "Sisli Yeşil"}` ürün seçeneğini, `"hidde
 | --- | --- |
 | 1. MVP: plan + ölçülerden 3D ev, kutu mobilyalar, Plan / 3D / Yürü, sığar mı kontrolleri | ✅ (demo 2+1 ile) |
 | 2. Katalog JSON + GLB bağlama | ✅ altyapı hazır (henüz GLB yok) |
+| 2b. Gerçekçi görünüm: dokular, gün ışığı (konum + saat), AO, ışın izlemeli Foto | ✅ |
 | 3. Marble `.spz` splat'ını arka plan yap, 2–3 bilinen ölçüyle ölçek + hizalama kalibrasyonu (Spark 2.x) | ⏳ dosya bekleniyor |
 | 4. Telefonda açmak için yayın (GitHub Pages / Actions) | ⏳ karar bekleniyor (aşağıya bakın) |
 
@@ -191,6 +207,9 @@ eklenebilir; `"choice": {"Kumaş": "Sisli Yeşil"}` ürün seçeneğini, `"hidde
   bağımsızdır: hem tarayıcıda hem Node testlerinde ve komut satırında aynı kod çalışır.
 - Ağır geçiş analizi **Web Worker**'da çalışır; telefonda sürükleme takılmaz. Sürüklerken hızlı kontroller,
   bırakınca tam analiz.
+- Gerçekçi görünüm parçaları (gün ışığı, AO, Foto) **sonradan yüklenir**; plan ekranı telefonda hızlı açılır.
+- Dokular kodla üretilir (dış görsel yok); parke tahtası, derz, süpürgelik, kasa ve doğrama ölçüleri **görsel
+  varsayımdır** ve hiçbir ölçü kontrolüne girmez.
 - Splat için **Spark** (`@sparkjsdev/spark`, MIT, World Labs) planlanıyor: `.spz` doğrudan destekli, three.js
   sahnesine `SplatMesh` olarak girer; mobilya kutuları ve kontroller aynı sahnede kalır.
 
@@ -198,6 +217,10 @@ eklenebilir; `"choice": {"Kumaş": "Sisli Yeşil"}` ürün seçeneğini, `"hidde
 
 - [three.js](https://github.com/mrdoob/three.js) — MIT. Kullanılıyor.
 - [sparkjsdev/spark](https://github.com/sparkjsdev/spark) — MIT. 3. aşamada kullanılacak.
+- [N8AO](https://github.com/N8python/n8ao) — ISC. Köşe/temas gölgesi (AO). Yalnızca `N8AOPass` kullanıldığı için
+  `postprocessing` paketi Vite'ta küçük bir taslakla değiştirilir (`src/view/postprocessing-stub.js`).
+- [three-gpu-pathtracer](https://github.com/gkjohnson/three-gpu-pathtracer) ve
+  [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh) — MIT. Foto modu (ışın izleme).
 - [dohun1214/roomlens](https://github.com/dohun1214/roomlens) — depoda **lisans dosyası yok** (varsayılan: tüm
   hakları saklı). **Kod alınmadı**; yalnızca yaklaşım fikirleri (SAT çakışması, ızgarada geçiş, kapı önü,
   pencere önü ve "kullanım tarafı" kontrolleri, X ekseninde ters dönen splat'lar için düzeltme seçeneği) ilham oldu.

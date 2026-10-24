@@ -1043,7 +1043,15 @@
    },
    "assumed": true,
    "url": null,
-   "group": "Koltuklar"
+   "group": "Koltuklar",
+   "shape": {
+    "type": "sofa",
+    "seatCushions": 3,
+    "backCushions": 3,
+    "armWidth": 18,
+    "armTop": 60,
+    "armRadius": 5
+   }
   },
   {
    "id": "berjer",
@@ -1058,7 +1066,15 @@
    },
    "assumed": true,
    "url": null,
-   "group": "Koltuklar"
+   "group": "Koltuklar",
+   "shape": {
+    "type": "sofa",
+    "seatCushions": 1,
+    "backCushions": 1,
+    "armWidth": 14,
+    "armTop": 62,
+    "armRadius": 4
+   }
   },
   {
    "id": "orta-sehpa",
@@ -1070,7 +1086,13 @@
    "color": "#a07c55",
    "assumed": true,
    "url": null,
-   "group": "Sehpalar"
+   "group": "Sehpalar",
+   "shape": {
+    "type": "table",
+    "top": 3,
+    "leg": 4,
+    "shelf": 12
+   }
   },
   {
    "id": "tv-unitesi",
@@ -1086,7 +1108,14 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "TV üniteleri"
+   "group": "TV üniteleri",
+   "shape": {
+    "type": "case",
+    "fronts": "drawers",
+    "rows": 1,
+    "cols": 3,
+    "legs": 10
+   }
   },
   {
    "id": "tv-55",
@@ -1119,7 +1148,10 @@
    },
    "assumed": true,
    "url": null,
-   "group": "Masalar"
+   "group": "Masalar",
+   "shape": {
+    "type": "table"
+   }
   },
   {
    "id": "sandalye",
@@ -1133,7 +1165,10 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Sandalyeler"
+   "group": "Sandalyeler",
+   "shape": {
+    "type": "chair"
+   }
   },
   {
    "id": "kitaplik",
@@ -1149,7 +1184,10 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Dolap ve raflar"
+   "group": "Dolap ve raflar",
+   "shape": {
+    "type": "shelf"
+   }
   },
   {
    "id": "cift-yatak",
@@ -1169,7 +1207,10 @@
    "assumed": true,
    "url": null,
    "notes": "Ön = ayak ucu, arka = başlık.",
-   "group": "Yataklar"
+   "group": "Yataklar",
+   "shape": {
+    "type": "bed"
+   }
   },
   {
    "id": "komodin",
@@ -1185,7 +1226,14 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Dolap ve raflar"
+   "group": "Dolap ve raflar",
+   "shape": {
+    "type": "case",
+    "fronts": "drawers",
+    "rows": 2,
+    "wood": true,
+    "legs": 8
+   }
   },
   {
    "id": "gardirop-4",
@@ -1204,7 +1252,12 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Dolap ve raflar"
+   "group": "Dolap ve raflar",
+   "shape": {
+    "type": "case",
+    "fronts": "doors",
+    "count": 4
+   }
   },
   {
    "id": "gardirop-surgulu",
@@ -1220,7 +1273,12 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Dolap ve raflar"
+   "group": "Dolap ve raflar",
+   "shape": {
+    "type": "case",
+    "fronts": "sliding",
+    "count": 2
+   }
   },
   {
    "id": "tek-yatak",
@@ -1238,7 +1296,11 @@
    "assumed": true,
    "url": null,
    "notes": "Yan erişim varsayılan olarak sol yanda; duvara göre yerleşimde 'use' ile değiştirilebilir.",
-   "group": "Yataklar"
+   "group": "Yataklar",
+   "shape": {
+    "type": "bed",
+    "headboard": 6
+   }
   },
   {
    "id": "calisma-masasi",
@@ -1254,7 +1316,12 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Masalar"
+   "group": "Masalar",
+   "shape": {
+    "type": "table",
+    "leg": 4,
+    "apron": 6
+   }
   },
   {
    "id": "calisma-sandalyesi",
@@ -1267,7 +1334,10 @@
    "movable": true,
    "assumed": true,
    "url": null,
-   "group": "Sandalyeler"
+   "group": "Sandalyeler",
+   "shape": {
+    "type": "officeChair"
+   }
   },
   {
    "id": "buzdolabi",
@@ -1283,7 +1353,10 @@
    },
    "assumed": true,
    "url": null,
-   "group": "Beyaz eşya"
+   "group": "Beyaz eşya",
+   "shape": {
+    "type": "fridge"
+   }
   },
   {
    "id": "camasir-makinesi",
@@ -1298,7 +1371,10 @@
    },
    "assumed": true,
    "url": null,
-   "group": "Beyaz eşya"
+   "group": "Beyaz eşya",
+   "shape": {
+    "type": "washer"
+   }
   },
   {
    "id": "mutfak-masasi",
@@ -1315,7 +1391,10 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Masalar"
+   "group": "Masalar",
+   "shape": {
+    "type": "table"
+   }
   },
   {
    "id": "ayakkabilik",
@@ -1331,7 +1410,12 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Dolap ve raflar"
+   "group": "Dolap ve raflar",
+   "shape": {
+    "type": "case",
+    "fronts": "doors",
+    "count": 2
+   }
   },
   {
    "id": "hali-200x290",
@@ -1345,7 +1429,10 @@
    "flatpack": true,
    "assumed": true,
    "url": null,
-   "group": "Halılar"
+   "group": "Halılar",
+   "shape": {
+    "type": "rug"
+   }
   }
  ]
 }

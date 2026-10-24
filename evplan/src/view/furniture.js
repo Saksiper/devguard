@@ -11,6 +11,9 @@ const unitBox = new THREE.BoxGeometry(1, 1, 1);
 unitBox.translate(0, 0.5, 0);
 const edgeGeo = new THREE.EdgesGeometry(unitBox);
 
+/** Görünmez seçim kutusunun katmanı: kamera, gölge ve AO görmez; yalnızca seçim ışını görür. */
+export const PICK_LAYER = 2;
+
 const STATE_EDGE = { error: 0xdc2626, warn: 0xd97706, selected: 0x2563eb, none: 0x374151 };
 
 const loader = new GLTFLoader();
@@ -103,7 +106,7 @@ export class FurnitureView {
     const color = new THREE.Color(it.color);
     const body = new THREE.Mesh(
       unitBox,
-      new THREE.MeshLambertMaterial({ color, transparent: !it.collides, opacity: it.collides ? 1 : 0.7 }),
+      new THREE.MeshStandardMaterial({ color, roughness: 0.8, transparent: !it.collides, opacity: it.collides ? 1 : 0.7 }),
     );
     body.scale.set(it.w * CM, Math.max(it.h, 0.5) * CM, it.d * CM);
     body.userData.uid = it.uid;
@@ -121,6 +124,7 @@ export class FurnitureView {
       });
       root.add(model);
       Object.assign(body.material, { transparent: true, opacity: 0, depthWrite: false, colorWrite: false });
+      body.layers.set(PICK_LAYER);
     }
     // Ön yüz işareti: üst yüzün ön kenarında koyu şerit.
     if (!model && it.collides && it.h > 5) {
@@ -138,9 +142,8 @@ export class FurnitureView {
             if (o.isMesh) o.userData.uid = it.uid;
           });
           root.add(fitted);
-          body.material.transparent = true;
-          body.material.opacity = 0.0;
-          body.material.depthWrite = false;
+          Object.assign(body.material, { transparent: true, opacity: 0, depthWrite: false, colorWrite: false });
+          body.layers.set(PICK_LAYER);
         })
         .catch(() => {
           /* model yüklenemezse kutu kalır */
@@ -175,6 +178,7 @@ export class FurnitureView {
     if (!this.showZones) return;
     for (const it of items) {
       const sel = it.uid === selection;
+      if (this.zonesSelectedOnly && !sel) continue; // yürürken yalnızca seçili mobilyanın kapak/çekmece izleri
       for (const leaf of frontLeaves(it)) {
         const poly = leafPolygon(leaf, 12);
         this.zones.add(polyLine(poly.slice(1), 0.01, 0x6b7280, { closed: false, dashed: true, opacity: sel ? 1 : 0.6 }));

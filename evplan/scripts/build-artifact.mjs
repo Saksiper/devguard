@@ -3,7 +3,7 @@
 //
 //   npm run build && node scripts/build-artifact.mjs <veri-seti> <çıktı-klasörü> [başlık]
 //
-// Çıktı: <klasör>/index.html (gövde içeriği; doctype/head yok) + checks.worker-*.js (yanında yayınlanır).
+// Çıktı: <klasör>/index.html (gövde içeriği; doctype/head yok) + diğer JS parçaları (yanında yayınlanır).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -40,6 +40,7 @@ ${body.trim()}
 <script type="module">${js}</script>
 `;
 fs.writeFileSync(path.join(outDir, 'index.html'), page);
-const workers = fs.readdirSync(path.join(dist, 'assets')).filter((f) => f.startsWith('checks.worker-'));
-for (const w of workers) fs.copyFileSync(path.join(dist, 'assets', w), path.join(outDir, w));
-console.log(`${path.join(outDir, 'index.html')} (${(page.length / 1024).toFixed(0)} KB) + ${workers.join(', ')}`);
+// Kontrol işçisi ve sonradan yüklenen parçalar (gün ışığı, AO, foto, ortak three çekirdeği) sayfanın yanında yayınlanır.
+const parts = fs.readdirSync(path.join(dist, 'assets')).filter((f) => f.endsWith('.js') && f !== jsFile);
+for (const w of parts) fs.copyFileSync(path.join(dist, 'assets', w), path.join(outDir, w));
+console.log(`${path.join(outDir, 'index.html')} (${(page.length / 1024).toFixed(0)} KB) + ${parts.join(', ')}`);
