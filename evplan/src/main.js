@@ -54,7 +54,12 @@ class Checker {
         else p.resolve({ ...e.data.result, itemState: new Map(e.data.result.itemState) });
       };
       this.worker.onerror = () => {
+        // Worker açılamadıysa bekleyen işleri ana iş parçacığında bitir.
         this.worker = null;
+        for (const [id, p] of this.pending) {
+          this.pending.delete(id);
+          p.resolve(runChecks(this.model, p.items));
+        }
       };
     } catch {
       this.worker = null;
@@ -64,9 +69,10 @@ class Checker {
   run(items) {
     const id = ++this.seq;
     if (!this.worker) return new Promise((resolve) => setTimeout(() => resolve(runChecks(this.model, items)), 0));
+    const plain = JSON.parse(JSON.stringify(items));
     return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-      this.worker.postMessage({ id, plan: this.plan, items: JSON.parse(JSON.stringify(items)) });
+      this.pending.set(id, { resolve, reject, items: plain });
+      this.worker.postMessage({ id, plan: this.plan, items: plain });
     });
   }
 }
