@@ -1,0 +1,28 @@
+{
+  "id": "a-klasik",
+  "name": "A – Klasik",
+  "note": "DEMO yerleşim. x, y = mobilyanın taban merkezi (cm); rot = derece (saat yönü, 0'da önü aşağı/güney).",
+  "items": [
+    { "uid": "a1", "ref": "kanepe-3", "x": 200, "y": 210, "rot": 270 },
+    { "uid": "a2", "ref": "orta-sehpa", "x": 330, "y": 210, "rot": 90 },
+    { "uid": "a3", "ref": "tv-unitesi", "x": 499, "y": 210, "rot": 90 },
+    { "uid": "a4", "ref": "tv-55", "x": 501, "y": 210, "rot": 90 },
+    { "uid": "a5", "ref": "berjer", "x": 433, "y": 56, "rot": 15 },
+    { "uid": "a6", "ref": "hali-200x290", "x": 300, "y": 210, "rot": 90 },
+    { "uid": "a7", "ref": "kitaplik", "x": 16, "y": 325, "rot": 270 },
+    { "uid": "a10", "ref": "cift-yatak", "x": 795, "y": 200, "rot": 90 },
+    { "uid": "a11", "ref": "komodin", "x": 875, "y": 92, "rot": 90 },
+    { "uid": "a12", "ref": "komodin", "x": 875, "y": 308, "rot": 90 },
+    { "uid": "a13", "ref": "gardirop-4", "x": 560, "y": 200, "rot": 270 },
+    { "uid": "a20", "ref": "tek-yatak", "x": 796.5, "y": 735, "rot": 90 },
+    { "uid": "a21", "ref": "calisma-masasi", "x": 700, "y": 571, "rot": 0 },
+    { "uid": "a22", "ref": "calisma-sandalyesi", "x": 700, "y": 625, "rot": 180 },
+    { "uid": "a23", "ref": "kitaplik", "x": 536, "y": 760, "rot": 270 },
+    { "uid": "a30", "ref": "buzdolabi", "x": 262.5, "y": 823, "rot": 180 },
+    { "uid": "a31", "ref": "mutfak-masasi", "x": 160, "y": 680, "rot": 90 },
+    { "uid": "a32", "ref": "sandalye", "x": 95, "y": 680, "rot": 270 },
+    { "uid": "a33", "ref": "sandalye", "x": 225, "y": 680, "rot": 90 },
+    { "uid": "a40", "ref": "camasir-makinesi", "x": 450, "y": 571, "rot": 0 },
+    { "uid": "a50", "ref": "ayakkabilik", "x": 750, "y": 512, "rot": 180 }
+  ]
+}

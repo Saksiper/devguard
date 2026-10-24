@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "name": "Örnek 2+1 daire (DEMO)",
+    "demo": true,
+    "units": "cm",
+    "note": "DEMO: Bu plandaki TÜM ölçüler varsayımdır. Gerçek ev ölçüleri gelince bu dosya değiştirilecek. Koordinatlar: x sağa, y aşağı (plan resmi gibi), birim cm. Duvarlarda 'side' kalınlığın çizginin hangi tarafına verildiğini söyler (from→to yönünde yürürken left/right; yoksa center)."
+  },
+  "settings": {
+    "ceilingHeight": 260,
+    "eyeHeight": 160,
+    "passageMin": 75,
+    "passageHard": 60,
+    "accessMin": 60,
+    "gridStep": 2
+  },
+  "defaults": { "wallThickness": 10, "doorHeight": 205 },
+  "walls": [
+    { "id": "D-kuzey", "from": [0, 0], "to": [900, 0], "thickness": 25, "side": "left", "note": "dış duvar; çizgi iç yüz" },
+    { "id": "D-dogu", "from": [900, 0], "to": [900, 860], "thickness": 25, "side": "left" },
+    { "id": "D-guney", "from": [900, 860], "to": [0, 860], "thickness": 25, "side": "left" },
+    { "id": "D-bati", "from": [0, 860], "to": [0, 0], "thickness": 25, "side": "left" },
+    { "id": "I-salon-koridor", "from": [0, 400], "to": [900, 400], "thickness": 10, "side": "right" },
+    { "id": "I-salon-yatak1", "from": [520, 0], "to": [520, 400], "thickness": 10, "side": "left" },
+    { "id": "I-koridor-alt", "from": [0, 530], "to": [900, 530], "thickness": 10, "side": "right" },
+    { "id": "I-mutfak-banyo", "from": [300, 540], "to": [300, 860], "thickness": 10, "side": "left" },
+    { "id": "I-banyo-yatak2", "from": [510, 540], "to": [510, 860], "thickness": 10, "side": "left" },
+    { "id": "B-kuzey", "from": [40, -165], "to": [340, -165], "thickness": 15, "side": "left", "height": 110 },
+    { "id": "B-dogu", "from": [340, -165], "to": [340, -25], "thickness": 15, "side": "left", "height": 110 },
+    { "id": "B-bati", "from": [40, -25], "to": [40, -165], "thickness": 15, "side": "left", "height": 110 }
+  ],
+  "openings": [
+    { "id": "K-giris", "name": "Giriş kapısı", "type": "door", "wall": "D-dogu", "offset": 425, "width": 90, "height": 205, "hinge": "end", "swing": "right", "entrance": true },
+    { "id": "K-salon", "name": "Salon kapısı", "type": "door", "wall": "I-salon-koridor", "offset": 400, "width": 80, "hinge": "end", "swing": "left" },
+    { "id": "K-yatak1", "name": "Yatak odası 1 kapısı", "type": "door", "wall": "I-salon-koridor", "offset": 540, "width": 80, "hinge": "start", "swing": "left" },
+    { "id": "K-mutfak", "name": "Mutfak kapısı", "type": "door", "wall": "I-koridor-alt", "offset": 200, "width": 80, "hinge": "end", "swing": "right" },
+    { "id": "K-banyo", "name": "Banyo kapısı", "type": "door", "wall": "I-koridor-alt", "offset": 330, "width": 70, "hinge": "start", "swing": "right" },
+    { "id": "K-yatak2", "name": "Yatak odası 2 kapısı", "type": "door", "wall": "I-koridor-alt", "offset": 530, "width": 80, "hinge": "start", "swing": "right" },
+    { "id": "K-balkon", "name": "Balkon kapısı", "type": "door", "wall": "D-kuzey", "offset": 60, "width": 90, "height": 220, "hinge": "start", "swing": "right" },
+    { "id": "P-salon", "name": "Salon penceresi", "type": "window", "wall": "D-kuzey", "offset": 200, "width": 180, "sill": 90, "height": 150, "leaves": 2, "swing": "right", "pivotInset": 8 },
+    { "id": "P-yatak1", "name": "Yatak odası 1 penceresi", "type": "window", "wall": "D-kuzey", "offset": 620, "width": 180, "sill": 90, "height": 150, "leaves": 2, "swing": "right", "pivotInset": 8 },
+    { "id": "P-salon-yan", "name": "Salon yan penceresi", "type": "window", "wall": "D-bati", "offset": 580, "width": 160, "sill": 90, "height": 150, "leaves": 2, "swing": "right", "pivotInset": 8 },
+    { "id": "P-mutfak", "name": "Mutfak penceresi", "type": "window", "wall": "D-guney", "offset": 680, "width": 140, "sill": 100, "height": 120, "swing": "right", "pivotInset": 8 },
+    { "id": "P-banyo", "name": "Banyo penceresi", "type": "window", "wall": "D-guney", "offset": 460, "width": 60, "sill": 160, "height": 60 },
+    { "id": "P-yatak2", "name": "Yatak odası 2 penceresi", "type": "window", "wall": "D-guney", "offset": 100, "width": 180, "sill": 90, "height": 150, "leaves": 2, "swing": "right", "pivotInset": 8 }
+  ],
+  "rooms": [
+    { "id": "salon", "name": "Salon", "polygon": [[0, 0], [520, 0], [520, 400], [0, 400]], "floor": "parke" },
+    { "id": "yatak1", "name": "Yatak odası 1", "polygon": [[530, 0], [900, 0], [900, 400], [530, 400]], "floor": "parke" },
+    { "id": "koridor", "name": "Hol / koridor", "polygon": [[0, 410], [900, 410], [900, 530], [0, 530]], "floor": "parke" },
+    { "id": "mutfak", "name": "Mutfak", "polygon": [[0, 540], [300, 540], [300, 860], [0, 860]], "floor": "seramik" },
+    { "id": "banyo", "name": "Banyo", "polygon": [[310, 540], [510, 540], [510, 860], [310, 860]], "floor": "seramik" },
+    { "id": "yatak2", "name": "Yatak odası 2", "polygon": [[520, 540], [900, 540], [900, 860], [520, 860]], "floor": "parke" },
+    { "id": "balkon", "name": "Balkon", "polygon": [[40, -165], [340, -165], [340, -25], [40, -25]], "floor": "dis", "ceiling": false }
+  ],
+  "fixtures": [
+    { "id": "petek-salon", "type": "radiator", "name": "Petek (salon)", "x": 290, "y": 9, "w": 140, "d": 10, "h": 60, "z": 15 },
+    { "id": "petek-salon-yan", "type": "radiator", "name": "Petek (salon yan)", "x": 9, "y": 200, "w": 120, "d": 10, "h": 60, "z": 15, "rot": 90 },
+    { "id": "petek-yatak1", "type": "radiator", "name": "Petek (yatak 1)", "x": 710, "y": 9, "w": 120, "d": 10, "h": 60, "z": 15 },
+    { "id": "petek-yatak2", "type": "radiator", "name": "Petek (yatak 2)", "x": 710, "y": 851, "w": 120, "d": 10, "h": 60, "z": 15 },
+    { "id": "petek-mutfak", "type": "radiator", "name": "Petek (mutfak)", "x": 291, "y": 640, "w": 60, "d": 10, "h": 60, "z": 15, "rot": 90 },
+    { "id": "havlupan", "type": "radiator", "name": "Havlupan", "x": 501, "y": 700, "w": 50, "d": 10, "h": 120, "z": 20, "rot": 90 },
+    { "id": "kolon-salon", "type": "column", "name": "Kolon", "x": 12.5, "y": 385, "w": 25, "d": 30, "h": 260 },
+    { "id": "tezgah-alt", "type": "counter", "name": "Mutfak tezgahı", "x": 112.5, "y": 830, "w": 225, "d": 60, "h": 90 },
+    { "id": "tezgah-sol", "type": "counter", "name": "Mutfak tezgahı (yan)", "x": 30, "y": 700, "w": 200, "d": 60, "h": 90, "rot": 90 },
+    { "id": "kombi", "type": "boiler", "name": "Kombi", "x": 285, "y": 640, "w": 40, "d": 30, "h": 70, "z": 140, "rot": 90 },
+    { "id": "dus", "type": "shower", "name": "Duşakabin", "x": 465, "y": 815, "w": 90, "d": 90, "h": 200 },
+    { "id": "klozet", "type": "wc", "name": "Klozet", "x": 350, "y": 830, "w": 40, "d": 60, "h": 75, "rot": 180 },
+    { "id": "lavabo", "type": "sink", "name": "Lavabo dolabı", "x": 332.5, "y": 670, "w": 60, "d": 45, "h": 85, "rot": 270 }
+  ],
+  "access": {
+    "entranceDoor": "K-giris",
+    "elevator": null,
+    "note": "Asansör kabin/kapı ölçüleri bilinmiyor (varsayım: yok). Ölçülünce elevator: { doorWidth, doorHeight, cabinWidth, cabinDepth, cabinHeight } girilecek."
+  },
+  "splat": null
+}

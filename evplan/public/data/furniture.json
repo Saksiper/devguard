@@ -1,0 +1,25 @@
+{
+  "note": "Mobilya kataloğu. Ölçüler cm: w = genişlik (G), d = derinlik (D), h = yükseklik (Y). 'assumed: true' = ölçü örnek/varsayım, gerçek ürünle değiştirilecek. Yerel eksen: +d yönü mobilyanın ÖNÜ. İsteğe bağlı: model (GLB yolu), url (ürün linki), frontDoors {count, hinge}, drawers {depth}, use {front, back, left, right, sideFrom}, movable (sandalye gibi kolay çekilen), collides:false (halı gibi), flatpack (demonte gelir).",
+  "items": [
+    { "id": "kanepe-3", "name": "3'lü kanepe", "category": "Salon", "w": 220, "d": 95, "h": 85, "color": "#5f7387", "use": { "front": 40 }, "assumed": true, "url": null },
+    { "id": "berjer", "name": "Berjer", "category": "Salon", "w": 80, "d": 85, "h": 95, "color": "#8c6f5a", "use": { "front": 40 }, "assumed": true, "url": null },
+    { "id": "orta-sehpa", "name": "Orta sehpa", "category": "Salon", "w": 100, "d": 60, "h": 45, "color": "#a07c55", "assumed": true, "url": null },
+    { "id": "tv-unitesi", "name": "TV ünitesi", "category": "Salon", "w": 180, "d": 40, "h": 50, "color": "#3f3f46", "drawers": { "depth": 35 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "tv-55", "name": "Televizyon 55\"", "category": "Salon", "w": 123, "d": 25, "h": 75, "z": 50, "color": "#111827", "assumed": true, "url": null },
+    { "id": "yemek-masasi", "name": "Yemek masası (6 kişilik)", "category": "Salon", "w": 160, "d": 90, "h": 75, "color": "#b08d63", "use": { "front": 70, "back": 70 }, "assumed": true, "url": null },
+    { "id": "sandalye", "name": "Sandalye", "category": "Salon", "w": 45, "d": 52, "h": 90, "color": "#6b5b4b", "movable": true, "flatpack": true, "assumed": true, "url": null },
+    { "id": "kitaplik", "name": "Kitaplık", "category": "Salon", "w": 80, "d": 30, "h": 200, "color": "#c8b79a", "use": { "front": 60 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "cift-yatak", "name": "Çift kişilik yatak (160×200)", "category": "Yatak odası", "w": 165, "d": 208, "h": 105, "color": "#d6cfc4", "flatpack": true, "use": { "left": 60, "right": 60, "front": 50, "sideFrom": 0.4 }, "assumed": true, "url": null, "notes": "Ön = ayak ucu, arka = başlık." },
+    { "id": "komodin", "name": "Komodin", "category": "Yatak odası", "w": 50, "d": 40, "h": 55, "color": "#9c8466", "drawers": { "depth": 30 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "gardirop-4", "name": "Gardırop (4 kapaklı)", "category": "Yatak odası", "w": 180, "d": 58, "h": 220, "color": "#e5e1da", "frontDoors": { "count": 4 }, "use": { "front": 60 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "gardirop-surgulu", "name": "Gardırop (sürgülü)", "category": "Yatak odası", "w": 200, "d": 65, "h": 220, "color": "#cfc8bd", "use": { "front": 70 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "tek-yatak", "name": "Tek kişilik yatak (100×200)", "category": "Yatak odası", "w": 105, "d": 205, "h": 90, "color": "#cbd5e1", "flatpack": true, "use": { "left": 50, "sideFrom": 0.3 }, "assumed": true, "url": null, "notes": "Yan erişim varsayılan olarak sol yanda; duvara göre yerleşimde 'use' ile değiştirilebilir." },
+    { "id": "calisma-masasi", "name": "Çalışma masası", "category": "Çalışma", "w": 120, "d": 60, "h": 75, "color": "#d9c3a5", "use": { "front": 80 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "calisma-sandalyesi", "name": "Çalışma sandalyesi", "category": "Çalışma", "w": 60, "d": 60, "h": 110, "color": "#374151", "movable": true, "assumed": true, "url": null },
+    { "id": "buzdolabi", "name": "Buzdolabı", "category": "Mutfak", "w": 70, "d": 72, "h": 185, "color": "#e8eaed", "frontDoors": { "count": 1, "hinge": "right" }, "assumed": true, "url": null },
+    { "id": "camasir-makinesi", "name": "Çamaşır makinesi", "category": "Banyo", "w": 60, "d": 60, "h": 85, "color": "#f4f4f5", "use": { "front": 60 }, "assumed": true, "url": null },
+    { "id": "mutfak-masasi", "name": "Mutfak masası (2-4 kişilik)", "category": "Mutfak", "w": 110, "d": 70, "h": 75, "color": "#c7a27c", "use": { "front": 60, "back": 60 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "ayakkabilik", "name": "Ayakkabılık", "category": "Hol", "w": 100, "d": 35, "h": 110, "color": "#a3a3a3", "frontDoors": { "count": 2 }, "flatpack": true, "assumed": true, "url": null },
+    { "id": "hali-200x290", "name": "Halı 200×290", "category": "Salon", "w": 200, "d": 290, "h": 1, "color": "#b9a48a", "collides": false, "flatpack": true, "assumed": true, "url": null }
+  ]
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f2430" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Ev Yerleşim Planlayıcı</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header id="topbar">
+        <div class="brand">
+          <strong id="plan-name">Ev planı</strong>
+          <span id="demo-badge" class="badge warn" hidden>DEMO · ölçüler varsayım</span>
+        </div>
+        <nav class="modes" role="tablist" aria-label="Görünüm">
+          <button data-mode="plan" class="active" title="Kuşbakışı plan (1)">Plan</button>
+          <button data-mode="orbit" title="3D model (2)">3D</button>
+          <button data-mode="walk" title="İçinde yürü (3)">Yürü</button>
+        </nav>
+        <div class="layout-pick">
+          <select id="layout-select" aria-label="Yerleşim"></select>
+          <span id="status-pill" class="pill" title="Kontrol özeti"></span>
+        </div>
+      </header>
+
+      <main id="stage">
+        <div id="viewport"></div>
+        <div id="hud">
+          <div id="toast" hidden></div>
+          <div id="selbar" hidden>
+            <span class="name"></span>
+            <button data-s="r-90" title="90° sola">⟲90</button>
+            <button data-s="r-15" title="15° sola">⟲15</button>
+            <button data-s="r15" title="15° sağa">⟳15</button>
+            <button data-s="r90" title="90° sağa">⟳90</button>
+            <button data-s="more" title="Ölçü ve ayrıntılar">Detay</button>
+            <button data-s="close" title="Seçimi kaldır">✕</button>
+          </div>
+          <div id="walk-help" hidden>
+            <span class="desk">WASD / oklar: yürü · sürükle: bak · Shift: hızlı</span>
+            <span class="touch">Sol yarı: yürü · sağ yarı: bak</span>
+          </div>
+          <div id="joystick" hidden><div class="knob"></div></div>
+          <div id="view-tools">
+            <button id="btn-fit" title="Evi ortala">⤢</button>
+            <button id="btn-cut" title="Duvarları 120 cm'den kes / tam yükseklik">Kes</button>
+            <button id="btn-zones" class="active" title="Kapak, çekmece ve kullanım alanlarını göster">Alan</button>
+            <button id="btn-paths" class="active" title="Dar geçiş yollarını göster">Yol</button>
+            <button id="btn-labels" class="active" title="Mobilya adlarını göster">Ad</button>
+          </div>
+        </div>
+      </main>
+
+      <aside id="panel">
+        <button id="panel-grip" aria-label="Paneli aç/kapat"><span></span></button>
+        <div class="tabs" role="tablist">
+          <button data-tab="checks" class="active">Kontrol <span id="tab-checks-count"></span></button>
+          <button data-tab="selected">Seçili</button>
+          <button data-tab="add">Ekle</button>
+          <button data-tab="layouts">Yerleşimler</button>
+        </div>
+        <section id="tab-checks" class="tab active"></section>
+        <section id="tab-selected" class="tab"></section>
+        <section id="tab-add" class="tab"></section>
+        <section id="tab-layouts" class="tab"></section>
+      </aside>
+    </div>
+    <div id="fatal" hidden></div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

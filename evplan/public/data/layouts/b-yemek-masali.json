@@ -1,0 +1,29 @@
+{
+  "id": "b-yemek-masali",
+  "name": "B – Yemek masalı salon",
+  "note": "DEMO yerleşim; bilerek birkaç sorun içerir (kontrol listesinde görünür).",
+  "items": [
+    { "uid": "b1", "ref": "kanepe-3", "x": 471.5, "y": 200, "rot": 90 },
+    { "uid": "b2", "ref": "orta-sehpa", "x": 365, "y": 200, "rot": 90 },
+    { "uid": "b3", "ref": "tv-unitesi", "x": 36, "y": 200, "rot": 270 },
+    { "uid": "b4", "ref": "tv-55", "x": 34, "y": 200, "rot": 270 },
+    { "uid": "b5", "ref": "yemek-masasi", "x": 200, "y": 330, "rot": 0 },
+    { "uid": "b6", "ref": "sandalye", "x": 160, "y": 258, "rot": 0 },
+    { "uid": "b7", "ref": "sandalye", "x": 240, "y": 258, "rot": 0 },
+    { "uid": "b8", "ref": "sandalye", "x": 95, "y": 330, "rot": 270 },
+    { "uid": "b10", "ref": "cift-yatak", "x": 690, "y": 119, "rot": 0 },
+    { "uid": "b11", "ref": "komodin", "x": 580, "y": 35, "rot": 0 },
+    { "uid": "b12", "ref": "komodin", "x": 800, "y": 35, "rot": 0 },
+    { "uid": "b13", "ref": "gardirop-surgulu", "x": 866.5, "y": 250, "rot": 90 },
+    { "uid": "b20", "ref": "tek-yatak", "x": 796.5, "y": 600, "rot": 90, "use": { "right": 50, "sideFrom": 0.3 } },
+    { "uid": "b21", "ref": "calisma-masasi", "x": 710, "y": 805, "rot": 180 },
+    { "uid": "b22", "ref": "calisma-sandalyesi", "x": 710, "y": 750, "rot": 0 },
+    { "uid": "b23", "ref": "kitaplik", "x": 536, "y": 760, "rot": 270 },
+    { "uid": "b30", "ref": "buzdolabi", "x": 262.5, "y": 823, "rot": 180 },
+    { "uid": "b31", "ref": "mutfak-masasi", "x": 160, "y": 680, "rot": 90 },
+    { "uid": "b32", "ref": "sandalye", "x": 95, "y": 680, "rot": 270 },
+    { "uid": "b33", "ref": "sandalye", "x": 225, "y": 680, "rot": 90 },
+    { "uid": "b40", "ref": "camasir-makinesi", "x": 450, "y": 571, "rot": 0 },
+    { "uid": "b50", "ref": "ayakkabilik", "x": 850, "y": 512, "rot": 180 }
+  ]
+}

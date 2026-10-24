@@ -1,0 +1,4 @@
+{
+  "note": "Uygulamanın açılışta yüklediği yerleşim dosyaları. Yeni dosya eklerseniz buraya adını yazın.",
+  "layouts": ["a-klasik.json", "b-yemek-masali.json"]
+}
