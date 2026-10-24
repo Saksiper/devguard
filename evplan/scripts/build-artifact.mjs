@@ -1,9 +1,9 @@
-// Tek sayfalık önizleme: derlenmiş uygulamayı, CSS/JS'i ve bir veri setini içine gömerek tek HTML yapar
+// Önizleme sayfası: derlenmiş uygulamanın CSS'ini ve bir veri setini içine gömen HTML + yanında JS parçaları
 // (dosya okuyamayan / ayrı sunucusu olmayan barındırma için, ör. özel claude.ai sayfası).
 //
 //   npm run build && node scripts/build-artifact.mjs <veri-seti> <çıktı-klasörü> [başlık]
 //
-// Çıktı: <klasör>/index.html (gövde içeriği; doctype/head yok) + diğer JS parçaları (yanında yayınlanır).
+// Çıktı: <klasör>/index.html (gövde içeriği; doctype/head yok) + JS parçaları (yanında yayınlanır).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,7 +23,6 @@ const html = read(path.join(dist, 'index.html'));
 const jsFile = html.match(/src="\.\/assets\/(index-[^"]+\.js)"/)[1];
 const cssFile = html.match(/href="\.\/assets\/(index-[^"]+\.css)"/)[1];
 const body = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>')).replace(/<script[^>]*src=[^>]*><\/script>/g, '');
-const js = read(path.join(dist, 'assets', jsFile)).replace(/<\/script/gi, '<\\/script');
 const css = read(path.join(dist, 'assets', cssFile));
 
 const dir = path.join(data, set);
@@ -37,10 +36,12 @@ const page = `<title>${title}</title>
 <style>${css}</style>
 ${body.trim()}
 <script>window.__EVPLAN_DATA__ = ${payload};</script>
-<script type="module">${js}</script>
+<script type="module" src="./${jsFile}"></script>
 `;
 fs.writeFileSync(path.join(outDir, 'index.html'), page);
-// Kontrol işçisi ve sonradan yüklenen parçalar (gün ışığı, AO, foto, ortak three çekirdeği) sayfanın yanında yayınlanır.
-const parts = fs.readdirSync(path.join(dist, 'assets')).filter((f) => f.endsWith('.js') && f !== jsFile);
+// Uygulama betiği, kontrol işçisi ve sonradan yüklenen parçalar (gün ışığı, AO, foto, ortak three çekirdeği)
+// sayfanın yanında ayrı dosya olarak yayınlanır. Ana betik sayfaya gömülmez: parçalar ondan içe aktarım yapar
+// ve aynı modül örneğini paylaşmaları gerekir.
+const parts = fs.readdirSync(path.join(dist, 'assets')).filter((f) => f.endsWith('.js'));
 for (const w of parts) fs.copyFileSync(path.join(dist, 'assets', w), path.join(outDir, w));
 console.log(`${path.join(outDir, 'index.html')} (${(page.length / 1024).toFixed(0)} KB) + ${parts.join(', ')}`);

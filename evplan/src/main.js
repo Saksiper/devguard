@@ -9,7 +9,7 @@ import { Viewer } from './view/viewer.js';
 import { Panel } from './ui/panel.js';
 
 // Veri seti: ?veri=demo ile örnek daire; varsayılan olarak data/ev/ varsa o, yoksa demo.
-// window.__EVPLAN_DATA__ verilmişse (tek dosyalık sürüm) veri dosyaları okunmaz.
+// window.__EVPLAN_DATA__ verilmişse (veri gömülü önizleme sayfası) veri dosyaları okunmaz.
 const SETS = ['ev', 'demo'];
 async function pickDataSet() {
   const want = new URLSearchParams(location.search).get('veri');
