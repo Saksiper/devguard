@@ -27,7 +27,7 @@ export function buildObstacles(model, items) {
     z0: p.z0,
     z1: p.z1,
   }));
-  const fixtures = model.fixtures.map((f) => ({
+  const fixtures = model.fixtures.filter((f) => f.collides).map((f) => ({
     kind: 'fixture',
     id: f.id,
     label: f.name ?? f.type ?? 'sabit engel',
@@ -81,7 +81,7 @@ export function sideDistance(frame, obstacles, maxDist = 500) {
     if (poly.length < 3) continue;
     poly = clip(poly, (p) => frame.half - 0.01 - p[0]);
     if (poly.length < 3) continue;
-    poly = clip(poly, (p) => p[1] + 0.25);
+    poly = clip(poly, (p) => p[1] - TOUCH); // yüzle aynı hizada biten (bitişik) engeller önde sayılmaz
     if (poly.length < 3) continue;
     const minV = Math.max(0, Math.min(...poly.map((p) => p[1])));
     if (minV < best.dist) best = { dist: minV, obstacle: o };
@@ -126,6 +126,13 @@ function shrink(poly, k = 0.5) {
 }
 
 const fmt = (v) => `${Math.round(v)} cm`;
+
+/** Kapı bu odaya mı açılıyor (kapı boşluğunun iki yanından biri oda içinde mi)? */
+function doorTouchesRoom(d, room) {
+  const w = d.wallRef;
+  const k = (w.oMax - w.oMin) / 2 + 5;
+  return [k, -k].some((s) => pointInPolygon(add(d.center, scale(w.n, s)), room.poly));
+}
 
 /**
  * @returns {{ issues, passage, metrics, itemState: Map<uid, 'error'|'warn'|null> }}
@@ -270,19 +277,22 @@ export function runChecks(model, items, { passage = true } = {}) {
     }
   }
 
-  // 5) Teslimat: giriş kapısından / asansörden geçer mi (yaklaşık).
-  const ent = model.entrance;
+  // 5) Teslimat: mobilya bulunduğu odanın kapısından, daire kapısından ve asansörden geçer mi (yaklaşık).
+  // Kural: en küçük iki ölçü kapının net genişliği × yüksekliğine sığmalı (koridorda dönüş hesaba katılmaz).
+  const ent = model.deliveryDoor;
   const lift = model.access?.elevator;
+  const fits = (a, b, door) => a <= door.width - 2 && b <= door.height - 2;
   for (const it of items) {
     if (it.flatpack || it.entry?.delivered) continue;
     const [a, b, c] = [it.w, it.d, it.h].sort((p, q) => p - q);
-    if (ent) {
-      const W = ent.width;
-      const H = ent.height;
-      if (!(a <= W - 2 && b <= H - 2))
-        push('warn', 'delivery', `${it.name} (kesit ${Math.round(a)}×${Math.round(b)} cm) giriş kapısından (${W}×${H}) düz geçmeyebilir.`, {
+    const room = roomAt(model, [it.x, it.y]);
+    const roomDoors = room ? model.entrances.filter((d) => doorTouchesRoom(d, room)) : [];
+    const doors = [...new Set([ent, ...roomDoors].filter(Boolean))];
+    for (const d of doors) {
+      if (!fits(a, b, d))
+        push('warn', 'delivery', `${it.name} (kesit ${Math.round(a)}×${Math.round(b)} cm) ${d.name ?? d.id} (${Math.round(d.width)}×${Math.round(d.height)}) kapısından düz geçmeyebilir.`, {
           items: [it.uid],
-          at: ent.center,
+          at: d.center,
         });
     }
     if (lift && lift.cabinWidth) {
@@ -293,21 +303,21 @@ export function runChecks(model, items, { passage = true } = {}) {
       if (!door || !diag)
         push('warn', 'delivery', `${it.name} asansöre sığmayabilir (${Math.round(a)}×${Math.round(b)}×${Math.round(c)}).`, {
           items: [it.uid],
-          at: ent?.center ?? [it.x, it.y],
+          at: [it.x, it.y],
         });
       else if (!straight)
-        push('info', 'delivery', `${it.name} asansöre ancak eğik/dik sığar.`, { items: [it.uid], at: ent?.center ?? [it.x, it.y] });
+        push('info', 'delivery', `${it.name} asansöre ancak eğik/dik sığar.`, { items: [it.uid], at: [it.x, it.y] });
     }
   }
 
   // 6) Geçiş yolları: girişten her kapıya ve mobilya önlerine en geniş yol.
   let pass = null;
-  if (passage && model.entrance) {
+  if (passage && model.entrances.length) {
     const fixedObs = [...obs.walls, ...obs.fixtures].filter((o) => o.z0 < S.bodyHeight);
     const itemObs = obs.furn.filter((o) => o.z0 < S.bodyHeight && !o.movable);
     const targets = [];
     for (const d of model.doors) {
-      if (d === model.entrance) continue;
+      if (model.entrances.includes(d)) continue;
       targets.push({ id: d.id, kind: 'door', label: d.name ?? `Kapı ${d.id}`, region: d.portal, threshold: S.passageMin });
     }
     const useWarned = new Set(issues.filter((i) => i.kind === 'use').map((i) => i.items[0]));

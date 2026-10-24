@@ -182,9 +182,9 @@ describe('kontroller', () => {
 });
 
 describe('demo verisi', () => {
-  const dir = path.resolve(__dirname, '../public/data');
+  const dir = path.resolve(__dirname, '../public/data/demo');
   const plan = JSON.parse(fs.readFileSync(path.join(dir, 'plan.json'), 'utf8'));
-  const cat = JSON.parse(fs.readFileSync(path.join(dir, 'furniture.json'), 'utf8'));
+  const cat = JSON.parse(fs.readFileSync(path.join(dir, '../furniture.json'), 'utf8'));
   const byId = new Map(cat.items.map((i) => [i.id, i]));
   const model = buildPlanModel(plan);
   const load = (f) => JSON.parse(fs.readFileSync(path.join(dir, 'layouts', f), 'utf8'));

@@ -8,7 +8,21 @@ import { Store, decodeShare } from './store.js';
 import { Viewer } from './view/viewer.js';
 import { Panel } from './ui/panel.js';
 
-const DATA = './data/';
+// Veri seti: ?veri=demo ile örnek daire; varsayılan olarak data/ev/ varsa o, yoksa demo.
+const SETS = ['ev', 'demo'];
+async function pickDataSet() {
+  const want = new URLSearchParams(location.search).get('veri');
+  const order = want ? [want, ...SETS.filter((s) => s !== want)] : SETS;
+  for (const s of order) {
+    try {
+      const res = await fetch(`./data/${s}/plan.json`, { method: 'HEAD', cache: 'no-cache' });
+      if (res.ok) return s;
+    } catch {
+      /* sıradakini dene */
+    }
+  }
+  return 'demo';
+}
 
 async function getJSON(path) {
   const res = await fetch(path, { cache: 'no-cache' });
@@ -81,14 +95,16 @@ async function boot() {
   let plan;
   let catalog;
   let index;
+  const set = await pickDataSet();
+  const DATA = `./data/${set}/`;
   try {
     [plan, catalog, index] = await Promise.all([
       getJSON(`${DATA}plan.json`),
-      getJSON(`${DATA}furniture.json`),
+      getJSON(`${DATA}furniture.json`).catch(() => getJSON('./data/furniture.json')),
       getJSON(`${DATA}layouts/index.json`).catch(() => ({ layouts: [] })),
     ]);
   } catch (e) {
-    return fatal('Veri yüklenemedi', [e.message]);
+    return fatal('Veri yüklenemedi', [e.message, `Veri seti: data/${set}/`]);
   }
   const vp = validatePlan(plan);
   const vc = validateCatalog(catalog);
@@ -109,6 +125,7 @@ async function boot() {
   }
 
   const model = buildPlanModel(plan);
+  if (!fileLayouts.length) fileLayouts.push({ id: 'bos', name: 'Boş ev', items: [] });
   const store = new Store({ plan, catalog, fileLayouts });
 
   if (location.hash.startsWith('#y=')) {
@@ -192,6 +209,7 @@ async function boot() {
     for (const b of modeBtns) b.classList.toggle('active', b.dataset.mode === m);
     document.getElementById('walk-help').hidden = m !== 'walk';
     document.getElementById('btn-cut').hidden = m !== 'orbit';
+    document.getElementById('btn-tape').hidden = m === 'walk';
     // Telefonda yürürken panel kapansın, ekran yürümeye kalsın.
     if (m === 'walk' && panel.isMobile()) document.getElementById('panel').classList.add('collapsed');
     viewer.refresh();
@@ -216,6 +234,12 @@ async function boot() {
     viewer.labelsOn = on;
     viewer.furniture.labels.visible = on && viewer.mode === 'plan';
     e.currentTarget.classList.toggle('active', on);
+  });
+  document.getElementById('btn-tape').addEventListener('click', (e) => {
+    const on = !viewer.tapeOn;
+    viewer.setTape(on);
+    e.currentTarget.classList.toggle('active', on);
+    if (on) toast('Mezura: ölçmek istediğin iki noktaya dokun. Planda yatay mesafe, 3D\'de gerçek mesafe.');
   });
   // Sorun listesinden seçince sekme değişmesin.
   document.getElementById('tab-checks').addEventListener('click', () => (panel.keepTab = true), { capture: true });

@@ -27,7 +27,8 @@ cd evplan
 npm ci            # ilk sefer
 npm run dev       # http://localhost:5173 — aynı Wi-Fi'daki telefondan: http://<bilgisayar-ip>:5173
 npm test          # çekirdek hesap testleri
-npm run check     # tüm yerleşimleri komut satırında kontrol et
+npm run check     # tüm yerleşimleri komut satırında kontrol et (--veri demo)
+npm run import -- <model.json> <klasör>   # oda-poligonu modelini plan.json'a çevir
 npm run build     # dist/ (statik site; GitHub Pages'e konabilir)
 ```
 
@@ -40,7 +41,8 @@ Not: npm 10.9'daki bir hata yüzünden `npm install` (kilit dosyası yeniden ç�
 - Mobilyaya dokunun → seçilir; sürükleyin → taşınır (duvara/mobilyaya 6 cm'den yakınsa yapışır, Alt ile kapatılır).
 - Döndürme: üstteki çubuk (⟲90 ⟲15 ⟳15 ⟳90), telefonda **ikinci parmakla çevirme**, klavyede R / Q / E.
 - Seçili mobilyanın dört kenarından en yakın engele mesafe (cm) planda çizilir.
-- Yürü: masaüstünde WASD/oklar + sürükleyerek bakış; telefonda sol yarı joystick, sağ yarı bakış. Duvar ve mobilyalardan geçilmez. Sağ altta mini plan.
+- Yürü: masaüstünde WASD/oklar + sürükleyerek bakış; telefonda sol yarı joystick, sağ yarı bakış. Duvar ve mobilyalardan geçilmez. Sağ altta mini plan; **mini plana dokununca oraya geçilir** (koridor ölçülmediyse odalar arası).
+- **Mezura** (Ölç): iki noktaya dokun → mesafe. Planda yatay (x × y bileşenleriyle), 3D'de gerçek mesafe.
 - Yerleşimler: kopyala, yeniden adlandır, JSON indir/yükle, **paylaşım linki** (yerleşim linkin içinde, sunucu gerekmez), **karşılaştırma tablosu** ve başka bir yerleşimi **hayalet** olarak üstüne çizme.
 
 Tarayıcıda yaptığınız değişiklikler o tarayıcıda (localStorage) saklanır. Kalıcı yapmak için
@@ -51,13 +53,34 @@ değişirse dosya kazanır; tarayıcıdaki değişiklikler "(yerel kopya)" adıy
 
 ```
 public/data/
-  plan.json              ev: duvarlar, kapı/pencereler, odalar, sabit engeller, ayarlar
-  furniture.json         mobilya kataloğu (ölçü, renk, link, isteğe bağlı GLB modeli)
-  layouts/index.json     açılışta yüklenecek yerleşim dosyalarının listesi
-  layouts/*.json         yerleşimler
+  furniture.json         ortak mobilya kataloğu (ölçü, renk, link, isteğe bağlı GLB modeli)
+  ev/                    GERÇEK EV — depo herkese açık olduğu için .gitignore'da (onay bekliyor)
+    plan.json            içe aktarılan plan (aşağıya bakın)
+    layouts/…            yerleşimler
+    source/model.json    kaynak model (metre)
+  demo/                  örnek 2+1 daire (ölçüler varsayım)
+    plan.json, layouts/…
 public/models/           GLB modelleri (isteğe bağlı)
 public/splats/           Gaussian splat (.spz) — 3. aşama
 ```
+
+Uygulama `data/ev/` varsa onu, yoksa demoyu açar; `?veri=demo` ile demo zorlanır. Bir veri setinde
+`furniture.json` varsa ortak katalog yerine o kullanılır.
+
+### Oda-poligonu modelinden içe aktarma
+
+Metre cinsinden, odaları iç yüz poligonu + kenar bazlı açıklık/petek/ankastre olarak tanımlayan model
+(Claude'daki görüntüleyicinin `…-model.json` dosyası) doğrudan çevrilir:
+
+```bash
+npm run import -- public/data/ev/source/model.json public/data/ev
+```
+
+Dönüşüm kuralları: duvarlar her odanın dışına `wall_thickness_assumed` kalınlıkta çizilir, ama komşu odaya
+taşmaz (boşluk küçükse inceltilir ve not düşülür). Camlar kanatlara bölünür: açılan kanatlar camlı kapı
+(içe açıldığı ve menteşe tarafı **tahmin**), sabitler pencere. Koridor/antre ölçülmemişse odaların koridora
+açılan kapıları "giriş" sayılır; geçiş analizi her birinden başlar. Tavan kirişi, sarkıt lambalar ve ankastre
+dolaplar yükseklikleriyle sabit engel olur (üst dolap/kiriş planda kesik çizgi).
 
 Hatalı bir alan olursa uygulama açılışta Türkçe hata listesi gösterir (ör. "openings[3] (K-banyo):
 duvar I-koridor-alt 900 cm; açıklık 880–950 cm aralığı duvarın dışına taşıyor").

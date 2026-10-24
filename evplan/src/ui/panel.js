@@ -133,6 +133,11 @@ export class Panel {
     });
     html += '</ol>';
     html += `<p class="note">Ölçütler: geçiş hedefi ${S.passageMin} cm (altı turuncu, ${S.passageHard} cm altı kırmızı), mobilya önüne erişim ${S.accessMin} cm, ızgara ±${S.gridStep} cm. Değerler <code>plan.json → settings</code> içinden değiştirilebilir.</p>`;
+    const todo = [...(meta.missing ?? []).map((x) => `Eksik: ${x}`), ...(meta.thinWalls ?? []), ...(meta.notes ?? [])];
+    if (todo.length || (!meta.demo && meta.note))
+      html += `<details class="note warnbox"><summary>Eksik / teyit edilecek (${todo.length})</summary>${meta.note ? `<p>${esc(meta.note)}</p>` : ''}<ul>${todo
+        .map((t) => `<li>${esc(t)}</li>`)
+        .join('')}</ul></details>`;
     if (m.roomFree) {
       html += '<h3>Odalarda boş zemin</h3><table class="cmp"><tr><th>Oda</th><th>Boş</th></tr>';
       for (const rf of m.roomFree) {

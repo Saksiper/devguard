@@ -1,2 +1,4 @@
 dist/
 node_modules/
+# Gerçek ev verisi: depo herkese açık olduğu için kullanıcı onayı olmadan commit edilmez.
+public/data/ev/

@@ -212,8 +212,7 @@ function bestCell(cells, label) {
  */
 export function analyzePassage(model, obstacles, targets) {
   const step = model.settings.gridStep;
-  const source = model.entrance;
-  if (!source || !model.rooms.length) return null;
+  if (!model.entrances.length || !model.rooms.length) return null;
 
   const pts = [...model.rooms.flatMap((r) => r.poly), ...model.doors.flatMap((d) => d.portal)];
   const bounds = {
@@ -270,7 +269,7 @@ export function analyzePassage(model, obstacles, targets) {
     clearWith[i] = Math.max(0, Math.min(cf, Math.sqrt(dItems[i]) * step - half));
   }
 
-  const srcCells = regionCells(grid, source.portal);
+  const srcCells = model.entrances.flatMap((e) => regionCells(grid, e.portal));
   const runWith = widestPaths(grid, clearWith, srcCells);
   const runBase = widestPaths(grid, clearBase, srcCells);
 

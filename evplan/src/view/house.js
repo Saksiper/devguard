@@ -12,12 +12,28 @@ const FLOOR_COLORS = { parke: 0xd9c4a0, seramik: 0xe6e4e0, dis: 0xcdc8bf, hali: 
 const FIXTURE_COLORS = {
   radiator: 0xf8fafc,
   column: 0xefede8,
+  beam: 0xe9e6e0,
   counter: 0x9aa3ad,
   boiler: 0xf1f5f9,
   shower: 0xbfdbfe,
   wc: 0xffffff,
   sink: 0xf1f5f9,
+  lamp: 0xfff4d6,
+  post: 0xa1a1aa,
 };
+// Ankastre malzemeleri (içe aktarılan modeldeki adlar).
+const MATERIAL_COLORS = {
+  cab: 0xc8a27c,
+  white: 0xf5f5f4,
+  top: 0x44403c,
+  plinth: 0x57534e,
+  glassCab: 0xcfe3ee,
+  oven: 0x1f2937,
+  ovenGlass: 0x0f172a,
+  hob: 0x111827,
+  steel: 0xa1a1aa,
+};
+const TRANSPARENT = new Set(['shower', 'glassCab']);
 
 export const MAT = {
   wall: new THREE.MeshLambertMaterial({ color: 0xf4f2ee }),
@@ -26,6 +42,8 @@ export const MAT = {
   ceiling: new THREE.MeshLambertMaterial({ color: 0xfbfaf8, side: THREE.DoubleSide }),
   glass: new THREE.MeshLambertMaterial({ color: 0x9ec9f0, transparent: true, opacity: 0.35, depthWrite: false }),
   door: new THREE.MeshLambertMaterial({ color: 0xb08a5e }),
+  frosted: new THREE.MeshLambertMaterial({ color: 0xe8eef2, transparent: true, opacity: 0.75 }),
+  glassDoor: new THREE.MeshLambertMaterial({ color: 0x7fb3d9, transparent: true, opacity: 0.4, depthWrite: false }),
   frame: new THREE.MeshLambertMaterial({ color: 0xffffff }),
 };
 
@@ -92,10 +110,11 @@ export function buildHouse(model) {
   const ceilings = new THREE.Group();
   const openings = new THREE.Group();
   const fixtures = new THREE.Group();
-  const planMarks = new THREE.Group(); // sadece plan görünümünde (kapı yayları vb.)
+  const planMarks = new THREE.Group(); // plan ve 3D'de (kapı yayları vb.)
+  const aboveMarks = new THREE.Group(); // yalnızca planda: kesit üstündeki kiriş/dolap/lamba izleri
   const roomLabels = new THREE.Group();
   const fixtureLabels = new THREE.Group();
-  root.add(walls, floors, ceilings, openings, fixtures, planMarks, roomLabels, fixtureLabels);
+  root.add(walls, floors, ceilings, openings, fixtures, planMarks, aboveMarks, roomLabels, fixtureLabels);
 
   const cuttables = [];
 
@@ -120,14 +139,16 @@ export function buildHouse(model) {
       ceilings.add(c);
     }
     const dims = r.isRect ? `${Math.round(r.size[0])} × ${Math.round(r.size[1])} cm` : '';
-    roomLabels.add(label(`${r.name}<small>${r.area.toFixed(1)} m²${dims ? ` · ${dims}` : ''}</small>`, 'room', v3(r.center[0], r.center[1], 5)));
+    const rl = label(`${r.name}<small>${r.area.toFixed(1)} m²${dims ? ` · ${dims}` : ''}</small>`, 'room', v3(r.center[0], r.center[1], 5));
+    rl.userData.room = r;
+    roomLabels.add(rl);
   }
 
   for (const op of model.openings) {
     const w = op.wallRef;
-    if (op.type === 'window') {
+    if (op.type === 'window' || op.glazed) {
       const om = (w.oMin + w.oMax) / 2;
-      const glass = wallBox(w, op.s0, op.s1, om - 1, om + 1, op.sill, op.top, MAT.glass);
+      const glass = wallBox(w, op.s0, op.s1, om - 1, om + 1, op.sill, op.top, op.type === 'door' ? MAT.glassDoor : MAT.glass);
       glass.renderOrder = 2;
       openings.add(glass);
       cuttables.push(glass);
@@ -147,11 +168,13 @@ export function buildHouse(model) {
       const arc = sector.slice(1);
       const y = (op.type === 'door' ? 0.5 : op.sill) * CM + 0.003;
       planMarks.add(polyLine(arc, op.type === 'door' ? 0.012 : y, op.type === 'door' ? 0x6b7280 : 0x60a5fa, { closed: false, dashed: true }));
-      if (op.type === 'door') {
+      if (op.type === 'door' && op.glazed && op.leaves.length) {
+        // Camlı kapı/balkon kapısı: kapalı cam olarak çizilir (planda açılma yayı yine görünür).
+      } else if (op.type === 'door') {
         // Kanat açık (openAngle) konumda çizilir.
         const a = ((leaf.a0 + leaf.sign * leaf.openAngle) * Math.PI) / 180;
         const end = [leaf.hinge[0] + Math.cos(a) * leaf.radius, leaf.hinge[1] + Math.sin(a) * leaf.radius];
-        const door = new THREE.Mesh(unitBox, MAT.door);
+        const door = new THREE.Mesh(unitBox, op.glassLeaf ? MAT.frosted : MAT.door);
         const mid = [(leaf.hinge[0] + end[0]) / 2, (leaf.hinge[1] + end[1]) / 2];
         door.position.copy(v3(mid[0], mid[1], op.height / 2));
         door.scale.set(leaf.radius * CM, (op.height - 1) * CM, 0.04);
@@ -163,24 +186,31 @@ export function buildHouse(model) {
     }
   }
 
+  const cylGeo = new THREE.CylinderGeometry(0.5, 0.5, 1, 16);
   for (const f of model.fixtures) {
-    const color = FIXTURE_COLORS[f.type] ?? 0xd1d5db;
-    const mat = new THREE.MeshLambertMaterial({ color, transparent: f.type === 'shower', opacity: f.type === 'shower' ? 0.55 : 1 });
-    const mesh = new THREE.Mesh(unitBox, mat);
+    const color = f.color ? new THREE.Color(f.color) : (MATERIAL_COLORS[f.material] ?? FIXTURE_COLORS[f.type] ?? 0xd1d5db);
+    const clear = TRANSPARENT.has(f.type) || TRANSPARENT.has(f.material);
+    const mat = new THREE.MeshLambertMaterial({ color, transparent: clear, opacity: clear ? 0.55 : 1 });
+    const mesh = new THREE.Mesh(f.shape === 'cylinder' ? cylGeo : unitBox, mat);
     mesh.position.copy(v3(f.x, f.y, f.z + f.h / 2));
-    mesh.scale.set(f.w * CM, f.h * CM, f.d * CM);
+    mesh.scale.set(f.w * CM, Math.max(f.h, 0.3) * CM, f.d * CM);
     mesh.rotation.y = (-f.rot * Math.PI) / 180;
     mesh.userData.fixture = f;
     mesh.userData.z = [f.z, f.z + f.h];
     fixtures.add(mesh);
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(unitBox), new THREE.LineBasicMaterial({ color: 0x9ca3af }));
-    mesh.add(edges);
+    if (f.shape !== 'cylinder' && f.collides && Math.min(f.w, f.d) > 3) {
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(unitBox), new THREE.LineBasicMaterial({ color: 0x9ca3af }));
+      mesh.add(edges);
+    }
     if (f.type === 'radiator' || f.type === 'boiler') {
       fixtureLabels.add(label(f.type === 'boiler' ? 'kombi' : 'petek', 'item', v3(f.x, f.y, f.z + f.h + 2)));
     }
+    cuttables.push(mesh);
+    // Kesit yüksekliğinin üstündekiler (kiriş, üst dolap, kombi) planda kesik çizgiyle gösterilir.
+    if (f.z >= 120) aboveMarks.add(polyLine(f.poly, 1.25, 0x6b7280, { dashed: true }));
   }
 
-  return { root, walls, floors, ceilings, openings, fixtures, planMarks, roomLabels, fixtureLabels, cuttables };
+  return { root, walls, floors, ceilings, openings, fixtures, planMarks, aboveMarks, roomLabels, fixtureLabels, cuttables };
 }
 
 /** Duvarları belirli yükseklikte "keser" (plan görünümü ve 3D kesit). cut = null → tam yükseklik. */

@@ -135,10 +135,16 @@ export class Viewer extends EventTarget {
     const b = this.model.bounds;
     const w = (b.maxX - b.minX) * CM;
     const h = (b.maxY - b.minY) * CM;
-    this.planHalf = Math.max(h / 2, w / 2 / (this.aspect || 1)) * 1.08;
+    // Telefonda alttaki kapalı panel (~64 px) sahnenin üstüne biner; ev görünen kısma ortalanır.
+    const pad = window.matchMedia('(max-width: 760px)').matches ? 64 : 0;
+    const H = this.container.clientHeight || 1;
+    const avail = Math.max(1, H - pad);
+    const visHalf = Math.max(h / 2, w / 2 / ((this.container.clientWidth || 1) / avail)) * 1.08;
+    this.planHalf = (visHalf * H) / avail;
+    const shift = (pad * this.planHalf) / H;
     this.planCam.zoom = 1;
-    this.planControls.target.copy(this.center);
-    this.planCam.position.set(this.center.x, 30, this.center.z);
+    this.planControls.target.set(this.center.x, 0, this.center.z + shift);
+    this.planCam.position.set(this.center.x, 30, this.center.z + shift);
     this._updatePlanFrustum();
     this.orbitControls.target.copy(this.center);
     this.perspCam.position.set(this.center.x + this.extent * 0.15, this.extent * 1.05, this.center.z + this.extent * 0.95);
@@ -156,6 +162,7 @@ export class Viewer extends EventTarget {
     applyCut(this.house, plan ? PLAN_CUT : mode === 'orbit' && this.orbitCut ? ORBIT_CUT : null);
     this.house.ceilings.visible = walk;
     this.house.planMarks.visible = !walk;
+    this.house.aboveMarks.visible = plan;
     this.house.roomLabels.visible = plan;
     this.house.fixtureLabels.visible = plan;
     this.furniture.labels.visible = plan && this.labelsOn;
@@ -305,8 +312,16 @@ export class Viewer extends EventTarget {
     this.container.addEventListener(
       'pointerdown',
       (e) => {
+        if (this.mode === 'walk' && e.target === dom && this._miniTeleport(e)) {
+          e.stopPropagation();
+          return;
+        }
         if (this.mode === 'walk' || e.target !== dom) return;
         pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (this.tapeOn) {
+          down = { x: e.clientX, y: e.clientY, t: performance.now() };
+          return;
+        }
         if (drag && pointers.size === 2) {
           // İkinci parmak: döndürme hareketi.
           const [a, b] = [...pointers.values()];
@@ -369,11 +384,83 @@ export class Viewer extends EventTarget {
       }
       if (this.mode === 'walk' || !down) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-      if (moved < 6 && performance.now() - down.t < 500 && e.target === dom) this.store.select(null);
+      const tap = moved < 6 && performance.now() - down.t < 500 && e.target === dom;
+      if (tap && this.tapeOn) this._tapeClick(e);
+      else if (tap) this.store.select(null);
       down = null;
     };
     dom.addEventListener('pointerup', up);
     dom.addEventListener('pointercancel', up);
+  }
+
+  /** Yürü modunda mini plana dokununca oraya geç (ör. koridor ölçülmediyse odalar arası). */
+  _miniTeleport(e) {
+    const r = this.container.getBoundingClientRect();
+    const w = r.width;
+    const h = r.height;
+    const size = Math.round(Math.min(w, h) * 0.32);
+    const u = (e.clientX - r.left - (w - size - 10)) / size;
+    const v = (e.clientY - r.top - (h - size - 10)) / size;
+    if (u < 0 || u > 1 || v < 0 || v > 1) return false;
+    const b = this.model.bounds;
+    const half = (Math.max(b.maxX - b.minX, b.maxY - b.minY) / 2) * 1.05;
+    const p = [this.center.x / CM + (u * 2 - 1) * half, this.center.z / CM + (v * 2 - 1) * half];
+    if (this.walk._insideHome(p)) this.walk.pos = this.walk._resolve(p);
+    return true;
+  }
+
+  setTape(on) {
+    this.tapeOn = on;
+    if (!this.tape) {
+      this.tape = { group: new THREE.Group(), pts: [] };
+      this.scene.add(this.tape.group);
+    }
+    this._clearTape();
+    this.renderer.domElement.style.cursor = on ? 'crosshair' : 'default';
+  }
+
+  _clearTape() {
+    const t = this.tape;
+    for (const c of [...t.group.children]) {
+      t.group.remove(c);
+      c.element?.remove();
+      c.geometry?.dispose();
+    }
+    t.pts = [];
+  }
+
+  /** Mezura: iki noktaya dokun → aradaki mesafe (planda yatay, 3D'de gerçek mesafe). */
+  _tapeClick(e) {
+    const r = this.renderer.domElement.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(ndc, this.camera);
+    const targets = [...this.house.walls.children, ...this.house.fixtures.children, ...this.house.floors.children, ...this.furniture.pickables()].filter(
+      (o) => o.visible && o.parent?.visible !== false,
+    );
+    const hit = ray.intersectObjects(targets, false)[0];
+    if (!hit) return;
+    const t = this.tape;
+    if (t.pts.length >= 2) this._clearTape();
+    const p = hit.point.clone();
+    t.pts.push(p);
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 8), new THREE.MeshBasicMaterial({ color: 0xdb2777, depthTest: false }));
+    dot.position.copy(p);
+    dot.renderOrder = 10;
+    t.group.add(dot);
+    if (t.pts.length === 2) {
+      const [a, b] = t.pts;
+      const flat = this.mode === 'plan';
+      const d = flat ? Math.hypot(a.x - b.x, a.z - b.z) : a.distanceTo(b);
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]), new THREE.LineBasicMaterial({ color: 0xdb2777, depthTest: false }));
+      line.renderOrder = 10;
+      t.group.add(line);
+      const mid = a.clone().add(b).multiplyScalar(0.5);
+      const dx = Math.abs(a.x - b.x) / CM;
+      const dz = Math.abs(a.z - b.z) / CM;
+      const extra = dx > 1 && dz > 1 ? ` <small>(${Math.round(dx)} × ${Math.round(dz)})</small>` : '';
+      t.group.add(label(`${Math.round(d / CM)} cm${extra}`, 'dim tape', mid));
+    }
   }
 
   /** Mıknatıs: 6 cm'den yakın duvar/mobilya kenarına yapıştır (Alt basılıysa kapalı). */
@@ -439,7 +526,12 @@ export class Viewer extends EventTarget {
       m.label.visible = it.collides && (uid === this.store.selection || (big > textW && small > 16));
     }
     for (const l of this.house.fixtureLabels.children) l.visible = pxPerCm > 1.1;
-    for (const l of this.house.roomLabels.children) l.element.classList.toggle('compact', pxPerCm < 0.9);
+    for (const l of this.house.roomLabels.children) {
+      const r = l.userData.room;
+      const minPx = r ? Math.min(r.size[0], r.size[1]) * pxPerCm : 100;
+      l.visible = minPx > 34;
+      l.element.classList.toggle('compact', pxPerCm < 0.9 || minPx < 70);
+    }
   }
 
   _frame() {

@@ -240,6 +240,15 @@ button.danger {
   font-weight: 600;
 }
 
+.lbl.tape {
+  background: #db2777;
+}
+
+.lbl.tape small {
+  font-weight: 400;
+  opacity: 0.85;
+}
+
 .lbl.issue {
   background: var(--err);
   color: #fff;
@@ -368,6 +377,10 @@ details.demo summary {
 
 #walk-help .touch {
   display: none;
+}
+
+#walk-help .mini {
+  opacity: 0.8;
 }
 
 @media (pointer: coarse) {

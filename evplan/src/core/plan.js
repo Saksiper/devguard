@@ -213,6 +213,7 @@ export function buildPlanModel(plan) {
 
   const fixtures = (plan.fixtures ?? []).map((f) => ({
     ...f,
+    collides: f.collides !== false, // false: yalnızca görsel (fırın camı, ocak yüzeyi, lamba…)
     rot: f.rot ?? 0,
     z: f.z ?? 0,
     poly: rectCorners(f.x, f.y, f.w, f.d, f.rot ?? 0),
@@ -223,10 +224,13 @@ export function buildPlanModel(plan) {
   const allPts = [...pieces.flatMap((p) => p.poly), ...rooms.flatMap((r) => r.poly)];
   const bounds = allPts.length ? bbox(allPts) : { minX: 0, minY: 0, maxX: 100, maxY: 100 };
 
-  const entrance =
-    openings.find((o) => o.id === plan.access?.entranceDoor) ??
-    openings.find((o) => o.type === 'door' && o.entrance) ??
-    openings.find((o) => o.type === 'door');
+  // Giriş: access.entranceDoor ya da entrance: true işaretli kapılar. Koridor henüz ölçülmediyse
+  // odaların koridora açılan kapılarının hepsi giriş sayılabilir (geçiş analizi her birinden başlar).
+  const flagged = openings.filter((o) => o.type === 'door' && o.entrance);
+  const explicit = openings.find((o) => o.id === plan.access?.entranceDoor);
+  const entrances = explicit ? [explicit] : flagged.length ? flagged : openings.filter((o) => o.type === 'door').slice(0, 1);
+  const entrance = entrances[0];
+  const deliveryDoor = explicit ?? (flagged.length === 1 ? flagged[0] : null);
 
   return {
     plan,
@@ -241,6 +245,8 @@ export function buildPlanModel(plan) {
     fixtures,
     bounds,
     entrance,
+    entrances,
+    deliveryDoor,
     access: plan.access ?? {},
   };
 }
