@@ -79,7 +79,7 @@ export class WalkControls {
         this.joyEl.style.top = `${y}px`;
         this.knob.style.transform = '';
       } else if (!this.look) {
-        this.look = { id: e.pointerId, x: e.clientX, y: e.clientY };
+        this.look = { id: e.pointerId, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t: performance.now() };
       }
       this.dom.setPointerCapture?.(e.pointerId);
     });
@@ -111,7 +111,11 @@ export class WalkControls {
         this.joy = null;
         this.joyEl.hidden = true;
       }
-      if (this.look && e.pointerId === this.look.id) this.look = null;
+      if (this.look && e.pointerId === this.look.id) {
+        const l = this.look;
+        this.look = null;
+        if (e.type === 'pointerup' && Math.hypot(e.clientX - l.x0, e.clientY - l.y0) < 6 && performance.now() - l.t < 450) this.onTap?.(e);
+      }
     };
     this.dom.addEventListener('pointerup', end);
     this.dom.addEventListener('pointercancel', end);

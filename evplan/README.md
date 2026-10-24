@@ -44,6 +44,14 @@ Not: npm 10.9'daki bir hata yüzünden `npm install` (kilit dosyası yeniden ç�
 - Seçili mobilyanın dört kenarından en yakın engele mesafe (cm) planda çizilir.
 - Yürü: masaüstünde WASD/oklar + sürükleyerek bakış; telefonda sol yarı joystick, sağ yarı bakış. Duvar ve mobilyalardan geçilmez. Sağ altta mini plan; **mini plana dokununca oraya geçilir** (koridor ölçülmediyse odalar arası).
 - **Mezura** (Ölç): iki noktaya dokun → mesafe. Planda yatay (x × y bileşenleriyle), 3D'de gerçek mesafe.
+- **Katalog**: türlere göre (koltuk, TV ünitesi, televizyon, masa…) ürün kartları. "Ekle" görünümün ortasına (yürürken
+  önünüze) koyar; aynı türden bir mobilya daha önce kullanıldıysa **son bırakıldığı yere** (arka kenarı hizalı) gelir.
+  Seçili mobilya varken "Yerine dene" ve çubuktaki ◀ ▶ aynı türün ürünlerini sırayla aynı yerde dener; üstündeki TV
+  yeni üniteye taşınır.
+- **Gizle** (çubukta ya da H): mobilya çizilmez ve kontrollere girmez; sol üstteki "N gizli · göster" geri getirir.
+  Sağdaki **TV** düğmesi tüm televizyonları birlikte gizler/gösterir. **Sil** (Del) her modda çalışır; Ctrl+Z geri alır.
+- Üstte duran eşyalar (TV): yüksekliği altındaki üniteye göre otomatik; ayaklardan biri boşta kalırsa ya da
+  üst tablanın taşıma sınırı (`maxTopLoad`) aşılırsa hata verilir.
 - Yerleşimler: kopyala, yeniden adlandır, JSON indir/yükle, **paylaşım linki** (yerleşim linkin içinde, sunucu gerekmez), **karşılaştırma tablosu** ve başka bir yerleşimi **hayalet** olarak üstüne çizme.
 
 Tarayıcıda yaptığınız değişiklikler o tarayıcıda (localStorage) saklanır. Kalıcı yapmak için
@@ -150,6 +158,9 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
     "movable": true,                      // sandalye gibi: masanın altına girebilir, geçişi kapatmaz
     "collides": false,                    // halı gibi: çakışma sayılmaz
     "flatpack": true,                     // demonte gelir → kapı/asansör kontrolü yapılmaz
+    "onTop": true,                        // TV gibi: altındaki mobilyanın üstüne oturur (z otomatik)
+    "weight": 15.5, "maxTopLoad": 40,     // kg: eşyanın ağırlığı / üst tablanın taşıyabileceği
+    "group": "Televizyon",                // katalog türü ("Yerine dene" ve son konum bu türe göre)
     "assumed": true                       // ölçü örnek/varsayım
   }
 ]}
@@ -163,7 +174,7 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
 ```
 
 `x, y` mobilyanın taban **merkezi**. Bir yerleşimde katalog ölçüsünü ezmek için `w, d, h, z, color, name, use`
-eklenebilir. Katalogda olmayan bir kutu için `ref` yerine doğrudan `name, w, d, h` verilebilir.
+eklenebilir; `"choice": {"Kumaş": "Sisli Yeşil"}` ürün seçeneğini, `"hidden": true` gizli olduğunu tutar. Katalogda olmayan bir kutu için `ref` yerine doğrudan `name, w, d, h` verilebilir.
 
 ## Yol haritası
 

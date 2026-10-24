@@ -204,12 +204,14 @@ async function boot() {
     viewer.refresh();
     if (t === 'select') {
       panel.renderSelected();
+      if (panel.tab === 'add') panel.renderAdd();
       if (store.selection && !panel.keepTab && !panel.isMobile()) panel.showTab('selected');
       panel.keepTab = false;
       return;
     }
     panel.renderSelect();
     panel.renderSelected();
+    if (panel.tab === 'add') panel.renderAdd();
     if (panel.tab === 'layouts' || t === 'layout') panel.renderLayouts();
     full();
   });
@@ -247,6 +249,26 @@ async function boot() {
     viewer.furniture.labels.visible = on && viewer.mode === 'plan';
     e.currentTarget.classList.toggle('active', on);
   });
+  let hq = true;
+  try {
+    const v = localStorage.getItem('evplan:hq');
+    if (v !== null) hq = v === '1';
+  } catch {
+    /* depolama yok */
+  }
+  viewer.setQuality(hq);
+  const hqBtn = document.getElementById('btn-hq');
+  hqBtn.classList.toggle('active', hq);
+  hqBtn.addEventListener('click', () => {
+    hq = !hq;
+    viewer.setQuality(hq);
+    hqBtn.classList.toggle('active', hq);
+    try {
+      localStorage.setItem('evplan:hq', hq ? '1' : '0');
+    } catch {
+      /* depolama yok */
+    }
+  });
   document.getElementById('btn-tape').addEventListener('click', (e) => {
     const on = !viewer.tapeOn;
     viewer.setTape(on);
@@ -270,9 +292,21 @@ async function boot() {
       e.preventDefault();
       return store.redo();
     }
-    if (viewer.mode === 'walk') return;
     const it = store.selection ? store.item(store.selection) : null;
     if (!it) return;
+    // Silme ve seçimi bırakma her modda (yürürken de) çalışır.
+    if (k === 'Delete' || k === 'Backspace') {
+      e.preventDefault();
+      const name = it.name;
+      store.remove(it.uid);
+      return toast(`${name} silindi. Geri almak için Ctrl+Z.`);
+    }
+    if (k === 'Escape') return store.select(null);
+    if (k === 'h' || k === 'H') {
+      store.setHidden(it.uid, true);
+      return toast(`${it.name} gizlendi.`);
+    }
+    if (viewer.mode === 'walk') return; // oklar/QE yürümeye ait
     const step = e.shiftKey ? 10 : 1;
     const nudge = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[k];
     if (nudge) {
@@ -285,8 +319,6 @@ async function boot() {
     }
     const rot = { r: e.shiftKey ? -90 : 90, R: -90, q: -15, Q: -15, e: 15, E: 15 }[k];
     if (rot && !ctrl) return store.update(it.uid, { rot: normAngle(it.rot + rot) });
-    if (k === 'Delete' || k === 'Backspace') return store.remove(it.uid);
-    if (k === 'Escape') return store.select(null);
   });
 
   setMode('plan');

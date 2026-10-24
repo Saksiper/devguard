@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { CM, applyCut, buildHouse, label, polyFill, polyLine, v3 } from './house.js';
 import { FurnitureView } from './furniture.js';
 import { WalkControls } from './walk.js';
@@ -41,10 +42,12 @@ export class Viewer extends EventTarget {
     this.labelRenderer = labels;
 
     this.scene = new THREE.Scene();
-    this.scene.add(new THREE.HemisphereLight(0xffffff, 0xa8a29e, 2.4));
+    this.hemi = new THREE.HemisphereLight(0xffffff, 0xa8a29e, 2.4);
+    this.scene.add(this.hemi);
     const sun = new THREE.DirectionalLight(0xffffff, 1.3);
     sun.position.set(4, 10, 6);
-    this.scene.add(sun);
+    this.scene.add(sun, sun.target);
+    this.sun = sun;
 
     this.house = buildHouse(model);
     this.scene.add(this.house.root);
@@ -171,6 +174,43 @@ export class Viewer extends EventTarget {
     if (walk) this._updateWalkWorld();
     this.renderer.domElement.style.cursor = walk ? 'grab' : 'default';
     this.dispatchEvent(new CustomEvent('mode', { detail: mode }));
+  }
+
+  /** Gerçekçi görünüm: ortam ışığı (yansıma), yumuşak gölgeler, ton eşleme. Telefonda da çalışır ama daha ağır. */
+  setQuality(hq) {
+    this.hq = hq;
+    const r = this.renderer;
+    r.shadowMap.enabled = hq;
+    r.shadowMap.type = THREE.PCFSoftShadowMap;
+    r.toneMapping = hq ? THREE.NeutralToneMapping : THREE.NoToneMapping;
+    if (hq && !this.envTex) {
+      const pm = new THREE.PMREMGenerator(r);
+      this.envTex = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+      pm.dispose();
+    }
+    this.scene.environment = hq ? this.envTex : null;
+    this.scene.environmentIntensity = 0.55;
+    this.hemi.intensity = hq ? 1.7 : 2.4;
+    const b = this.model.bounds;
+    const sun = this.sun;
+    sun.castShadow = hq;
+    sun.intensity = hq ? 2.2 : 1.3;
+    // Güneş cephe tarafından (planın sağ üstü) içeri vursun.
+    sun.position.set(this.center.x + this.extent * 0.6, this.extent * 0.9, this.center.z - this.extent * 0.25);
+    sun.target.position.copy(this.center);
+    const half = this.extent * 0.75;
+    Object.assign(sun.shadow.camera, { left: -half, right: half, top: half, bottom: -half, near: 0.5, far: this.extent * 3 });
+    sun.shadow.camera.updateProjectionMatrix();
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.bias = -0.0004;
+    sun.shadow.normalBias = 0.02;
+    sun.shadow.radius = 4;
+    for (const m of this.house.walls.children) m.castShadow = m.receiveShadow = true;
+    for (const m of this.house.fixtures.children) m.castShadow = m.receiveShadow = true;
+    for (const m of this.house.floors.children) m.receiveShadow = true;
+    this.scene.traverse((o) => {
+      if (o.material) for (const mat of [].concat(o.material)) mat.needsUpdate = true;
+    });
   }
 
   toggleCut() {
@@ -302,6 +342,12 @@ export class Viewer extends EventTarget {
         .filter((x) => x.it)
         .sort((a, b) => (a.it.collides === b.it.collides ? a.h.distance - b.h.distance : a.it.collides ? -1 : 1));
       return sorted[0]?.it ?? null;
+    };
+    this._pick = pick;
+    // Yürürken kısa dokunuş: altındaki mobilyayı seç (boşluğa dokunmak seçimi kaldırır).
+    this.walk.onTap = (e) => {
+      const it = pick(e);
+      this.store.select(it ? it.uid : null);
     };
     const setControls = (on) => {
       if (this.mode === 'plan') this.planControls.enabled = on;
@@ -497,6 +543,21 @@ export class Viewer extends EventTarget {
       this.perspCam.position.add(delta);
       this.orbitControls.update();
     }
+  }
+
+  /** Yeni/taşınan mobilyanın konumu: yürürken 90 cm önünüze, size dönük; diğer modlarda görünüm ortası. */
+  placementFor(c) {
+    if (this.mode === 'walk') {
+      const a = (this.walk.yaw * Math.PI) / 180;
+      const dist = (c?.d ?? 50) / 2 + 90;
+      return {
+        x: Math.round(this.walk.pos[0] + Math.cos(a) * dist),
+        y: Math.round(this.walk.pos[1] + Math.sin(a) * dist),
+        rot: normAngle(Math.round(this.walk.yaw + 90)),
+      };
+    }
+    const [x, y] = this.viewCenter();
+    return { x: Math.round(x), y: Math.round(y), rot: 0 };
   }
 
   /** Ekranın ortasına denk gelen plan noktası (yeni mobilya buraya eklenir). */

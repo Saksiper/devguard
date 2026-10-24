@@ -4,7 +4,8 @@
 // değişiklikler tarayıcıda (localStorage) saklanır. Dosya sonradan değişirse dosya kazanır, yerel
 // değişiklikler "(yerel kopya)" adıyla ayrı yerleşim olarak korunur.
 
-import { newUid, resolveItem } from './core/items.js';
+import { newUid, pointInRect, resolveItem, stackItems, tvSpot } from './core/items.js';
+import { toWorld } from './core/geom.js';
 
 const VERSION = 1;
 
@@ -130,12 +131,13 @@ export class Store extends EventTarget {
 
   /** Aktif yerleşimin katalogla birleştirilmiş mobilyaları (önbellekli). */
   items() {
-    if (!this._resolved) this._resolved = this.active.items.map((e) => resolveItem(e, this.catalogById));
+    if (!this._resolved)
+      this._resolved = stackItems(this.active.items.filter((e) => !e.hidden).map((e) => resolveItem(e, this.catalogById)));
     return this._resolved;
   }
 
   resolveLayout(layout) {
-    return layout.items.map((e) => resolveItem(e, this.catalogById));
+    return stackItems(layout.items.filter((e) => !e.hidden).map((e) => resolveItem(e, this.catalogById)));
   }
 
   item(uid) {
@@ -183,6 +185,7 @@ export class Store extends EventTarget {
     if (this._dragBase === null) return;
     const now = JSON.stringify(this.active.items);
     if (now !== this._dragBase) {
+      this._recordSpot(this.selection);
       const id = this.activeId;
       if (!this.undoStack.has(id)) this.undoStack.set(id, []);
       this.undoStack.get(id).push(this._dragBase);
@@ -203,19 +206,122 @@ export class Store extends EventTarget {
     if (live) {
       this._resolved = null;
       this.emit('live', { uid });
-    } else this._changed('commit', { uid });
+    } else {
+      this._resolved = null;
+      if ('x' in patch || 'y' in patch || 'rot' in patch) this._recordSpot(uid);
+      this._changed('commit', { uid });
+    }
+  }
+
+  /** Gizle/göster: gizli mobilya çizilmez ve kontrollere girmez (ör. TV'siz üniteye bakmak için). */
+  setHidden(uids, hidden) {
+    const set = new Set([].concat(uids));
+    const list = this.active.items.filter((i) => set.has(i.uid));
+    if (!list.length) return;
+    this._snapshot();
+    for (const e of list) {
+      if (hidden) e.hidden = true;
+      else delete e.hidden;
+    }
+    if (hidden && set.has(this.selection)) this.selection = null;
+    this._changed('commit');
+  }
+
+  hiddenEntries() {
+    return this.active.items.filter((e) => e.hidden).map((e) => resolveItem(e, this.catalogById));
+  }
+
+  /** Bir türün (ör. Televizyon) hepsini gizle; hepsi zaten gizliyse göster. Döner: yeni durum (true = gizli). */
+  toggleGroupHidden(group) {
+    const all = this.active.items.filter((e) => (resolveItem(e, this.catalogById).group ?? '') === group);
+    if (!all.length) return null;
+    const hide = all.some((e) => !e.hidden);
+    this.setHidden(all.map((e) => e.uid), hide);
+    return hide;
+  }
+
+  /** Türün (galeri grubu) son konumu: yeni aynı türden ürün buraya konur. */
+  _recordSpot(uid) {
+    const it = uid ? this.item(uid) : null;
+    if (!it) return;
+    const g = it.group ?? it.category;
+    if (!g) return;
+    const l = this.active;
+    l.lastSpots = { ...(l.lastSpots ?? {}), [g]: { x: it.x, y: it.y, rot: it.rot, d: it.d, uid: it.uid } };
+  }
+
+  /**
+   * Katalog ürünü için başlangıç yeri: aynı türün son bırakıldığı yer (arka kenar aynı hizada),
+   * yoksa evde duran aynı türden mobilyanın yeri. Hiçbiri yoksa null.
+   */
+  spotFor(c) {
+    const g = c.group ?? c.category;
+    if (!g) return null;
+    let spot = this.active.lastSpots?.[g] ?? null;
+    if (!spot) {
+      const same = this.items().find((i) => (i.group ?? i.category) === g);
+      if (same) spot = { x: same.x, y: same.y, rot: same.rot, d: same.d, uid: same.uid };
+    }
+    if (!spot) return null;
+    const dd = (c.d - spot.d) / 2;
+    const a = (spot.rot * Math.PI) / 180;
+    const occupied = !!spot.uid && this.active.items.some((i) => i.uid === spot.uid);
+    return {
+      x: Math.round((spot.x - Math.sin(a) * dd) * 10) / 10,
+      y: Math.round((spot.y + Math.cos(a) * dd) * 10) / 10,
+      rot: spot.rot,
+      occupied,
+    };
   }
 
   add(ref, x, y, rot = 0, extra = {}) {
     this._snapshot();
     const uid = newUid();
-    this.active.items.push({ uid, ref, x: Math.round(x), y: Math.round(y), rot, ...extra });
+    this.active.items.push({ uid, ref, x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, rot, ...extra });
     this.selection = uid;
+    this._resolved = null;
+    this._recordSpot(uid);
     this._changed('commit', { uid });
     return uid;
   }
 
+  /**
+   * Seçili mobilyanın yerine başka bir ürünü dener: konum ve yön korunur, arka kenar aynı hizada
+   * kalır (duvara yaslı ünite derinliği değişince duvara girmesin). Yerleşime özel ölçü/renk sıfırlanır.
+   */
+  swap(uid, ref, choice = null) {
+    const e = this.active.items.find((i) => i.uid === uid);
+    const next = this.catalogById.get(ref);
+    const old = this.item(uid);
+    if (!e || !next || !old) return;
+    this._snapshot();
+    // Üstündeki TV gibi parçalar yeni ünitenin sehpa kısmına taşınacak.
+    const riders = this.items().filter((o) => o.onTop && o.uid !== uid && pointInRect([o.x, o.y], old));
+    const dd = (next.d - old.d) / 2;
+    const a = ((e.rot ?? 0) * Math.PI) / 180;
+    e.x = Math.round((e.x - Math.sin(a) * dd) * 10) / 10;
+    e.y = Math.round((e.y + Math.cos(a) * dd) * 10) / 10;
+    for (const k of ['w', 'd', 'h', 'z', 'color', 'name', 'use', 'choice']) delete e[k];
+    e.ref = ref;
+    if (choice) e.choice = choice;
+    this._resolved = null;
+    this._recordSpot(uid);
+    if (riders.length) {
+      const nu = resolveItem(e, this.catalogById);
+      const [lx, ly] = tvSpot(nu);
+      const [wx, wy] = toWorld([lx, ly], nu.x, nu.y, nu.rot);
+      for (const r of riders) {
+        const re = this.active.items.find((i) => i.uid === r.uid);
+        re.x = Math.round(wx * 10) / 10;
+        re.y = Math.round(wy * 10) / 10;
+        re.rot = e.rot ?? 0;
+      }
+    }
+    this._changed('commit', { uid });
+  }
+
   remove(uid) {
+    this._recordSpot(uid);
     this._snapshot();
     this.active.items = this.active.items.filter((i) => i.uid !== uid);
     if (this.selection === uid) this.selection = null;

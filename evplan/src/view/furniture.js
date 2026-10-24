@@ -4,7 +4,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { CM, label, polyFill, polyLine, v3 } from './house.js';
-import { drawerZone, frontLeaves, leafPolygon, useZones } from '../core/items.js';
+import { drawerZones, frontLeaves, leafPolygon, useZones } from '../core/items.js';
+import { buildModel } from './models/index.js';
 
 const unitBox = new THREE.BoxGeometry(1, 1, 1);
 unitBox.translate(0, 0.5, 0);
@@ -50,7 +51,7 @@ export class FurnitureView {
   }
 
   key(it) {
-    return [it.w, it.d, it.h, it.color, it.model, it.name].join('|');
+    return [it.w, it.d, it.h, it.color, it.model, it.name, JSON.stringify(it.parts ?? null), it.shape?.type, it.modules?.length].join('|');
   }
 
   sync(items, state, selection) {
@@ -68,9 +69,24 @@ export class FurnitureView {
       m.label.position.copy(v3(it.x, it.y, it.z + it.h + 3));
       const st = selection === it.uid ? 'selected' : (state.get(it.uid) ?? 'none');
       m.edges.material.color.setHex(STATE_EDGE[st]);
+      m.edges.visible = !m.shaped || st !== 'none';
       const emissive = st === 'error' ? 0x7f1d1d : st === 'selected' ? 0x1e3a8a : 0x000000;
       m.body.material.emissive.setHex(emissive);
       m.body.material.emissiveIntensity = st === 'none' ? 0 : 0.35;
+      if (m.shaped && m.root.userData.st !== st) {
+        // Modelli mobilyada durum rengi hafif bir parıltı olarak verilir.
+        m.root.userData.st = st;
+        m.root.traverse((o) => {
+          if (o.isMesh && o !== m.body && o.material?.emissive) {
+            if (!o.userData.mat) o.userData.mat = o.material;
+            o.material = st === 'none' ? o.userData.mat : o.userData.mat.clone();
+            if (st !== 'none') {
+              o.material.emissive.setHex(emissive || 0x7c2d12);
+              o.material.emissiveIntensity = 0.18;
+            }
+          }
+        });
+      }
       m.label.element.classList.toggle('sel', st === 'selected');
     }
     for (const [uid, m] of this.meshes) {
@@ -91,12 +107,23 @@ export class FurnitureView {
     );
     body.scale.set(it.w * CM, Math.max(it.h, 0.5) * CM, it.d * CM);
     body.userData.uid = it.uid;
+    body.castShadow = it.collides;
+    body.receiveShadow = true;
     root.add(body);
     const edges = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: STATE_EDGE.none }));
     edges.scale.copy(body.scale);
     root.add(edges);
+    // Parametrik model (koltuk, TV ünitesi…): kutu görünmez kalır ama seçim için tıklanabilir.
+    const model = buildModel(it);
+    if (model) {
+      model.traverse((o) => {
+        if (o.isMesh) o.userData.uid = it.uid;
+      });
+      root.add(model);
+      Object.assign(body.material, { transparent: true, opacity: 0, depthWrite: false, colorWrite: false });
+    }
     // Ön yüz işareti: üst yüzün ön kenarında koyu şerit.
-    if (it.collides && it.h > 5) {
+    if (!model && it.collides && it.h > 5) {
       const strip = new THREE.Mesh(unitBox, new THREE.MeshBasicMaterial({ color: color.clone().multiplyScalar(0.45) }));
       const depth = Math.min(8, it.d * 0.2);
       strip.scale.set(it.w * CM * 0.9, 0.004, depth * CM);
@@ -122,7 +149,7 @@ export class FurnitureView {
     const lbl = label(it.name, 'item', v3(0, 0, 0));
     this.group.add(root);
     this.labels.add(lbl);
-    return { root, body, edges, label: lbl, key: this.key(it) };
+    return { root, body, edges, label: lbl, key: this.key(it), shaped: !!model };
   }
 
   _dispose(m) {
@@ -153,8 +180,7 @@ export class FurnitureView {
         this.zones.add(polyLine(poly.slice(1), 0.01, 0x6b7280, { closed: false, dashed: true, opacity: sel ? 1 : 0.6 }));
         if (sel) this.zones.add(polyFill(poly, 0.008, 0x2563eb, 0.12));
       }
-      const dz = drawerZone(it);
-      if (dz) this.zones.add(polyLine(dz, 0.01, 0x6b7280, { dashed: true, opacity: sel ? 1 : 0.5 }));
+      for (const { poly: dz } of drawerZones(it)) this.zones.add(polyLine(dz, 0.01, 0x6b7280, { dashed: true, opacity: sel ? 1 : 0.5 }));
       if (sel)
         for (const z of useZones(it)) {
           this.zones.add(polyFill(z.poly, 0.006, 0x16a34a, 0.12));

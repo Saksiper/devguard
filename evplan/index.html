@@ -30,14 +30,22 @@
         <div id="viewport"></div>
         <div id="hud">
           <div id="toast" hidden></div>
+          <div id="hud-tl">
           <div id="selbar" hidden>
             <span class="name"></span>
+            <button data-s="prev" title="Aynı türden önceki ürünü dene">◀</button>
+            <button data-s="next" title="Aynı türden sonraki ürünü dene">▶</button>
+            <button data-s="here" title="Önüme getir (yürürken)">Önüme</button>
             <button data-s="r-90" title="90° sola">⟲90</button>
             <button data-s="r-15" title="15° sola">⟲15</button>
             <button data-s="r15" title="15° sağa">⟳15</button>
             <button data-s="r90" title="90° sağa">⟳90</button>
             <button data-s="more" title="Ölçü ve ayrıntılar">Detay</button>
+            <button data-s="hide" title="Gizle (H)">Gizle</button>
+            <button data-s="del" class="danger" title="Sil (Del)">Sil</button>
             <button data-s="close" title="Seçimi kaldır">✕</button>
+          </div>
+          <button id="hidden-pill" hidden title="Gizlenen mobilyaları geri göster"></button>
           </div>
           <div id="walk-help" hidden>
             <span class="desk">WASD / oklar: yürü · sürükle: bak · Shift: hızlı</span>
@@ -52,6 +60,8 @@
             <button id="btn-paths" class="active" title="Dar geçiş yollarını göster">Yol</button>
             <button id="btn-labels" class="active" title="Mobilya adlarını göster">Ad</button>
             <button id="btn-tape" title="Mezura: iki noktaya dokun">Ölç</button>
+            <button id="btn-hq" title="Gerçekçi görünüm: gölge ve ortam ışığı">HD</button>
+            <button id="btn-tv" class="active" title="Televizyonları göster / gizle">TV</button>
           </div>
         </div>
       </main>
@@ -61,7 +71,7 @@
         <div class="tabs" role="tablist">
           <button data-tab="checks" class="active">Kontrol <span id="tab-checks-count"></span></button>
           <button data-tab="selected">Seçili</button>
-          <button data-tab="add">Ekle</button>
+          <button data-tab="add">Katalog</button>
           <button data-tab="layouts">Yerleşimler</button>
         </div>
         <section id="tab-checks" class="tab active"></section>

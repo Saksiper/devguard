@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { buildPlanModel } from '../src/core/plan.js';
-import { resolveItem } from '../src/core/items.js';
+import { resolveItem, stackItems } from '../src/core/items.js';
 import { runChecks } from '../src/core/checks.js';
 import { validateCatalog, validateLayout, validatePlan } from '../src/core/validate.js';
 
@@ -39,7 +39,7 @@ for (const f of files) {
     continue;
   }
   const t = performance.now();
-  const r = runChecks(model, lay.items.map((e) => resolveItem(e, byId)));
+  const r = runChecks(model, stackItems(lay.items.filter((e) => !e.hidden).map((e) => resolveItem(e, byId))));
   const m = r.metrics;
   console.log(`\n== ${lay.name}  (${Math.round(performance.now() - t)} ms) — ${m.errors} sorun, ${m.warnings} uyarı, en dar kapı yolu ${m.minPassage === null ? '-' : Math.round(m.minPassage)} cm`);
   for (const i of r.issues) console.log(`  ${{ error: 'SORUN', warn: 'UYARI', info: 'bilgi' }[i.severity].padEnd(5)}  ${i.text}`);

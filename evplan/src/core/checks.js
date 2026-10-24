@@ -3,8 +3,8 @@
 // Önem dereceleri: error (kırmızı, fiziksel olarak olmaz), warn (turuncu, rahatsız eder),
 // info (mavi, bilgi). Her bulgu ilgili mobilyaların uid'lerini ve plan üzerindeki konumunu taşır.
 
-import { add, convexOverlap, dot, pointInPolygon, polygonCentroid, scale, sub } from './geom.js';
-import { footprint, frontLeaves, drawerZone, useZones, sideFrame, SIDE_NAMES } from './items.js';
+import { add, convexOverlap, dot, pointInPolygon, polygonCentroid, scale, sub, toWorld } from './geom.js';
+import { footprint, frontLeaves, drawerZones, itemBoxes, pointInRect, useZones, sideFrame, SIDE_NAMES } from './items.js';
 import { bandPolygon, leafAt, leafSector, roomAt } from './plan.js';
 import { analyzePassage } from './passage.js';
 
@@ -37,15 +37,17 @@ export function buildObstacles(model, items) {
   }));
   const furn = items
     .filter((it) => it.collides)
-    .map((it) => ({
-      kind: 'item',
-      uid: it.uid,
-      label: it.name,
-      poly: footprint(it),
-      z0: it.z,
-      z1: it.z + it.h,
-      movable: it.movable,
-    }));
+    .flatMap((it) =>
+      itemBoxes(it).map((b) => ({
+        kind: 'item',
+        uid: it.uid,
+        label: it.name,
+        poly: footprint(b),
+        z0: b.z,
+        z1: b.z + b.h,
+        movable: it.movable,
+      })),
+    );
   return { walls, fixtures, furn, all: [...walls, ...fixtures, ...furn] };
 }
 
@@ -148,13 +150,14 @@ export function runChecks(model, items, { passage = true } = {}) {
   for (const it of items) {
     if (!it.collides) continue;
     const fp = footprint(it);
-    const z0 = it.z;
-    const z1 = it.z + it.h;
     for (const o of [...obs.walls, ...obs.fixtures]) {
-      if (!zOverlap(z0, z1, o.z0, o.z1)) continue;
-      const ov = convexOverlap(fp, o.poly);
-      if (ov > TOUCH)
-        push('error', 'collision', `${it.name} ${o.label} ile çakışıyor (≈${fmt(ov)}).`, {
+      let worst = 0;
+      for (const b of itemBoxes(it)) {
+        if (!zOverlap(b.z, b.z + b.h, o.z0, o.z1)) continue;
+        worst = Math.max(worst, convexOverlap(footprint(b), o.poly));
+      }
+      if (worst > TOUCH)
+        push('error', 'collision', `${it.name} ${o.label} ile çakışıyor (≈${fmt(worst)}).`, {
           items: [it.uid],
           at: polygonCentroid(o.poly),
         });
@@ -170,14 +173,17 @@ export function runChecks(model, items, { passage = true } = {}) {
       }
     }
   }
+  const pairSeen = new Set();
   for (let i = 0; i < obs.furn.length; i++) {
     for (let j = i + 1; j < obs.furn.length; j++) {
       const a = obs.furn[i];
       const b = obs.furn[j];
+      if (a.uid === b.uid) continue; // aynı mobilyanın modülleri
       if (a.movable || b.movable) continue; // sandalye masanın altına girebilir
       if (!zOverlap(a.z0, a.z1, b.z0, b.z1)) continue;
       const ov = convexOverlap(a.poly, b.poly);
-      if (ov > TOUCH)
+      const key = [a.uid, b.uid].sort().join('|');
+      if (ov > TOUCH && !pairSeen.has(key) && pairSeen.add(key))
         push('error', 'collision', `${a.label} ile ${b.label} üst üste (≈${fmt(ov)}).`, {
           items: [a.uid, b.uid],
           at: polygonCentroid([...a.poly, ...b.poly]),
@@ -246,17 +252,17 @@ export function runChecks(model, items, { passage = true } = {}) {
           at: leaf.hinge,
         });
     }
-    const dz = drawerZone(it);
-    if (dz) {
+    for (const { poly: dz, it: m } of drawerZones(it)) {
       const frame = { center: polygonCentroid([dz[0], dz[1]]), u: sub(dz[1], dz[0]), n: sub(dz[3], dz[0]) };
       const ul = Math.hypot(...frame.u);
       const nl = Math.hypot(...frame.n);
       frame.u = scale(frame.u, 1 / ul);
       frame.n = scale(frame.n, 1 / nl);
       frame.half = ul / 2;
-      const { dist, obstacle } = sideDistance(frame, others, it.drawers.depth + 1);
-      if (obstacle && dist < it.drawers.depth - TOUCH)
-        push('error', 'front', `${it.name}: çekmeceler ${fmt(it.drawers.depth)} gerektiriyor, ${obstacle.label} yüzünden ${fmt(dist)} açılıyor.`, {
+      const rel = others.filter((o) => zOverlap(m.z, m.z + m.h, o.z0, o.z1));
+      const { dist, obstacle } = sideDistance(frame, rel, m.drawers.depth + 1);
+      if (obstacle && dist < m.drawers.depth - TOUCH)
+        push('error', 'front', `${m.name}: çekmeceler ${fmt(m.drawers.depth)} gerektiriyor, ${obstacle.label} yüzünden ${fmt(dist)} açılıyor.`, {
           items: [it.uid, obstacle.uid].filter(Boolean),
           at: polygonCentroid(dz),
         });
@@ -309,6 +315,37 @@ export function runChecks(model, items, { passage = true } = {}) {
         push('info', 'delivery', `${it.name} asansöre ancak eğik/dik sığar.`, { items: [it.uid], at: [it.x, it.y] });
     }
   }
+
+  // 5b) Üstüne konan (TV…): ayaklar yüzeye basıyor mu, tabla taşıma sınırı, ünite genişliği.
+  const load = new Map();
+  for (const it of items) {
+    if (!it.onTop) continue;
+    const supports = [];
+    for (const o of items)
+      if (o !== it && o.collides && !o.onTop)
+        for (const b of itemBoxes(o)) if (Math.abs(b.z + b.h - it.z) < 1) supports.push({ o, b });
+    const at = (lx) => toWorld([lx, 0], it.x, it.y, it.rot);
+    const feet = it.shape?.feet ? [-it.shape.feet.span / 2, it.shape.feet.span / 2].map(at) : [at(0)];
+    const holders = feet.map((p) => supports.find((s) => pointInRect(p, s.b)));
+    if (!supports.length) continue; // duvara asılı ya da yerde
+    if (holders.some((h) => !h)) {
+      const span = it.shape?.feet ? ` (ayak açıklığı ${fmt(it.shape.feet.span)})` : '';
+      push('error', 'support', `${it.name}: ayaklarından biri ${supports[0].o.name} üstünde değil, boşlukta kalıyor${span}.`, {
+        items: [it.uid, supports[0].o.uid],
+        at: [it.x, it.y],
+      });
+    }
+    const base = holders.find(Boolean)?.o;
+    if (base && it.weight) load.set(base, (load.get(base) ?? 0) + it.weight);
+    if (base && it.w > base.w + 0.5)
+      push('info', 'support', `${it.name} (${fmt(it.w)}) ${base.name} biriminden (${fmt(base.w)}) geniş; üretici genellikle ünitenin TV'den biraz geniş olmasını önerir.`, {
+        items: [it.uid],
+        at: [it.x, it.y],
+      });
+  }
+  for (const [o, kg] of load)
+    if (o.maxTopLoad && kg > o.maxTopLoad)
+      push('error', 'support', `${o.name} üst tablası en fazla ${o.maxTopLoad} kg taşır; üstünde ≈${kg} kg var.`, { items: [o.uid], at: [o.x, o.y] });
 
   // 6) Geçiş yolları: girişten her kapıya ve mobilya önlerine en geniş yol.
   let pass = null;

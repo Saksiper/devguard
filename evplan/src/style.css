@@ -316,10 +316,23 @@ details.demo summary {
   max-width: 90%;
 }
 
-#selbar {
+#hud-tl {
   position: absolute;
   left: 10px;
   top: 10px;
+  max-width: calc(100% - 70px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;
+}
+
+#hud-tl > * {
+  pointer-events: auto;
+}
+
+#selbar {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -327,9 +340,15 @@ details.demo summary {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 4px;
-  max-width: calc(100% - 70px);
+  max-width: 100%;
   overflow-x: auto;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 700px) {
+  #selbar {
+    flex-wrap: wrap;
+  }
 }
 
 #selbar .name {
@@ -354,6 +373,15 @@ details.demo summary {
   padding: 5px 7px;
   font-size: 12px;
   white-space: nowrap;
+}
+
+#hidden-pill {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 #walk-help {
@@ -597,6 +625,152 @@ details.demo summary {
   background: #fef3c7;
   border-radius: 4px;
   padding: 1px 4px;
+}
+
+.cat-filters {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cat-filters input[type='search'] {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 9px;
+  width: 100%;
+}
+
+.chk {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.chips button {
+  font-size: 12px;
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+
+.chips button.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.cards,
+.alts {
+  display: grid;
+  gap: 8px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px;
+  align-items: center;
+}
+
+.card .thumb {
+  width: 112px;
+  height: 75px;
+  object-fit: contain;
+  background: #f4f3f0;
+  border-radius: 7px;
+}
+
+.card-body {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.card-title .brand {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.card .meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.card .tag {
+  color: #92400e;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.card-actions button {
+  padding: 4px 9px;
+  font-size: 12px;
+}
+
+.card-actions a {
+  color: var(--accent);
+}
+
+.swatches {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 4px 0;
+}
+
+.swatches button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--line);
+  padding: 0;
+}
+
+.swatches button.on {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.swatches.mini span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.opt {
+  margin: 6px 0;
+  font-size: 12px;
+}
+
+.opt select {
+  margin-left: 6px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 4px 6px;
 }
 
 .form {

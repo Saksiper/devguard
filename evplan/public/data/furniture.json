@@ -1,25 +1,1351 @@
 {
-  "note": "Mobilya kataloğu. Ölçüler cm: w = genişlik (G), d = derinlik (D), h = yükseklik (Y). 'assumed: true' = ölçü örnek/varsayım, gerçek ürünle değiştirilecek. Yerel eksen: +d yönü mobilyanın ÖNÜ. İsteğe bağlı: model (GLB yolu), url (ürün linki), frontDoors {count, hinge}, drawers {depth}, use {front, back, left, right, sideFrom}, movable (sandalye gibi kolay çekilen), collides:false (halı gibi), flatpack (demonte gelir).",
-  "items": [
-    { "id": "kanepe-3", "name": "3'lü kanepe", "category": "Salon", "w": 220, "d": 95, "h": 85, "color": "#5f7387", "use": { "front": 40 }, "assumed": true, "url": null },
-    { "id": "berjer", "name": "Berjer", "category": "Salon", "w": 80, "d": 85, "h": 95, "color": "#8c6f5a", "use": { "front": 40 }, "assumed": true, "url": null },
-    { "id": "orta-sehpa", "name": "Orta sehpa", "category": "Salon", "w": 100, "d": 60, "h": 45, "color": "#a07c55", "assumed": true, "url": null },
-    { "id": "tv-unitesi", "name": "TV ünitesi", "category": "Salon", "w": 180, "d": 40, "h": 50, "color": "#3f3f46", "drawers": { "depth": 35 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "tv-55", "name": "Televizyon 55\"", "category": "Salon", "w": 123, "d": 25, "h": 75, "z": 50, "color": "#111827", "assumed": true, "url": null },
-    { "id": "yemek-masasi", "name": "Yemek masası (6 kişilik)", "category": "Salon", "w": 160, "d": 90, "h": 75, "color": "#b08d63", "use": { "front": 70, "back": 70 }, "assumed": true, "url": null },
-    { "id": "sandalye", "name": "Sandalye", "category": "Salon", "w": 45, "d": 52, "h": 90, "color": "#6b5b4b", "movable": true, "flatpack": true, "assumed": true, "url": null },
-    { "id": "kitaplik", "name": "Kitaplık", "category": "Salon", "w": 80, "d": 30, "h": 200, "color": "#c8b79a", "use": { "front": 60 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "cift-yatak", "name": "Çift kişilik yatak (160×200)", "category": "Yatak odası", "w": 165, "d": 208, "h": 105, "color": "#d6cfc4", "flatpack": true, "use": { "left": 60, "right": 60, "front": 50, "sideFrom": 0.4 }, "assumed": true, "url": null, "notes": "Ön = ayak ucu, arka = başlık." },
-    { "id": "komodin", "name": "Komodin", "category": "Yatak odası", "w": 50, "d": 40, "h": 55, "color": "#9c8466", "drawers": { "depth": 30 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "gardirop-4", "name": "Gardırop (4 kapaklı)", "category": "Yatak odası", "w": 180, "d": 58, "h": 220, "color": "#e5e1da", "frontDoors": { "count": 4 }, "use": { "front": 60 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "gardirop-surgulu", "name": "Gardırop (sürgülü)", "category": "Yatak odası", "w": 200, "d": 65, "h": 220, "color": "#cfc8bd", "use": { "front": 70 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "tek-yatak", "name": "Tek kişilik yatak (100×200)", "category": "Yatak odası", "w": 105, "d": 205, "h": 90, "color": "#cbd5e1", "flatpack": true, "use": { "left": 50, "sideFrom": 0.3 }, "assumed": true, "url": null, "notes": "Yan erişim varsayılan olarak sol yanda; duvara göre yerleşimde 'use' ile değiştirilebilir." },
-    { "id": "calisma-masasi", "name": "Çalışma masası", "category": "Çalışma", "w": 120, "d": 60, "h": 75, "color": "#d9c3a5", "use": { "front": 80 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "calisma-sandalyesi", "name": "Çalışma sandalyesi", "category": "Çalışma", "w": 60, "d": 60, "h": 110, "color": "#374151", "movable": true, "assumed": true, "url": null },
-    { "id": "buzdolabi", "name": "Buzdolabı", "category": "Mutfak", "w": 70, "d": 72, "h": 185, "color": "#e8eaed", "frontDoors": { "count": 1, "hinge": "right" }, "assumed": true, "url": null },
-    { "id": "camasir-makinesi", "name": "Çamaşır makinesi", "category": "Banyo", "w": 60, "d": 60, "h": 85, "color": "#f4f4f5", "use": { "front": 60 }, "assumed": true, "url": null },
-    { "id": "mutfak-masasi", "name": "Mutfak masası (2-4 kişilik)", "category": "Mutfak", "w": 110, "d": 70, "h": 75, "color": "#c7a27c", "use": { "front": 60, "back": 60 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "ayakkabilik", "name": "Ayakkabılık", "category": "Hol", "w": 100, "d": 35, "h": 110, "color": "#a3a3a3", "frontDoors": { "count": 2 }, "flatpack": true, "assumed": true, "url": null },
-    { "id": "hali-200x290", "name": "Halı 200×290", "category": "Salon", "w": 200, "d": 290, "h": 1, "color": "#b9a48a", "collides": false, "flatpack": true, "assumed": true, "url": null }
-  ]
+ "note": "Mobilya kataloğu. Ölçüler cm: w = genişlik (G), d = derinlik (D), h = yükseklik (Y). 'assumed: true' = ölçü örnek/varsayım, gerçek ürünle değiştirilecek. Yerel eksen: +d yönü mobilyanın ÖNÜ. İsteğe bağlı: model (GLB yolu), url (ürün linki), frontDoors {count, hinge}, drawers {depth}, use {front, back, left, right, sideFrom}, movable (sandalye gibi kolay çekilen), collides:false (halı gibi), flatpack (demonte gelir). Gerçek ürünlerde: group (galeri türü), brand, price, options/variants (renk seçenekleri), shape (parametrik 3D model: sofa | cabinets), modules (çok modüllü mobilya; her modül kendi ölçüsü ve kapaklarıyla kontrol edilir), onTop (TV gibi alttaki yüzeye oturur).",
+ "items": [
+  {
+   "id": "normod-klem-3",
+   "name": "Klem üçlü koltuk",
+   "brand": "Normod",
+   "category": "Gerçek ürünler",
+   "w": 224,
+   "d": 91,
+   "h": 84,
+   "color": "#a7a895",
+   "url": "https://normod.com/products/klem-uclu-koltuk-silindir-ahsap-ayak-fitilli-kadife",
+   "source": "normod.com ürün sayfası (Ürün Ölçüleri), 24.10.2026; renkler ürün görsellerinden örneklendi",
+   "dims": {
+    "seatWidth": 180,
+    "seatDepth": 59,
+    "seatHeight": 43,
+    "legHeight": 16
+   },
+   "material": "Fitilli kadife, %100 polyester; masif kayın ayak",
+   "use": {
+    "front": 45
+   },
+   "options": [
+    {
+     "name": "Kumaş",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kemik",
+       "color": "#d6d5d2"
+      },
+      {
+       "name": "Sisli Yeşil",
+       "color": "#a7a895"
+      },
+      {
+       "name": "Polen Sarı",
+       "color": "#baa362"
+      },
+      {
+       "name": "Sütlü Kahve",
+       "color": "#8f7a6d"
+      },
+      {
+       "name": "Kiremit",
+       "color": "#561a11"
+      }
+     ]
+    },
+    {
+     "name": "Ayak",
+     "part": "legs",
+     "values": [
+      {
+       "name": "Açık",
+       "color": "#b5814d"
+      },
+      {
+       "name": "Koyu",
+       "color": "#493e3b"
+      },
+      {
+       "name": "Siyah",
+       "color": "#191919"
+      }
+     ]
+    },
+    {
+     "name": "Sırt Minderi",
+     "part": "backStyle",
+     "values": [
+      {
+       "name": "Rahat Dolgu",
+       "value": "soft"
+      },
+      {
+       "name": "Kalıcı Form",
+       "value": "firm"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Kumaş": "Sisli Yeşil",
+    "Ayak": "Açık",
+    "Sırt Minderi": "Kalıcı Form"
+   },
+   "variants": {
+    "Kemik / Açık / Rahat Dolgu": {
+     "id": 43056682434802,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Kemik / Açık / Kalıcı Form": {
+     "id": 44576718782706,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Kemik / Koyu / Rahat Dolgu": {
+     "id": 43056682238194,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Kemik / Koyu / Kalıcı Form": {
+     "id": 44576718815474,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Kemik / Siyah / Rahat Dolgu": {
+     "id": 43056682631410,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Kemik / Siyah / Kalıcı Form": {
+     "id": 44576718848242,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Sisli Yeşil / Açık / Rahat Dolgu": {
+     "id": 43056682467570,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Sisli Yeşil / Açık / Kalıcı Form": {
+     "id": 44576718881010,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Sisli Yeşil / Koyu / Rahat Dolgu": {
+     "id": 43056682270962,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Sisli Yeşil / Koyu / Kalıcı Form": {
+     "id": 44576718913778,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Sisli Yeşil / Siyah / Rahat Dolgu": {
+     "id": 43056682664178,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Sisli Yeşil / Siyah / Kalıcı Form": {
+     "id": 44576718946546,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Polen Sarı / Açık / Rahat Dolgu": {
+     "id": 43056682533106,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Polen Sarı / Açık / Kalıcı Form": {
+     "id": 44576719274226,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Polen Sarı / Koyu / Rahat Dolgu": {
+     "id": 43056682336498,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Polen Sarı / Koyu / Kalıcı Form": {
+     "id": 44576719306994,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Polen Sarı / Siyah / Rahat Dolgu": {
+     "id": 43056682729714,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Polen Sarı / Siyah / Kalıcı Form": {
+     "id": 44576719339762,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Sütlü Kahve / Açık / Rahat Dolgu": {
+     "id": 43056682565874,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Sütlü Kahve / Açık / Kalıcı Form": {
+     "id": 44576719077618,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Sütlü Kahve / Koyu / Rahat Dolgu": {
+     "id": 43056682369266,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Sütlü Kahve / Koyu / Kalıcı Form": {
+     "id": 44576719110386,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Sütlü Kahve / Siyah / Rahat Dolgu": {
+     "id": 43056682762482,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Sütlü Kahve / Siyah / Kalıcı Form": {
+     "id": 44576719143154,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Kiremit / Açık / Rahat Dolgu": {
+     "id": 51893047099759,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Kiremit / Açık / Kalıcı Form": {
+     "id": 51893047132527,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Kiremit / Koyu / Rahat Dolgu": {
+     "id": 51893047165295,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Kiremit / Koyu / Kalıcı Form": {
+     "id": 51893047198063,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    },
+    "Kiremit / Siyah / Rahat Dolgu": {
+     "id": 51893047230831,
+     "price": 44290.0,
+     "sku": "NM-5032-105-103"
+    },
+    "Kiremit / Siyah / Kalıcı Form": {
+     "id": 51893047263599,
+     "price": 47090.0,
+     "sku": "NM-5032-105-103-B"
+    }
+   },
+   "shape": {
+    "type": "sofa",
+    "fabric": "corduroy",
+    "armWidth": 22,
+    "armTop": 65,
+    "armBottom": 15,
+    "armRadius": 10,
+    "baseBottom": 16,
+    "baseTop": 25,
+    "seatCushions": 2,
+    "backCushions": 2,
+    "backThickness": 20,
+    "backRecline": 8,
+    "backFrame": 10,
+    "legDiameter": 5.5,
+    "legInset": [
+     33,
+     11
+    ],
+    "note": "Şekil ürün fotoğraflarından; G×D×Y ve oturum ölçüleri üreticiden. Kolçak yüksekliği (≈65 cm) ve minder kalınlıkları fotoğraftan tahmini."
+   },
+   "group": "Koltuklar"
+  },
+  {
+   "id": "ikea-besta-300",
+   "name": "BESTÅ TV ünitesi 300 cm",
+   "brand": "IKEA",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 300,
+   "d": 42,
+   "h": 193,
+   "color": "#dccab1",
+   "price": 34570,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/besta-agartilmis-mese-gorunumlu-beyaz-mese-gorunumlu-seffaf-cam-300x42x193-cm-tv-unitesi-09406388",
+   "articleNo": "094.063.88",
+   "source": "ikea.com.tr ürün sayfası (Ebatlar, İçerdiği ürünler), 24.10.2026; renkler ürün görselinden örneklendi",
+   "material": "Ağartılmış meşe görünümlü / beyaz meşe görünümlü, şeffaf temperli cam",
+   "notes": "İçerik: BESTÅ iskelet 60×40×192 + TV sehpası iskeleti 180×40×38 + iskelet 60×40×128; LAPPVIKEN kapaklar, SINDVIK cam kapaklar. Duvara sabitlenmeli.",
+   "shape": {
+    "type": "cabinets",
+    "carcass": "#cdb9a0",
+    "front": "#dccab1",
+    "frame": "#d6c3a8",
+    "interior": "#b9a48c"
+   },
+   "modules": [
+    {
+     "name": "boy dolap 60×40×192",
+     "w": 60,
+     "h": 193,
+     "fronts": [
+      {
+       "type": "door",
+       "h": 64,
+       "hinge": "left"
+      },
+      {
+       "type": "glass",
+       "h": 64,
+       "hinge": "left"
+      },
+      {
+       "type": "glass",
+       "h": 64,
+       "hinge": "left"
+      }
+     ]
+    },
+    {
+     "name": "TV sehpası 180×40×38",
+     "w": 180,
+     "h": 38,
+     "fronts": [
+      {
+       "type": "drawer",
+       "h": 26,
+       "count": 3,
+       "depth": 33
+      },
+      {
+       "type": "open",
+       "h": 11,
+       "count": 3
+      }
+     ]
+    },
+    {
+     "name": "dolap 60×40×128",
+     "w": 60,
+     "h": 129,
+     "fronts": [
+      {
+       "type": "door",
+       "h": 64,
+       "hinge": "right"
+      },
+      {
+       "type": "glass",
+       "h": 64,
+       "hinge": "right"
+      }
+     ]
+    }
+   ],
+   "maxTopLoad": 50
+  },
+  {
+   "id": "ikea-tonstad-342",
+   "name": "TONSTAD TV ünitesi 342 cm",
+   "brand": "IKEA",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 341.8,
+   "d": 37.2,
+   "h": 119.9,
+   "color": "#c5a37f",
+   "price": 53997,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/tonstad-mese-kaplama-342x37x120-cm-tv-unitesi-29515065",
+   "articleNo": "295.150.65",
+   "source": "ikea.com.tr ürün sayfası (Ebatlar, İçerdiği ürünler), 24.10.2026; renkler ürün görselinden örneklendi",
+   "material": "Meşe kaplama",
+   "notes": "İçerik: TONSTAD TV sehpası 178×37×55 + sürgü kapaklı dolap 82×37×120; görselde sol dolap camlı vitrin (menteşeli kabul edildi — teyit edilmeli). Genişliklerin toplamı 341,8 cm.",
+   "shape": {
+    "type": "cabinets",
+    "carcass": "#c29f7a",
+    "front": "#c8a682",
+    "frame": "#bf9c77",
+    "interior": "#a98763",
+    "plinth": "#a8875f"
+   },
+   "modules": [
+    {
+     "name": "vitrin 81,8×37×120",
+     "w": 81.8,
+     "h": 119.9,
+     "plinth": 5,
+     "fronts": [
+      {
+       "type": "glass",
+       "h": 112,
+       "count": 2
+      }
+     ]
+    },
+    {
+     "name": "TV sehpası 178×37×55",
+     "w": 178,
+     "h": 55,
+     "plinth": 5,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 36,
+       "count": 2
+      },
+      {
+       "type": "open",
+       "h": 12,
+       "count": 1
+      }
+     ]
+    },
+    {
+     "name": "sürgü kapaklı dolap 82×37×120",
+     "w": 82,
+     "h": 119.9,
+     "plinth": 5,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 112,
+       "count": 2
+      }
+     ]
+    }
+   ],
+   "maxTopLoad": 30
+  },
+  {
+   "id": "ikea-lanesund-322",
+   "name": "LANESUND TV ünitesi 322 cm",
+   "brand": "IKEA",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 322,
+   "d": 47,
+   "h": 81,
+   "color": "#a08773",
+   "price": 69998,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/lanesund-kahverengi-322x47x81-cm-tv-unitesi-29514730",
+   "articleNo": "295.147.30",
+   "source": "ikea.com.tr ürün sayfası (Ebatlar, İçerdiği ürünler), 24.10.2026; renkler ürün görselinden örneklendi",
+   "material": "Kayın kaplama (kahverengi), masif kayın; temperli cam kapaklar, alüminyum çerçeve",
+   "notes": "İçerik: LANESUND konsol 161×47×81 + TV sehpası 161×47×55. Sehpa 63 inç'e kadar TV için; üst panel maks. 30 kg.",
+   "shape": {
+    "type": "cabinets",
+    "carcass": "#a08773",
+    "front": "#a58a75",
+    "frame": "#202020",
+    "interior": "#8a7362",
+    "plinth": "#8f7765",
+    "handle": "#202020"
+   },
+   "modules": [
+    {
+     "name": "konsol 161×47×81",
+     "w": 161,
+     "h": 81,
+     "plinth": 8,
+     "fronts": [
+      {
+       "type": "glass",
+       "h": 69,
+       "count": 4
+      }
+     ]
+    },
+    {
+     "name": "TV sehpası 161×47×55",
+     "w": 161,
+     "h": 55,
+     "plinth": 8,
+     "fronts": [
+      {
+       "h": 43,
+       "cols": [
+        {
+         "type": "glass",
+         "w": 48,
+         "hinge": "left"
+        },
+        {
+         "type": "open",
+         "w": 65
+        },
+        {
+         "type": "glass",
+         "w": 48,
+         "hinge": "right"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "maxTopLoad": 30
+  },
+  {
+   "id": "ikea-stockholm-2025-179",
+   "name": "STOCKHOLM 2025 TV sehpası 179 cm",
+   "brand": "IKEA",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 178.8,
+   "d": 42,
+   "h": 56.2,
+   "color": "#cfa46f",
+   "price": 24499,
+   "flatpack": true,
+   "maxTopLoad": 40,
+   "url": "https://www.ikea.com.tr/urun/stockholm-2025-mese-kaplama-179x42x56-cm-tv-sehpasi-40586508",
+   "articleNo": "405.865.08",
+   "source": "ikea.com.tr ürün sayfası (Ebatlar), 24.10.2026; ayak yüksekliği ve renk ürün görselinden",
+   "material": "Meşe kaplama (fırçalanmış), şeffaf akrilik vernik; sürgü kapaklar",
+   "notes": "70 inç'e kadar TV, maks. TV ağırlığı 40 kg. Ayarlanabilir ayaklar. Panel ayak yüksekliği ≈15 cm görselden tahmini.",
+   "shape": {
+    "type": "cabinets",
+    "singleBody": true,
+    "radius": 0.4,
+    "carcass": "#c99d68",
+    "front": "#cfa46f",
+    "interior": "#9a7448",
+    "plinth": "#c39760",
+    "legs": {
+     "type": "block",
+     "h": 15,
+     "w": 3.6,
+     "depth": 32,
+     "radius": 0.6,
+     "inset": [
+      36
+     ]
+    }
+   },
+   "modules": [
+    {
+     "name": "sol sürgü kapak",
+     "w": 89.4,
+     "h": 56.2,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 38
+      }
+     ]
+    },
+    {
+     "name": "sağ sürgü kapak",
+     "w": 89.4,
+     "h": 56.2,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 38
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "jysk-hillested-160",
+   "name": "HILLESTED TV sehpası 160 cm",
+   "brand": "JYSK",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 160,
+   "d": 40,
+   "h": 50,
+   "color": "#b08a64",
+   "price": 15000,
+   "flatpack": true,
+   "articleNo": "3620317",
+   "url": "https://jysk.com.tr/oturma-odasi/tv-unitesi/tv-sehpasi-hillested-2-kapi-sicak-mese-polirattan",
+   "source": "jysk.com.tr ürün sayfası (Özellikler), 24.10.2026; ayak yüksekliği ve renkler ürün görselinden",
+   "material": "Sıcak meşe görünümlü MDF/sunta, polirattan (hasır) kapaklar, masif kauçuk ağacı ayaklar",
+   "notes": "2 kapı, 3 raf; üst maks. 40 kg. Ayak yüksekliği ≈15 cm görselden tahmini.",
+   "shape": {
+    "type": "cabinets",
+    "carcass": "#b08a64",
+    "front": "#b48d66",
+    "interior": "#3a312e",
+    "cane": "#c39868",
+    "plinth": "#986f44",
+    "knob": "#8a6a48"
+   },
+   "modules": [
+    {
+     "name": "gövde",
+     "w": 160,
+     "h": 50,
+     "legs": {
+      "h": 15,
+      "d": 4.5,
+      "inset": [
+       12,
+       5
+      ]
+     },
+     "fronts": [
+      {
+       "h": 31,
+       "cols": [
+        {
+         "type": "cane",
+         "w": 52,
+         "hinge": "left"
+        },
+        {
+         "type": "open",
+         "w": 56
+        },
+        {
+         "type": "cane",
+         "w": 52,
+         "hinge": "right"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "maxTopLoad": 40
+  },
+  {
+   "id": "jysk-lyngvig-120",
+   "name": "LYNGVIG TV sehpası 120 cm",
+   "brand": "JYSK",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 120,
+   "d": 40,
+   "h": 50,
+   "color": "#bd936d",
+   "price": 15000,
+   "flatpack": true,
+   "url": "https://jysk.com.tr/oturma-odasi/tv-unitesi/tv-sehpasi-lyngvig-120cm-2-surgulu-dolap-dogal-mese",
+   "source": "jysk.com.tr ürün sayfası (Özellikler), 24.10.2026; ayak yüksekliği ve renkler ürün görselinden",
+   "material": "Doğal meşe kaplama, 2 sürgülü (çıtalı) kapak, meşe kaplama ayaklar",
+   "notes": "Üst maks. 20 kg. Uçlar yuvarlak. Ayak yüksekliği ≈17 cm görselden tahmini.",
+   "shape": {
+    "type": "tambour",
+    "wood": "#bd936d",
+    "top": "#c9a888",
+    "legs": "#a5754f",
+    "legHeight": 17
+   },
+   "maxTopLoad": 20
+  },
+  {
+   "id": "jysk-lyngvig-160",
+   "name": "LYNGVIG TV sehpası 160 cm",
+   "brand": "JYSK",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 160,
+   "d": 40,
+   "h": 50,
+   "color": "#bd936d",
+   "price": 17500,
+   "flatpack": true,
+   "url": "https://jysk.com.tr/oturma-odasi/tv-unitesi/tv-sehpasi-lyngvig-160-cm-2-surgulu-kapak-dogal-mese",
+   "source": "jysk.com.tr ürün sayfası (Özellikler), 24.10.2026; ayak yüksekliği ve renkler ürün görselinden",
+   "material": "Doğal meşe kaplama, 2 sürgülü (çıtalı) kapak, meşe kaplama ayaklar",
+   "notes": "Üst maks. 30 kg. Uçlar yuvarlak. Ayak yüksekliği ≈17 cm görselden tahmini.",
+   "shape": {
+    "type": "tambour",
+    "wood": "#bd936d",
+    "top": "#c9a888",
+    "legs": "#a5754f",
+    "legHeight": 17
+   },
+   "maxTopLoad": 30
+  },
+  {
+   "id": "somass-watkins-180",
+   "name": "Watkins TV ünitesi 180 cm",
+   "brand": "SO-MASS",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 180,
+   "d": 44,
+   "h": 60,
+   "color": "#c99a6e",
+   "price": 62490,
+   "url": "https://so-mass.com/products/watkins-tv-unitesi-180-cm-naturel-mese",
+   "articleNo": "MAML000773",
+   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
+   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
+   "notes": "Monte gelir. Kulpsuz ön yüz, yuvarlatılmış köşeler, iki blok ayak. Bölme genişlikleri ve ayak yüksekliği (≈12 cm) görselden tahmini.",
+   "shape": {
+    "type": "cabinets",
+    "singleBody": true,
+    "radius": 6,
+    "carcass": "#c79a70",
+    "front": "#cc9f72",
+    "interior": "#5a3a22",
+    "plinth": "#c18e64",
+    "legs": {
+     "type": "block",
+     "h": 12,
+     "w": 11,
+     "depth": 30,
+     "radius": 5,
+     "inset": [
+      48.6
+     ]
+    }
+   },
+   "modules": [
+    {
+     "name": "açık bölme",
+     "w": 27.0,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "open",
+       "h": 45
+      }
+     ]
+    },
+    {
+     "name": "sürgü kapak",
+     "w": 41.4,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 45
+      }
+     ]
+    },
+    {
+     "name": "geniş sürgü kapak",
+     "w": 75.6,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 45
+      }
+     ]
+    },
+    {
+     "name": "çekmece + açık bölme",
+     "w": 36.0,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "open",
+       "h": 30
+      },
+      {
+       "type": "drawer",
+       "h": 15,
+       "depth": 34
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "somass-watkins-210",
+   "name": "Watkins TV ünitesi 210 cm",
+   "brand": "SO-MASS",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 210,
+   "d": 44,
+   "h": 60,
+   "color": "#c99a6e",
+   "price": 69990,
+   "url": "https://so-mass.com/products/watkins-tv-unitesi-210-cm-naturel-mese",
+   "articleNo": "MAML000718",
+   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
+   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
+   "notes": "Monte gelir. Kulpsuz ön yüz, yuvarlatılmış köşeler, iki blok ayak. Bölme genişlikleri ve ayak yüksekliği (≈12 cm) görselden tahmini.",
+   "shape": {
+    "type": "cabinets",
+    "singleBody": true,
+    "radius": 6,
+    "carcass": "#c79a70",
+    "front": "#cc9f72",
+    "interior": "#5a3a22",
+    "plinth": "#c18e64",
+    "legs": {
+     "type": "block",
+     "h": 12,
+     "w": 11,
+     "depth": 30,
+     "radius": 5,
+     "inset": [
+      56.7
+     ]
+    }
+   },
+   "modules": [
+    {
+     "name": "açık bölme",
+     "w": 31.5,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "open",
+       "h": 45
+      }
+     ]
+    },
+    {
+     "name": "sürgü kapak",
+     "w": 48.3,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 45
+      }
+     ]
+    },
+    {
+     "name": "geniş sürgü kapak",
+     "w": 88.2,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "sliding",
+       "h": 45
+      }
+     ]
+    },
+    {
+     "name": "çekmece + açık bölme",
+     "w": 42.0,
+     "h": 60,
+     "fronts": [
+      {
+       "type": "open",
+       "h": 30
+      },
+      {
+       "type": "drawer",
+       "h": 15,
+       "depth": 34
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "somass-avila-150",
+   "name": "Avila TV ünitesi 150 cm",
+   "brand": "SO-MASS",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 150,
+   "d": 45,
+   "h": 50,
+   "color": "#c99a6e",
+   "price": 44990,
+   "url": "https://so-mass.com/products/avila-tv-unitesi-150-cm-naturel-mese",
+   "articleNo": "DMAML000829",
+   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
+   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
+   "notes": "Ayak 18 cm (üretici). Gövde monte, ayaklar demonte gelir. Kapak/çekmece bölümleri görselden tahmini.",
+   "dims": {
+    "legHeight": 18
+   },
+   "shape": {
+    "type": "cabinets",
+    "singleBody": true,
+    "radius": 0.6,
+    "carcass": "#c79a70",
+    "front": "#cc9f72",
+    "interior": "#3b2618",
+    "plinth": "#c18e64",
+    "legs": {
+     "type": "round",
+     "h": 18,
+     "d": 4.5,
+     "taper": true,
+     "inset": [
+      9,
+      6
+     ]
+    }
+   },
+   "modules": [
+    {
+     "name": "sol kapak",
+     "w": 50.0,
+     "h": 50,
+     "fronts": [
+      {
+       "type": "door",
+       "h": 29,
+       "hinge": "left"
+      }
+     ]
+    },
+    {
+     "name": "çekmece + niş",
+     "w": 50.0,
+     "h": 50,
+     "fronts": [
+      {
+       "type": "drawer",
+       "h": 16,
+       "depth": 35
+      },
+      {
+       "type": "open",
+       "h": 13
+      }
+     ]
+    },
+    {
+     "name": "sağ kapak",
+     "w": 50.0,
+     "h": 50,
+     "fronts": [
+      {
+       "type": "door",
+       "h": 29,
+       "hinge": "right"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "somass-avila-180",
+   "name": "Avila TV ünitesi 180 cm",
+   "brand": "SO-MASS",
+   "group": "TV üniteleri",
+   "category": "Gerçek ürünler",
+   "w": 180,
+   "d": 45,
+   "h": 50,
+   "color": "#c99a6e",
+   "price": 49990,
+   "url": "https://so-mass.com/products/avila-tv-unitesi-180-cm-naturel-mese",
+   "articleNo": "DMAML000830",
+   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
+   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
+   "notes": "Ayak 18 cm (üretici). Gövde monte, ayaklar demonte gelir. Kapak/çekmece bölümleri görselden tahmini.",
+   "dims": {
+    "legHeight": 18
+   },
+   "shape": {
+    "type": "cabinets",
+    "singleBody": true,
+    "radius": 0.6,
+    "carcass": "#c79a70",
+    "front": "#cc9f72",
+    "interior": "#3b2618",
+    "plinth": "#c18e64",
+    "legs": {
+     "type": "round",
+     "h": 18,
+     "d": 4.5,
+     "taper": true,
+     "inset": [
+      9,
+      6
+     ]
+    }
+   },
+   "modules": [
+    {
+     "name": "sol kapak",
+     "w": 60.0,
+     "h": 50,
+     "fronts": [
+      {
+       "type": "door",
+       "h": 29,
+       "hinge": "left"
+      }
+     ]
+    },
+    {
+     "name": "çekmece + niş",
+     "w": 60.0,
+     "h": 50,
+     "fronts": [
+      {
+       "type": "drawer",
+       "h": 16,
+       "depth": 35
+      },
+      {
+       "type": "open",
+       "h": 13
+      }
+     ]
+    },
+    {
+     "name": "sağ kapak",
+     "w": 60.0,
+     "h": 50,
+     "fronts": [
+      {
+       "type": "door",
+       "h": 29,
+       "hinge": "right"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "samsung-qe55q60d",
+   "name": "Samsung 55\" QLED Q60D",
+   "brand": "Samsung",
+   "group": "Televizyon",
+   "category": "Gerçek ürünler",
+   "w": 123.2,
+   "d": 22.4,
+   "h": 74.6,
+   "color": "#1b1d22",
+   "price": null,
+   "onTop": true,
+   "weight": 15.5,
+   "url": "https://www.samsung.com/tr/business/tvs/qled-tv/q60d-55-inch-qled-4k-tizen-os-smart-tv-qe55q60dauxtk/",
+   "articleNo": "QE55Q60DAUXTK",
+   "source": "samsung.com/tr QE55Q60DAUXTK teknik özellikler: standlı 1232,1×745,9×224 mm, standsız 1232,1×708,3×25,7 mm, stant tabanı 896,2×224 mm, 15,5 kg",
+   "material": "2024 modeli (Türkiye sayfasındaki güncel Q60). Farklı yıl modeli alınacaksa ölçüler değişebilir.",
+   "notes": "Ayaklar iki uçta: ayak tabanı 89,6 cm genişliğinde; ünitenin üstüne iki ayağın da basması gerekir.",
+   "shape": {
+    "type": "tv",
+    "panelHeight": 70.8,
+    "panelDepth": 2.6,
+    "feet": {
+     "span": 89.6,
+     "depth": 22.4
+    }
+   }
+  },
+  {
+   "id": "kanepe-3",
+   "name": "3'lü kanepe",
+   "category": "Salon",
+   "w": 220,
+   "d": 95,
+   "h": 85,
+   "color": "#5f7387",
+   "use": {
+    "front": 40
+   },
+   "assumed": true,
+   "url": null,
+   "group": "Koltuklar"
+  },
+  {
+   "id": "berjer",
+   "name": "Berjer",
+   "category": "Salon",
+   "w": 80,
+   "d": 85,
+   "h": 95,
+   "color": "#8c6f5a",
+   "use": {
+    "front": 40
+   },
+   "assumed": true,
+   "url": null,
+   "group": "Koltuklar"
+  },
+  {
+   "id": "orta-sehpa",
+   "name": "Orta sehpa",
+   "category": "Salon",
+   "w": 100,
+   "d": 60,
+   "h": 45,
+   "color": "#a07c55",
+   "assumed": true,
+   "url": null,
+   "group": "Sehpalar"
+  },
+  {
+   "id": "tv-unitesi",
+   "name": "TV ünitesi",
+   "category": "Salon",
+   "w": 180,
+   "d": 40,
+   "h": 50,
+   "color": "#3f3f46",
+   "drawers": {
+    "depth": 35
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "TV üniteleri"
+  },
+  {
+   "id": "tv-55",
+   "name": "Televizyon 55\"",
+   "category": "Salon",
+   "w": 123,
+   "d": 25,
+   "h": 75,
+   "z": 50,
+   "color": "#111827",
+   "assumed": true,
+   "url": null,
+   "group": "Televizyon",
+   "onTop": true,
+   "shape": {
+    "type": "tv"
+   }
+  },
+  {
+   "id": "yemek-masasi",
+   "name": "Yemek masası (6 kişilik)",
+   "category": "Salon",
+   "w": 160,
+   "d": 90,
+   "h": 75,
+   "color": "#b08d63",
+   "use": {
+    "front": 70,
+    "back": 70
+   },
+   "assumed": true,
+   "url": null,
+   "group": "Masalar"
+  },
+  {
+   "id": "sandalye",
+   "name": "Sandalye",
+   "category": "Salon",
+   "w": 45,
+   "d": 52,
+   "h": 90,
+   "color": "#6b5b4b",
+   "movable": true,
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Sandalyeler"
+  },
+  {
+   "id": "kitaplik",
+   "name": "Kitaplık",
+   "category": "Salon",
+   "w": 80,
+   "d": 30,
+   "h": 200,
+   "color": "#c8b79a",
+   "use": {
+    "front": 60
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Dolap ve raflar"
+  },
+  {
+   "id": "cift-yatak",
+   "name": "Çift kişilik yatak (160×200)",
+   "category": "Yatak odası",
+   "w": 165,
+   "d": 208,
+   "h": 105,
+   "color": "#d6cfc4",
+   "flatpack": true,
+   "use": {
+    "left": 60,
+    "right": 60,
+    "front": 50,
+    "sideFrom": 0.4
+   },
+   "assumed": true,
+   "url": null,
+   "notes": "Ön = ayak ucu, arka = başlık.",
+   "group": "Yataklar"
+  },
+  {
+   "id": "komodin",
+   "name": "Komodin",
+   "category": "Yatak odası",
+   "w": 50,
+   "d": 40,
+   "h": 55,
+   "color": "#9c8466",
+   "drawers": {
+    "depth": 30
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Dolap ve raflar"
+  },
+  {
+   "id": "gardirop-4",
+   "name": "Gardırop (4 kapaklı)",
+   "category": "Yatak odası",
+   "w": 180,
+   "d": 58,
+   "h": 220,
+   "color": "#e5e1da",
+   "frontDoors": {
+    "count": 4
+   },
+   "use": {
+    "front": 60
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Dolap ve raflar"
+  },
+  {
+   "id": "gardirop-surgulu",
+   "name": "Gardırop (sürgülü)",
+   "category": "Yatak odası",
+   "w": 200,
+   "d": 65,
+   "h": 220,
+   "color": "#cfc8bd",
+   "use": {
+    "front": 70
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Dolap ve raflar"
+  },
+  {
+   "id": "tek-yatak",
+   "name": "Tek kişilik yatak (100×200)",
+   "category": "Yatak odası",
+   "w": 105,
+   "d": 205,
+   "h": 90,
+   "color": "#cbd5e1",
+   "flatpack": true,
+   "use": {
+    "left": 50,
+    "sideFrom": 0.3
+   },
+   "assumed": true,
+   "url": null,
+   "notes": "Yan erişim varsayılan olarak sol yanda; duvara göre yerleşimde 'use' ile değiştirilebilir.",
+   "group": "Yataklar"
+  },
+  {
+   "id": "calisma-masasi",
+   "name": "Çalışma masası",
+   "category": "Çalışma",
+   "w": 120,
+   "d": 60,
+   "h": 75,
+   "color": "#d9c3a5",
+   "use": {
+    "front": 80
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Masalar"
+  },
+  {
+   "id": "calisma-sandalyesi",
+   "name": "Çalışma sandalyesi",
+   "category": "Çalışma",
+   "w": 60,
+   "d": 60,
+   "h": 110,
+   "color": "#374151",
+   "movable": true,
+   "assumed": true,
+   "url": null,
+   "group": "Sandalyeler"
+  },
+  {
+   "id": "buzdolabi",
+   "name": "Buzdolabı",
+   "category": "Mutfak",
+   "w": 70,
+   "d": 72,
+   "h": 185,
+   "color": "#e8eaed",
+   "frontDoors": {
+    "count": 1,
+    "hinge": "right"
+   },
+   "assumed": true,
+   "url": null,
+   "group": "Beyaz eşya"
+  },
+  {
+   "id": "camasir-makinesi",
+   "name": "Çamaşır makinesi",
+   "category": "Banyo",
+   "w": 60,
+   "d": 60,
+   "h": 85,
+   "color": "#f4f4f5",
+   "use": {
+    "front": 60
+   },
+   "assumed": true,
+   "url": null,
+   "group": "Beyaz eşya"
+  },
+  {
+   "id": "mutfak-masasi",
+   "name": "Mutfak masası (2-4 kişilik)",
+   "category": "Mutfak",
+   "w": 110,
+   "d": 70,
+   "h": 75,
+   "color": "#c7a27c",
+   "use": {
+    "front": 60,
+    "back": 60
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Masalar"
+  },
+  {
+   "id": "ayakkabilik",
+   "name": "Ayakkabılık",
+   "category": "Hol",
+   "w": 100,
+   "d": 35,
+   "h": 110,
+   "color": "#a3a3a3",
+   "frontDoors": {
+    "count": 2
+   },
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Dolap ve raflar"
+  },
+  {
+   "id": "hali-200x290",
+   "name": "Halı 200×290",
+   "category": "Salon",
+   "w": 200,
+   "d": 290,
+   "h": 1,
+   "color": "#b9a48a",
+   "collides": false,
+   "flatpack": true,
+   "assumed": true,
+   "url": null,
+   "group": "Halılar"
+  }
+ ]
 }
