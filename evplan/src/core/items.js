@@ -74,6 +74,7 @@ export function resolveItem(entry, catalogById) {
     drawers: it.drawers ?? null,
     use: it.use ?? null,
     assumed: !!it.assumed,
+    sample: !!it.sample, // belirli bir ürün değil, örnek (ölçü standart)
     notes: it.notes ?? '',
     entry,
   };

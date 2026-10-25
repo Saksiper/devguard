@@ -2320,55 +2320,562 @@
    }
   },
   {
-   "id": "hali-200x290",
-   "name": "Halı 200×290",
+   "id": "hali-80x150",
+   "name": "Düz halı 80×150",
    "category": "Salon",
+   "group": "Halılar",
+   "w": 80,
+   "d": 150,
+   "h": 1,
+   "color": "#cbb994",
+   "collides": false,
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Kum"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
+  },
+  {
+   "id": "hali-120x180",
+   "name": "Düz halı 120×180",
+   "category": "Salon",
+   "group": "Halılar",
+   "w": 120,
+   "d": 180,
+   "h": 1,
+   "color": "#d6c5a8",
+   "collides": false,
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Bej"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
+  },
+  {
+   "id": "hali-160x230",
+   "name": "Düz halı 160×230",
+   "category": "Salon",
+   "group": "Halılar",
+   "w": 160,
+   "d": 230,
+   "h": 1,
+   "color": "#e9e1cf",
+   "collides": false,
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Krem"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
+  },
+  {
+   "id": "hali-200x290",
+   "name": "Düz halı 200×290",
+   "category": "Salon",
+   "group": "Halılar",
    "w": 200,
    "d": 290,
    "h": 1,
-   "color": "#b9a48a",
+   "color": "#cbb994",
    "collides": false,
    "flatpack": true,
-   "assumed": true,
+   "sample": true,
    "url": null,
-   "group": "Halılar",
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Kum"
+   },
    "shape": {
-    "type": "rug"
+    "type": "rug",
+    "plain": true
    }
   },
   {
    "id": "hali-200x300",
-   "name": "Halı 200×300",
+   "name": "Düz halı 200×300",
+   "category": "Salon",
+   "group": "Halılar",
+   "w": 200,
+   "d": 300,
+   "h": 1,
+   "color": "#a89886",
+   "collides": false,
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Vizon"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
+  },
+  {
+   "id": "hali-240x320",
+   "name": "Düz halı 240×320",
+   "category": "Salon",
+   "group": "Halılar",
+   "w": 240,
+   "d": 320,
+   "h": 1,
+   "color": "#d6c5a8",
+   "collides": false,
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Bej"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
+  },
+  {
+   "id": "hali-240x340",
+   "name": "Düz halı 240×340",
+   "category": "Salon",
+   "group": "Halılar",
+   "w": 240,
+   "d": 340,
+   "h": 1,
+   "color": "#c9c8c3",
+   "collides": false,
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Açık gri"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
+  },
+  {
+   "id": "hali-300x400",
+   "name": "Düz halı 300×400",
    "category": "Salon",
    "group": "Halılar",
    "w": 300,
-   "d": 200,
+   "d": 400,
    "h": 1,
-   "color": "#cfc6b5",
-   "assumed": true,
-   "url": null,
-   "shape": {
-    "type": "rug"
-   },
+   "color": "#9b9b98",
    "collides": false,
-   "flatpack": true
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Gri"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
   },
   {
-   "id": "hali-160x230",
-   "name": "Halı 160×230",
+   "id": "yolluk-80x300",
+   "name": "Düz yolluk 80×300",
    "category": "Salon",
    "group": "Halılar",
-   "w": 230,
-   "d": 160,
+   "w": 80,
+   "d": 300,
    "h": 1,
-   "color": "#cfc6b5",
-   "assumed": true,
-   "url": null,
-   "shape": {
-    "type": "rug"
-   },
+   "color": "#4b4b4e",
    "collides": false,
-   "flatpack": true
+   "flatpack": true,
+   "sample": true,
+   "url": null,
+   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Kum",
+       "color": "#cbb994"
+      },
+      {
+       "name": "Bej",
+       "color": "#d6c5a8"
+      },
+      {
+       "name": "Krem",
+       "color": "#e9e1cf"
+      },
+      {
+       "name": "Vizon",
+       "color": "#a89886"
+      },
+      {
+       "name": "Açık gri",
+       "color": "#c9c8c3"
+      },
+      {
+       "name": "Gri",
+       "color": "#9b9b98"
+      },
+      {
+       "name": "Antrasit",
+       "color": "#4b4b4e"
+      },
+      {
+       "name": "Adaçayı",
+       "color": "#a3ad95"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Antrasit"
+   },
+   "shape": {
+    "type": "rug",
+    "plain": true
+   }
   }
  ]
 }

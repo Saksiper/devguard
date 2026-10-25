@@ -150,4 +150,12 @@ describe('gerçek ürünler', () => {
     s.undo();
     expect(s.items()).toHaveLength(0);
   });
+
+  it('düz örnek halılar: standart ölçüler, renk seçeneği, örnek etiketi, çakışmaz', () => {
+    const rugs = cat.items.filter((c) => c.group === 'Halılar');
+    expect(rugs.map((c) => `${c.w}×${c.d}`)).toEqual(['80×150', '120×180', '160×230', '200×290', '200×300', '240×320', '240×340', '300×400', '80×300']);
+    const r = resolveItem({ uid: 'h', ref: 'hali-240x320', x: 0, y: 0, choice: { Renk: 'Antrasit' } }, byId);
+    expect(r).toMatchObject({ color: '#4b4b4e', sample: true, assumed: false, collides: false });
+    expect(rugs.every((c) => c.sample && !c.brand && c.options[0].values.some((v) => v.name === 'Kum'))).toBe(true);
+  });
 });

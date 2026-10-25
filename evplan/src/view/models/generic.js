@@ -301,7 +301,7 @@ function rugTex() {
   return rugTexture;
 }
 
-/** Halı: dokuma görünümlü yüzey, koyu kenar bordürü. */
+/** Halı: dokuma görünümlü yüzey, koyu kenar bordürü; shape.plain → bordürsüz tek renk. */
 export function buildRug(it) {
   const S = it.shape ?? {};
   const g = new THREE.Group();
@@ -311,6 +311,13 @@ export function buildRug(it) {
   const h = Math.max(0.6, it.h);
   const field = new THREE.MeshStandardMaterial({ color: col(it.color), map: t, roughness: 1 });
   const border = new THREE.MeshStandardMaterial({ color: col(S.border ?? it.color).multiplyScalar(0.7), map: t, roughness: 1 });
+  if (S.plain) {
+    // Düz halı: tek renk, kenarı hafif yuvarlatılmış.
+    const rug = rbox(it.w, h, it.d, Math.min(0.8, h / 2), field, 0, h / 2, 0);
+    rug.castShadow = false;
+    g.add(rug);
+    return done(g);
+  }
   const b = S.borderWidth ?? 12;
   const base = box(it.w, h, it.d, border, 0, h / 2, 0);
   base.castShadow = false;

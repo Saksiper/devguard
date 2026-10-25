@@ -224,7 +224,7 @@ export class Panel {
     const issues = (this.result?.issues ?? []).filter((i) => i.items.includes(it.uid));
     const product = this.productBlock(it);
     el.innerHTML = `
-      <h3>${esc(brandPrefix(it))}${esc(it.name)}${it.assumed ? ' <span class="badge warn">örnek ölçü</span>' : ''}</h3>
+      <h3>${esc(brandPrefix(it))}${esc(it.name)}${it.assumed ? ' <span class="badge warn">örnek ölçü</span>' : it.sample ? ' <span class="badge warn">örnek</span>' : ''}</h3>
       ${product}
       <div class="row">
         <button data-a="r-90" title="Shift+R">⟲ 90°</button>
@@ -325,7 +325,7 @@ export class Panel {
       <img class="thumb" alt="" data-thumb="${esc(c.id)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
       <div class="card-body">
         <div class="card-title">${brandPrefix(c) ? `<span class="brand">${esc(c.brand)}</span> ` : ''}${esc(c.name)}</div>
-        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : ''}</div>
+        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}</div>
         ${swatches ? `<div class="swatches mini">${swatches.values.map((v) => `<span title="${esc(v.name)}" style="background:${esc(v.color)}"></span>`).join('')}</div>` : ''}
         <div class="card-actions">
           ${(mode === 'swap' || sel) && !c.set ? `<button class="primary" data-swap="${esc(c.id)}" ${sel ? '' : 'disabled'}>Yerine dene</button>` : ''}
