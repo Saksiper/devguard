@@ -21,12 +21,13 @@ const room = {
 };
 
 describe('gerçek ürünler', () => {
-  it('Klem: seçenekler renge ve mağaza varyantına çevrilir', () => {
-    const it0 = resolveItem({ uid: 'a', ref: 'normod-klem-3', x: 0, y: 0, choice: { Kumaş: 'Sisli Yeşil', Ayak: 'Açık', 'Sırt Minderi': 'Kalıcı Form' } }, byId);
-    expect(it0.variant.id).toBe(44576718881010);
-    expect(it0.price).toBe(47090);
-    expect(it0.url).toContain('variant=44576718881010');
-    expect(it0.parts).toMatchObject({ fabric: '#a7a895', legs: '#b5814d', backStyle: 'firm' });
+  it('Klem performans kadife: seçilen varyant (Bej / Açık / Kalıcı Form) ve kalibre renk', () => {
+    const it0 = resolveItem({ uid: 'a', ref: 'normod-klem-3-pk', x: 0, y: 0, choice: { Kumaş: 'Bej', Ayak: 'Açık', 'Sırt Minderi': 'Kalıcı Form' } }, byId);
+    expect(it0.variant.id).toBe(51863732846959);
+    expect(it0.price).toBe(43530);
+    expect(it0.url).toContain('performans-kadife-4?variant=51863732846959');
+    expect(it0.parts).toMatchObject({ fabric: '#dad5cd', legs: '#b5814d', backStyle: 'firm' });
+    expect(cat.items.filter((c) => c.group === 'Koltuklar').map((c) => c.id)).toEqual(['normod-klem-3-pk']);
   });
 
   it('BESTÅ modülleri ayrı kutu: TV 38 cm sehpanın üstüne oturur, çakışma yok', () => {
@@ -86,7 +87,7 @@ describe('gerçek ürünler', () => {
     const spot = s.spotFor(byId.get('jysk-lyngvig-160'));
     expect(spot).toMatchObject({ x: 280, rot: 0, occupied: false });
     expect(spot.y - 40 / 2).toBeCloseTo(22 - 42 / 2); // arka kenar aynı
-    expect(s.spotFor(byId.get('normod-klem-3'))).toBeNull(); // başka tür: bilinen yer yok
+    expect(s.spotFor(byId.get('normod-klem-3-pk'))).toBeNull(); // başka tür: bilinen yer yok
   });
 
   it('Samsung Q60: iki ayak ünitenin üstünde mi, ağırlık üst tablayı aşıyor mu', () => {
@@ -125,17 +126,28 @@ describe('gerçek ürünler', () => {
     expect(s.hiddenEntries()).toEqual([]);
   });
 
-  it('Klem köşe: taban iki kanat (köşe içi boş), köşe yönü varyantı değiştirmez', () => {
-    const at = (corner) =>
-      resolveItem({ uid: 'k', ref: 'normod-klem-kose-290', x: 300, y: 300, rot: 0, choice: { Köşe: corner, Kumaş: 'Kemik', Ayak: 'Koyu', 'Sırt Minderi': 'Kalıcı Form' } }, byId);
+  it('L köşe koltuk: taban iki kanat (köşe içi boş), köşe yönü varyantı değiştirmez', () => {
+    // Katalogda L koltuk kalmadı; aynı kurgu deneme ürünüyle sınanır.
+    const pk = byId.get('normod-klem-3-pk');
+    const Lcat = {
+      ...pk,
+      id: 'deneme-L',
+      w: 290,
+      d: 290,
+      shape: { ...pk.shape, type: 'sofaL', wing: 91 },
+      options: [...pk.options, { name: 'Köşe', part: 'corner', values: [{ name: 'Sol arka', value: 'left' }, { name: 'Sağ arka', value: 'right' }] }],
+      variantOptions: ['Kumaş', 'Ayak', 'Sırt Minderi'],
+    };
+    const cat2 = new Map([...byId, ['deneme-L', Lcat]]);
+    const at = (corner) => resolveItem({ uid: 'k', ref: 'deneme-L', x: 300, y: 300, rot: 0, choice: { Köşe: corner } }, cat2);
     const L = at('Sol arka');
     const [back, side] = itemBoxes(L);
     expect([back.w, back.d, back.y]).toEqual([290, 91, 300 - 145 + 45.5]);
     expect([side.w, side.d, side.x]).toEqual([91, 199, 300 - 145 + 45.5]);
     expect(itemBoxes(at('Sağ arka'))[1].x).toBe(300 + 145 - 45.5);
-    expect(L.variant?.price).toBe(112680);
+    expect(L.variant?.price).toBe(43530);
     // Köşe içine konan orta sehpa koltukla çakışmaz.
-    const r = runChecks(buildPlanModel(room), [L, resolveItem({ uid: 's', ref: 'orta-sehpa', x: 330, y: 330, rot: 0 }, byId)], { passage: false });
+    const r = runChecks(buildPlanModel(room), [L, resolveItem({ uid: 's', ref: 'orta-sehpa', x: 330, y: 330, rot: 0 }, cat2)], { passage: false });
     expect(r.issues.filter((i) => i.kind === 'collision')).toEqual([]);
   });
 
@@ -152,10 +164,20 @@ describe('gerçek ürünler', () => {
   });
 
   it('düz örnek halılar: standart ölçüler, renk seçeneği, örnek etiketi, çakışmaz', () => {
-    const rugs = cat.items.filter((c) => c.group === 'Halılar');
+    const rugs = cat.items.filter((c) => c.group === 'Halılar' && c.sample);
     expect(rugs.map((c) => `${c.w}×${c.d}`)).toEqual(['80×150', '120×180', '160×230', '200×290', '200×300', '240×320', '240×340', '300×400', '80×300']);
     const r = resolveItem({ uid: 'h', ref: 'hali-240x320', x: 0, y: 0, choice: { Renk: 'Antrasit' } }, byId);
     expect(r).toMatchObject({ color: '#4b4b4e', sample: true, assumed: false, collides: false });
     expect(rugs.every((c) => c.sample && !c.brand && c.options[0].values.some((v) => v.name === 'Kum'))).toBe(true);
+  });
+
+  it('Nun Lizbon: ölçü seçeneği boyutu, renk iki tonlu dokuyu, varyant fiyat ve linki belirler', () => {
+    const l = resolveItem({ uid: 'l', ref: 'nun-lizbon', x: 0, y: 0 }, byId);
+    expect([l.w, l.d, l.color, l.price]).toEqual([80, 150, '#b8bbaa', 1950]);
+    expect(l.url).toBe('https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=80150');
+    expect(l.parts).toMatchObject({ weaveCell: '#abae9d', weaveLine: '#c9ccbc' });
+    const b = resolveItem({ uid: 'l', ref: 'nun-lizbon', x: 0, y: 0, choice: { Renk: 'Antrasit', Ölçü: '160×230' } }, byId);
+    expect([b.w, b.d, b.price, b.collides]).toEqual([160, 230, 5500, false]);
+    expect(b.url).toContain('renk=antrasit&olcu=160230');
   });
 });

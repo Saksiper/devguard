@@ -139,6 +139,8 @@ async function boot() {
   const model = buildPlanModel(plan);
   if (!fileLayouts.length) fileLayouts.push({ id: 'bos', name: 'Boş ev', items: [] });
   const store = new Store({ plan, catalog, fileLayouts });
+  if (store.dropped.length)
+    toast(`Katalogda artık olmayan ${store.dropped.length} mobilya kayıtlı yerleşimlerden çıkarıldı (${[...new Set(store.dropped)].join(', ')}).`, 8000);
 
   if (location.hash.startsWith('#y=')) {
     try {

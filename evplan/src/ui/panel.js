@@ -321,11 +321,12 @@ export class Panel {
     const price = c.price ?? (c.variants ? Math.min(...Object.values(c.variants).map((v) => v.price)) : null);
     const sel = this.store.selection ? this.store.item(this.store.selection) : null;
     const swatches = (c.options ?? []).find((o) => o.values.some((v) => v.color));
+    const sizes = (c.options ?? []).find((o) => o.values.some((v) => Number.isFinite(v.w)))?.values.length;
     return `<div class="card" data-ref="${esc(c.id)}">
       <img class="thumb" alt="" data-thumb="${esc(c.id)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
       <div class="card-body">
         <div class="card-title">${brandPrefix(c) ? `<span class="brand">${esc(c.brand)}</span> ` : ''}${esc(c.name)}</div>
-        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}</div>
+        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${sizes ? `${sizes} ölçü · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}</div>
         ${swatches ? `<div class="swatches mini">${swatches.values.map((v) => `<span title="${esc(v.name)}" style="background:${esc(v.color)}"></span>`).join('')}</div>` : ''}
         <div class="card-actions">
           ${(mode === 'swap' || sel) && !c.set ? `<button class="primary" data-swap="${esc(c.id)}" ${sel ? '' : 'disabled'}>Yerine dene</button>` : ''}

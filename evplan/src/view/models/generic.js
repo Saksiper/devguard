@@ -301,10 +301,66 @@ function rugTex() {
   return rugTexture;
 }
 
-/** Halı: dokuma görünümlü yüzey, koyu kenar bordürü; shape.plain → bordürsüz tek renk. */
+const lin = (c) => new THREE.Color(c); // Color, çalışma (doğrusal) uzayında tutar
+const luma = (c) => 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+const gridCache = new Map();
+
+/**
+ * Izgara dokulu şönil (ör. Nun Lizbon): koyu hav hücreleri + açık ızgara çizgileri, 4 × 4 hücrelik karo.
+ * Çizgi oranı, karonun doğrusal ortalaması fotoğraftaki ortalama renge (mean) eşit olacak şekilde seçilir;
+ * uzaktan (mipmap) bakınca renk birebir fotoğraftaki gibi kalır.
+ */
+function gridWeaveTex(cell, line, mean) {
+  const key = `${cell}|${line}|${mean}`;
+  if (gridCache.has(key)) return gridCache.get(key);
+  const [c, l, m] = [lin(cell), lin(line), lin(mean)];
+  const f = Math.max(0.1, Math.min(0.75, (luma(m) - luma(c)) / Math.max(1e-4, luma(l) - luma(c))));
+  // Hücre başına çizgi kalınlığı: alan oranı f = 1 − (1 − t)² → t = 1 − √(1 − f).
+  const t = 1 - Math.sqrt(1 - f);
+  const N = 4;
+  const P = 32; // piksel / hücre
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = N * P;
+  const x = cv.getContext('2d');
+  x.fillStyle = cell;
+  x.fillRect(0, 0, cv.width, cv.height);
+  x.fillStyle = line;
+  const lw = Math.max(1, Math.round(t * P));
+  for (let i = 0; i < N; i++) {
+    x.fillRect(i * P, 0, lw, cv.height);
+    x.fillRect(0, i * P, cv.width, lw);
+  }
+  const tex = new THREE.CanvasTexture(cv);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  gridCache.set(key, tex);
+  return tex;
+}
+
+/**
+ * Halı: dokuma görünümlü yüzey, koyu kenar bordürü; shape.plain → bordürsüz tek renk;
+ * shape.weave === 'grid' → ızgara dokulu şönil + ince açık biye (renkler parts.weaveCell / weaveLine).
+ */
 export function buildRug(it) {
   const S = it.shape ?? {};
   const g = new THREE.Group();
+  if (S.weave === 'grid') {
+    const pitch = S.pitch ?? 1; // cm
+    const tex = gridWeaveTex(it.parts?.weaveCell ?? it.color, it.parts?.weaveLine ?? it.color, it.color).clone();
+    tex.repeat.set(it.w / (4 * pitch), it.d / (4 * pitch));
+    tex.needsUpdate = true;
+    const h = Math.max(0.6, it.h);
+    const E = S.edgeWidth ?? 1.2;
+    const edge = new THREE.MeshStandardMaterial({ color: col(it.parts?.weaveEdge ?? S.edge ?? '#e6e2d8'), roughness: 1 });
+    const body = rbox(it.w, h, it.d, Math.min(0.5, h / 2), edge, 0, h / 2, 0);
+    body.castShadow = false;
+    g.add(body);
+    const top = box(it.w - 2 * E, 0.05, it.d - 2 * E, new THREE.MeshStandardMaterial({ color: 0xffffff, map: tex, roughness: 1 }), 0, h + 0.025, 0);
+    top.castShadow = false;
+    g.add(top);
+    return done(g);
+  }
   const t = rugTex().clone();
   t.repeat.set(it.w / 25, it.d / 25);
   t.needsUpdate = true;

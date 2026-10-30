@@ -79,9 +79,26 @@ export class Store extends EventTarget {
       if (l.source === 'local' && !this.layouts.has(l.id)) this._put(l);
     }
     if (!this.layouts.size) this._put({ id: 'bos', name: 'Boş yerleşim', items: [], source: 'local' });
+    this._pruneUnknown();
     const wanted = saved?.activeId;
     this.activeId = this.layouts.has(wanted) ? wanted : this.order[0];
     this._ensureUids();
+  }
+
+  /**
+   * Katalogdan çıkarılmış ürünler (ör. elenen koltuklar) tarayıcıda saklı eski kopyalarda kalmış olabilir:
+   * ölçüsü de yoksa çizilemez, yerleşimden düşülür. Düşülen adlar this.dropped'da (bir kez bildirilir).
+   */
+  _pruneUnknown() {
+    this.dropped = [];
+    const sized = (e) => ['w', 'd', 'h'].every((k) => Number.isFinite(e[k]));
+    for (const l of this.layouts.values()) {
+      const keep = l.items.filter((e) => !e.ref || this.catalogById.has(e.ref) || sized(e));
+      if (keep.length === l.items.length) continue;
+      for (const e of l.items) if (!keep.includes(e)) this.dropped.push(e.ref);
+      l.items = keep;
+      if (l.source === 'file') l.modified = true;
+    }
   }
 
   _put(layout) {

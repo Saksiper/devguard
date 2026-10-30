@@ -3,11 +3,10 @@
   "name": "A – Klasik",
   "note": "DEMO yerleşim. x, y = mobilyanın taban merkezi (cm); rot = derece (saat yönü, 0'da önü aşağı/güney).",
   "items": [
-    { "uid": "a1", "ref": "kanepe-3", "x": 200, "y": 210, "rot": 270 },
+    { "uid": "a1", "ref": "normod-klem-3-pk", "x": 200, "y": 210, "rot": 270, "choice": {"Kumaş": "Bej", "Ayak": "Açık", "Sırt Minderi": "Kalıcı Form"} },
     { "uid": "a2", "ref": "orta-sehpa", "x": 330, "y": 210, "rot": 90 },
     { "uid": "a3", "ref": "tv-unitesi", "x": 499, "y": 210, "rot": 90 },
     { "uid": "a4", "ref": "tv-55", "x": 501, "y": 210, "rot": 90 },
-    { "uid": "a5", "ref": "berjer", "x": 433, "y": 56, "rot": 15 },
     { "uid": "a6", "ref": "hali-200x290", "x": 300, "y": 210, "rot": 90 },
     { "uid": "a7", "ref": "kitaplik", "x": 16, "y": 325, "rot": 270 },
     { "uid": "a10", "ref": "cift-yatak", "x": 795, "y": 200, "rot": 90 },

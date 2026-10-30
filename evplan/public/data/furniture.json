@@ -2,23 +2,24 @@
  "note": "Mobilya kataloğu. Ölçüler cm: w = genişlik (G), d = derinlik (D), h = yükseklik (Y). 'assumed: true' = ölçü örnek/varsayım, gerçek ürünle değiştirilecek. Yerel eksen: +d yönü mobilyanın ÖNÜ. İsteğe bağlı: model (GLB yolu), url (ürün linki), frontDoors {count, hinge}, drawers {depth}, use {front, back, left, right, sideFrom}, movable (sandalye gibi kolay çekilen), collides:false (halı gibi), flatpack (demonte gelir). Gerçek ürünlerde: group (galeri türü), brand, price, options/variants (renk seçenekleri), shape (parametrik 3D model: sofa | cabinets), modules (çok modüllü mobilya; her modül kendi ölçüsü ve kapaklarıyla kontrol edilir), onTop (TV gibi alttaki yüzeye oturur).",
  "items": [
   {
-   "id": "normod-klem-3",
-   "name": "Klem üçlü koltuk",
+   "id": "normod-klem-3-pk",
+   "name": "Klem üçlü koltuk (performans kadife)",
    "brand": "Normod",
    "category": "Gerçek ürünler",
+   "group": "Koltuklar",
    "w": 224,
    "d": 91,
    "h": 84,
-   "color": "#a7a895",
-   "url": "https://normod.com/products/klem-uclu-koltuk-silindir-ahsap-ayak-fitilli-kadife",
-   "source": "normod.com ürün sayfası (Ürün Ölçüleri), 24.10.2026; renkler ürün görsellerinden örneklendi",
+   "color": "#dad5cd",
+   "url": "https://normod.com/products/klem-uclu-koltuk-silindir-ahsap-ayak-performans-kadife-4",
+   "source": "normod.com ürün verisi (Ürün Ölçüleri, varyantlar), 30.10.2026; renkler ürün fotoğraflarına kalibre edildi (beyaz referanslı stüdyo ışığında arka minder fotoğrafla ±1)",
    "dims": {
     "seatWidth": 180,
     "seatDepth": 59,
     "seatHeight": 43,
     "legHeight": 16
    },
-   "material": "Fitilli kadife, %100 polyester; masif kayın ayak",
+   "material": "Performans kadife: sıvı itici apre, %100 polyester, 50.000 Martindale, 644 gr/m; masif kayın ayak, kayın kontra iskelet, çelik S yay, HR sünger",
    "use": {
     "front": 45
    },
@@ -28,24 +29,24 @@
      "part": "fabric",
      "values": [
       {
-       "name": "Kemik",
-       "color": "#d6d5d2"
+       "name": "Bej",
+       "color": "#dad5cd"
       },
       {
-       "name": "Sisli Yeşil",
-       "color": "#a7a895"
+       "name": "Kehribar",
+       "color": "#b07b3a"
       },
       {
-       "name": "Polen Sarı",
-       "color": "#baa362"
+       "name": "Kum",
+       "color": "#c1b19f"
       },
       {
-       "name": "Sütlü Kahve",
-       "color": "#8f7a6d"
+       "name": "Terra",
+       "color": "#ae6547"
       },
       {
-       "name": "Kiremit",
-       "color": "#561a11"
+       "name": "Yosun",
+       "color": "#9eaaa1"
       }
      ]
     },
@@ -83,165 +84,165 @@
     }
    ],
    "defaultOptions": {
-    "Kumaş": "Sisli Yeşil",
+    "Kumaş": "Bej",
     "Ayak": "Açık",
     "Sırt Minderi": "Kalıcı Form"
    },
    "variants": {
-    "Kemik / Açık / Rahat Dolgu": {
-     "id": 43056682434802,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Bej / Açık / Rahat Dolgu": {
+     "id": 51863732814191,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Kemik / Açık / Kalıcı Form": {
-     "id": 44576718782706,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Bej / Açık / Kalıcı Form": {
+     "id": 51863732846959,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Kemik / Koyu / Rahat Dolgu": {
-     "id": 43056682238194,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Bej / Koyu / Rahat Dolgu": {
+     "id": 51863732879727,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Kemik / Koyu / Kalıcı Form": {
-     "id": 44576718815474,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Bej / Koyu / Kalıcı Form": {
+     "id": 51863732912495,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Kemik / Siyah / Rahat Dolgu": {
-     "id": 43056682631410,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Bej / Siyah / Rahat Dolgu": {
+     "id": 51863732945263,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Kemik / Siyah / Kalıcı Form": {
-     "id": 44576718848242,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Bej / Siyah / Kalıcı Form": {
+     "id": 51863732978031,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Sisli Yeşil / Açık / Rahat Dolgu": {
-     "id": 43056682467570,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Kehribar / Açık / Rahat Dolgu": {
+     "id": 51863733010799,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Sisli Yeşil / Açık / Kalıcı Form": {
-     "id": 44576718881010,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Kehribar / Açık / Kalıcı Form": {
+     "id": 51863733043567,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Sisli Yeşil / Koyu / Rahat Dolgu": {
-     "id": 43056682270962,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Kehribar / Koyu / Rahat Dolgu": {
+     "id": 51863733076335,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Sisli Yeşil / Koyu / Kalıcı Form": {
-     "id": 44576718913778,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Kehribar / Koyu / Kalıcı Form": {
+     "id": 51863733109103,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Sisli Yeşil / Siyah / Rahat Dolgu": {
-     "id": 43056682664178,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Kehribar / Siyah / Rahat Dolgu": {
+     "id": 51863733141871,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Sisli Yeşil / Siyah / Kalıcı Form": {
-     "id": 44576718946546,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Kehribar / Siyah / Kalıcı Form": {
+     "id": 51863733174639,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Polen Sarı / Açık / Rahat Dolgu": {
-     "id": 43056682533106,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Kum / Açık / Rahat Dolgu": {
+     "id": 51863733207407,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Polen Sarı / Açık / Kalıcı Form": {
-     "id": 44576719274226,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Kum / Açık / Kalıcı Form": {
+     "id": 51863733240175,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Polen Sarı / Koyu / Rahat Dolgu": {
-     "id": 43056682336498,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Kum / Koyu / Rahat Dolgu": {
+     "id": 51863733272943,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Polen Sarı / Koyu / Kalıcı Form": {
-     "id": 44576719306994,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Kum / Koyu / Kalıcı Form": {
+     "id": 51863733305711,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Polen Sarı / Siyah / Rahat Dolgu": {
-     "id": 43056682729714,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Kum / Siyah / Rahat Dolgu": {
+     "id": 51863733338479,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Polen Sarı / Siyah / Kalıcı Form": {
-     "id": 44576719339762,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Kum / Siyah / Kalıcı Form": {
+     "id": 51863733371247,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Sütlü Kahve / Açık / Rahat Dolgu": {
-     "id": 43056682565874,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Terra / Açık / Rahat Dolgu": {
+     "id": 51863733404015,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Sütlü Kahve / Açık / Kalıcı Form": {
-     "id": 44576719077618,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Terra / Açık / Kalıcı Form": {
+     "id": 51863733436783,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Sütlü Kahve / Koyu / Rahat Dolgu": {
-     "id": 43056682369266,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Terra / Koyu / Rahat Dolgu": {
+     "id": 51863733469551,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Sütlü Kahve / Koyu / Kalıcı Form": {
-     "id": 44576719110386,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Terra / Koyu / Kalıcı Form": {
+     "id": 51863733502319,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Sütlü Kahve / Siyah / Rahat Dolgu": {
-     "id": 43056682762482,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Terra / Siyah / Rahat Dolgu": {
+     "id": 51863733535087,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Sütlü Kahve / Siyah / Kalıcı Form": {
-     "id": 44576719143154,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Terra / Siyah / Kalıcı Form": {
+     "id": 51863733567855,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Kiremit / Açık / Rahat Dolgu": {
-     "id": 51893047099759,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Yosun / Açık / Rahat Dolgu": {
+     "id": 51863733600623,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Kiremit / Açık / Kalıcı Form": {
-     "id": 51893047132527,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Yosun / Açık / Kalıcı Form": {
+     "id": 51863733633391,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Kiremit / Koyu / Rahat Dolgu": {
-     "id": 51893047165295,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Yosun / Koyu / Rahat Dolgu": {
+     "id": 51863733666159,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Kiremit / Koyu / Kalıcı Form": {
-     "id": 51893047198063,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Yosun / Koyu / Kalıcı Form": {
+     "id": 51863733698927,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     },
-    "Kiremit / Siyah / Rahat Dolgu": {
-     "id": 51893047230831,
-     "price": 44290.0,
-     "sku": "NM-5032-105-103"
+    "Yosun / Siyah / Rahat Dolgu": {
+     "id": 51863733731695,
+     "price": 40990,
+     "sku": "NM-5032-114-103"
     },
-    "Kiremit / Siyah / Kalıcı Form": {
-     "id": 51893047263599,
-     "price": 47090.0,
-     "sku": "NM-5032-105-103-B"
+    "Yosun / Siyah / Kalıcı Form": {
+     "id": 51863733764463,
+     "price": 43530,
+     "sku": "NM-5032-114-103-B"
     }
    },
    "shape": {
     "type": "sofa",
-    "fabric": "corduroy",
+    "fabric": "velvet",
     "armWidth": 22,
     "armTop": 65,
     "armBottom": 15,
@@ -258,554 +259,9 @@
      33,
      11
     ],
-    "note": "Şekil ürün fotoğraflarından; G×D×Y ve oturum ölçüleri üreticiden. Kolçak yüksekliği (≈65 cm) ve minder kalınlıkları fotoğraftan tahmini."
+    "note": "Şekil Klem ürün fotoğraflarından; G×D×Y ve oturum ölçüleri üreticiden. Kolçak yüksekliği (≈65 cm) ve minder kalınlıkları fotoğraftan tahmini."
    },
-   "group": "Koltuklar"
-  },
-  {
-   "id": "normod-klem-2",
-   "name": "Klem ikili koltuk",
-   "brand": "Normod",
-   "category": "Gerçek ürünler",
-   "w": 198,
-   "d": 91,
-   "h": 84,
-   "color": "#a7a895",
-   "url": "https://normod.com/products/klem-ikili-koltuk-silindir-ahsap-ayak-fitilli-kadife",
-   "source": "normod.com ürün verisi (Ürün Ölçüleri, varyantlar), 25.10.2026; renkler Klem üçlüden",
-   "dims": {
-    "seatWidth": 154,
-    "seatDepth": 59,
-    "seatHeight": 43,
-    "legHeight": 16
-   },
-   "material": "Fitilli kadife, %100 polyester; masif kayın ayak",
-   "use": {
-    "front": 45
-   },
-   "options": [
-    {
-     "name": "Kumaş",
-     "part": "fabric",
-     "values": [
-      {
-       "name": "Kemik",
-       "color": "#d6d5d2"
-      },
-      {
-       "name": "Sisli Yeşil",
-       "color": "#a7a895"
-      },
-      {
-       "name": "Polen Sarı",
-       "color": "#baa362"
-      },
-      {
-       "name": "Sütlü Kahve",
-       "color": "#8f7a6d"
-      },
-      {
-       "name": "Kiremit",
-       "color": "#561a11"
-      }
-     ]
-    },
-    {
-     "name": "Ayak",
-     "part": "legs",
-     "values": [
-      {
-       "name": "Açık",
-       "color": "#b5814d"
-      },
-      {
-       "name": "Koyu",
-       "color": "#493e3b"
-      },
-      {
-       "name": "Siyah",
-       "color": "#191919"
-      }
-     ]
-    },
-    {
-     "name": "Sırt Minderi",
-     "part": "backStyle",
-     "values": [
-      {
-       "name": "Rahat Dolgu",
-       "value": "soft"
-      },
-      {
-       "name": "Kalıcı Form",
-       "value": "firm"
-      }
-     ]
-    }
-   ],
-   "defaultOptions": {
-    "Kumaş": "Sisli Yeşil",
-    "Ayak": "Açık",
-    "Sırt Minderi": "Kalıcı Form"
-   },
-   "variants": {
-    "Kemik / Açık / Rahat Dolgu": {
-     "id": 43056525639922,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Kemik / Açık / Kalıcı Form": {
-     "id": 44578551202034,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Kemik / Koyu / Rahat Dolgu": {
-     "id": 43056525443314,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Kemik / Koyu / Kalıcı Form": {
-     "id": 44578551234802,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Kemik / Siyah / Rahat Dolgu": {
-     "id": 43056525836530,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Kemik / Siyah / Kalıcı Form": {
-     "id": 44578551267570,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Sisli Yeşil / Açık / Rahat Dolgu": {
-     "id": 43056525672690,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Sisli Yeşil / Açık / Kalıcı Form": {
-     "id": 44578551300338,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Sisli Yeşil / Koyu / Rahat Dolgu": {
-     "id": 43056525476082,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Sisli Yeşil / Koyu / Kalıcı Form": {
-     "id": 44578551333106,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Sisli Yeşil / Siyah / Rahat Dolgu": {
-     "id": 43056525869298,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Sisli Yeşil / Siyah / Kalıcı Form": {
-     "id": 44578551365874,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Polen Sarı / Açık / Rahat Dolgu": {
-     "id": 43056525738226,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Polen Sarı / Açık / Kalıcı Form": {
-     "id": 44578551496946,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Polen Sarı / Koyu / Rahat Dolgu": {
-     "id": 43056525541618,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Polen Sarı / Koyu / Kalıcı Form": {
-     "id": 44578551529714,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Polen Sarı / Siyah / Rahat Dolgu": {
-     "id": 43056525934834,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Polen Sarı / Siyah / Kalıcı Form": {
-     "id": 44578551562482,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Sütlü Kahve / Açık / Rahat Dolgu": {
-     "id": 43056525770994,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Sütlü Kahve / Açık / Kalıcı Form": {
-     "id": 44578551595250,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Sütlü Kahve / Koyu / Rahat Dolgu": {
-     "id": 43056525574386,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Sütlü Kahve / Koyu / Kalıcı Form": {
-     "id": 44578551628018,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Sütlü Kahve / Siyah / Rahat Dolgu": {
-     "id": 43056525967602,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Sütlü Kahve / Siyah / Kalıcı Form": {
-     "id": 44578551660786,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Kiremit / Açık / Rahat Dolgu": {
-     "id": 51893030912367,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Kiremit / Açık / Kalıcı Form": {
-     "id": 51893030945135,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Kiremit / Koyu / Rahat Dolgu": {
-     "id": 51893030977903,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Kiremit / Koyu / Kalıcı Form": {
-     "id": 51893031010671,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    },
-    "Kiremit / Siyah / Rahat Dolgu": {
-     "id": 51893031043439,
-     "price": 41330,
-     "sku": "NM-5033-105-103"
-    },
-    "Kiremit / Siyah / Kalıcı Form": {
-     "id": 51893031076207,
-     "price": 43780,
-     "sku": "NM-5033-105-103-B"
-    }
-   },
-   "shape": {
-    "type": "sofa",
-    "fabric": "corduroy",
-    "armWidth": 22,
-    "armTop": 65,
-    "armBottom": 15,
-    "armRadius": 10,
-    "baseBottom": 16,
-    "baseTop": 25,
-    "seatCushions": 2,
-    "backCushions": 2,
-    "backThickness": 20,
-    "backRecline": 8,
-    "backFrame": 10,
-    "legDiameter": 5.5,
-    "legInset": [
-     33,
-     11
-    ],
-    "note": "Şekil ürün fotoğraflarından; G×D×Y ve oturum ölçüleri üreticiden. Kolçak yüksekliği (≈65 cm) ve minder kalınlıkları fotoğraftan tahmini."
-   },
-   "group": "Koltuklar"
-  },
-  {
-   "id": "normod-klem-kose-290",
-   "name": "Klem köşe koltuk 290×290",
-   "brand": "Normod",
-   "category": "Gerçek ürünler",
-   "w": 290,
-   "d": 290,
-   "h": 84,
-   "color": "#a7a895",
-   "url": "https://normod.com/products/klem-290-x-290-moduler-kose-silindir-ahsap-ayak-fitilli-kadife",
-   "source": "normod.com ürün verisi (Ürün Ölçüleri, varyantlar), 25.10.2026; renkler Klem üçlüden",
-   "dims": {
-    "seatWidth": 238,
-    "seatDepth": 59,
-    "seatHeight": 43,
-    "legHeight": 16
-   },
-   "material": "Fitilli kadife, %100 polyester; masif kayın ayak",
-   "use": {
-    "front": 45
-   },
-   "options": [
-    {
-     "name": "Kumaş",
-     "part": "fabric",
-     "values": [
-      {
-       "name": "Kemik",
-       "color": "#d6d5d2"
-      },
-      {
-       "name": "Sisli Yeşil",
-       "color": "#a7a895"
-      },
-      {
-       "name": "Polen Sarı",
-       "color": "#baa362"
-      },
-      {
-       "name": "Sütlü Kahve",
-       "color": "#8f7a6d"
-      },
-      {
-       "name": "Kiremit",
-       "color": "#561a11"
-      }
-     ]
-    },
-    {
-     "name": "Ayak",
-     "part": "legs",
-     "values": [
-      {
-       "name": "Açık",
-       "color": "#b5814d"
-      },
-      {
-       "name": "Koyu",
-       "color": "#493e3b"
-      },
-      {
-       "name": "Siyah",
-       "color": "#191919"
-      }
-     ]
-    },
-    {
-     "name": "Sırt Minderi",
-     "part": "backStyle",
-     "values": [
-      {
-       "name": "Rahat Dolgu",
-       "value": "soft"
-      },
-      {
-       "name": "Kalıcı Form",
-       "value": "firm"
-      }
-     ]
-    },
-    {
-     "name": "Köşe",
-     "part": "corner",
-     "values": [
-      {
-       "name": "Sol arka",
-       "value": "left"
-      },
-      {
-       "name": "Sağ arka",
-       "value": "right"
-      }
-     ]
-    }
-   ],
-   "defaultOptions": {
-    "Kumaş": "Sisli Yeşil",
-    "Ayak": "Açık",
-    "Sırt Minderi": "Kalıcı Form",
-    "Köşe": "Sol arka"
-   },
-   "variants": {
-    "Kemik / Koyu / Rahat Dolgu": {
-     "id": 43056462561522,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Sisli Yeşil / Koyu / Rahat Dolgu": {
-     "id": 43056462594290,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Polen Sarı / Koyu / Rahat Dolgu": {
-     "id": 43056462659826,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Sütlü Kahve / Koyu / Rahat Dolgu": {
-     "id": 43056462692594,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Kemik / Açık / Rahat Dolgu": {
-     "id": 43056462758130,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Sisli Yeşil / Açık / Rahat Dolgu": {
-     "id": 43056462790898,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Polen Sarı / Açık / Rahat Dolgu": {
-     "id": 43056462856434,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Sütlü Kahve / Açık / Rahat Dolgu": {
-     "id": 43056462889202,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Kemik / Siyah / Rahat Dolgu": {
-     "id": 43056462954738,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Sisli Yeşil / Siyah / Rahat Dolgu": {
-     "id": 43056462987506,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Polen Sarı / Siyah / Rahat Dolgu": {
-     "id": 43056463053042,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Sütlü Kahve / Siyah / Rahat Dolgu": {
-     "id": 43056463085810,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Kemik / Koyu / Kalıcı Form": {
-     "id": 44575169609970,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Sisli Yeşil / Koyu / Kalıcı Form": {
-     "id": 44575169642738,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Polen Sarı / Koyu / Kalıcı Form": {
-     "id": 44575169708274,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Sütlü Kahve / Koyu / Kalıcı Form": {
-     "id": 44575169741042,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Kemik / Açık / Kalıcı Form": {
-     "id": 44575169806578,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Sisli Yeşil / Açık / Kalıcı Form": {
-     "id": 44575169839346,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Polen Sarı / Açık / Kalıcı Form": {
-     "id": 44575169904882,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Sütlü Kahve / Açık / Kalıcı Form": {
-     "id": 44575169937650,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Kemik / Siyah / Kalıcı Form": {
-     "id": 44575170003186,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Sisli Yeşil / Siyah / Kalıcı Form": {
-     "id": 44575170035954,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Polen Sarı / Siyah / Kalıcı Form": {
-     "id": 44575170101490,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Sütlü Kahve / Siyah / Kalıcı Form": {
-     "id": 44575170134258,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Kiremit / Koyu / Rahat Dolgu": {
-     "id": 51893023867247,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Kiremit / Açık / Rahat Dolgu": {
-     "id": 51893023900015,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Kiremit / Siyah / Rahat Dolgu": {
-     "id": 51893023932783,
-     "price": 104380,
-     "sku": "NM-5048-105-103"
-    },
-    "Kiremit / Koyu / Kalıcı Form": {
-     "id": 51893023965551,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Kiremit / Açık / Kalıcı Form": {
-     "id": 51893023998319,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    },
-    "Kiremit / Siyah / Kalıcı Form": {
-     "id": 51893024031087,
-     "price": 112680,
-     "sku": "NM-5048-105-103-B"
-    }
-   },
-   "shape": {
-    "type": "sofaL",
-    "fabric": "corduroy",
-    "armWidth": 22,
-    "armTop": 65,
-    "armBottom": 15,
-    "armRadius": 10,
-    "baseBottom": 16,
-    "baseTop": 25,
-    "seatCushions": 2,
-    "backCushions": 2,
-    "backThickness": 20,
-    "backRecline": 8,
-    "backFrame": 10,
-    "legDiameter": 5.5,
-    "legInset": [
-     33,
-     11
-    ],
-    "note": "Köşe modülü arkada; köşe tarafı \"Köşe\" seçeneğiyle. Modül düzeni üreticide yok, fotoğraftan tahmini; dış ölçüler üreticiden.",
-    "wing": 91
-   },
-   "group": "Koltuklar",
-   "variantOptions": [
-    "Kumaş",
-    "Ayak",
-    "Sırt Minderi"
-   ],
-   "notes": "Taban iki kanat: arka 290 × 91, yan 91 × 199 cm; aradaki köşe içi boş (orta sehpa girebilir). Modüler: parçalar ayrı gelir, bu yüzden kapı/asansör kontrolü yapılmaz (en büyük modülün ölçüsü üreticide yok).",
-   "flatpack": true
+   "notes": "Seçilen koltuk: Bej / Açık ayak / Kalıcı Form (43.530 TL). Renkler ürün fotoğraflarından; Kehribar'ın fotoğrafı sayfada yok, rengi tahmini."
   },
   {
    "id": "ikea-besta-300",
@@ -1804,72 +1260,6 @@
    }
   },
   {
-   "id": "kanepe-3",
-   "name": "3'lü kanepe",
-   "category": "Salon",
-   "w": 220,
-   "d": 95,
-   "h": 85,
-   "color": "#5f7387",
-   "use": {
-    "front": 40
-   },
-   "assumed": true,
-   "url": null,
-   "group": "Koltuklar",
-   "shape": {
-    "type": "sofa",
-    "seatCushions": 3,
-    "backCushions": 3,
-    "armWidth": 18,
-    "armTop": 60,
-    "armRadius": 5
-   }
-  },
-  {
-   "id": "berjer",
-   "name": "Berjer",
-   "category": "Salon",
-   "w": 80,
-   "d": 85,
-   "h": 95,
-   "color": "#8c6f5a",
-   "use": {
-    "front": 40
-   },
-   "assumed": true,
-   "url": null,
-   "group": "Koltuklar",
-   "shape": {
-    "type": "sofa",
-    "seatCushions": 1,
-    "backCushions": 1,
-    "armWidth": 14,
-    "armTop": 62,
-    "armRadius": 4
-   }
-  },
-  {
-   "id": "donen-berjer",
-   "name": "Dönen berjer",
-   "category": "Gerçek ürünler",
-   "group": "Koltuklar",
-   "w": 88,
-   "d": 80,
-   "h": 88,
-   "color": "#c9b28f",
-   "source": "kullanıcının paylaştığı ürün ekran görüntüsü (88 × 80 × 88 cm), 25.10.2026; marka/bağlantı yok",
-   "material": "Kum rengi keten görünümlü kumaş, siyah döner metal ayak",
-   "use": {
-    "front": 45
-   },
-   "shape": {
-    "type": "swivel",
-    "base": "#1c1c1e",
-    "note": "Kol, oturma ve sırt oranları görselden tahmini."
-   }
-  },
-  {
    "id": "orta-sehpa",
    "name": "Orta sehpa",
    "category": "Salon",
@@ -2317,6 +1707,336 @@
     "count": 3,
     "wood": true,
     "legs": 14
+   }
+  },
+  {
+   "id": "nun-lizbon",
+   "name": "Lizbon Serisi halı",
+   "brand": "Nun Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 80,
+   "d": 150,
+   "h": 1,
+   "color": "#b8bbaa",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://nundekoratifhali.com/nun-lizbon-serisi",
+   "source": "nundekoratifhali.com ürün sayfası (renk, ölçü, fiyat, özellikler), 30.10.2026; renkler ürün fotoğraflarından ölçüldü",
+   "material": "Akrilik şönil + pamuk; hav yüksekliği 6 mm; 2100 g/m²; anti alerjik",
+   "notes": "Izgara dokulu şönil, ince açık renk biye. Özel ölçü de yapılıyor (80×150 – 280×380). Renkler beyaz fonlu ürün fotoğraflarının ortalaması; Mavi ve Kiremit fotoğrafları beyaz fonda değil, o ikisi yaklaşık.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Krem",
+       "color": "#e4ded3",
+       "parts": {
+        "weaveCell": "#e2dcd1",
+        "weaveLine": "#e7e1d7"
+       }
+      },
+      {
+       "name": "Bej",
+       "color": "#baa999",
+       "parts": {
+        "weaveCell": "#ab9989",
+        "weaveLine": "#cebeae"
+       }
+      },
+      {
+       "name": "Açık Gri",
+       "color": "#c1bbb2",
+       "parts": {
+        "weaveCell": "#b5afa6",
+        "weaveLine": "#d1cbc2"
+       }
+      },
+      {
+       "name": "Antrasit",
+       "color": "#88837f",
+       "parts": {
+        "weaveCell": "#6b6562",
+        "weaveLine": "#aba5a2"
+       }
+      },
+      {
+       "name": "Yeşil",
+       "color": "#b8bbaa",
+       "parts": {
+        "weaveCell": "#abae9d",
+        "weaveLine": "#c9ccbc"
+       }
+      },
+      {
+       "name": "Mavi",
+       "color": "#8c9da6",
+       "parts": {
+        "weaveCell": "#81919b",
+        "weaveLine": "#9dadb7"
+       }
+      },
+      {
+       "name": "Kiremit",
+       "color": "#b17f5d",
+       "parts": {
+        "weaveCell": "#a3704f",
+        "weaveLine": "#c69370"
+       }
+      }
+     ]
+    },
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "80×150",
+       "w": 80,
+       "d": 150
+      },
+      {
+       "name": "80×300",
+       "w": 80,
+       "d": 300
+      },
+      {
+       "name": "120×180",
+       "w": 120,
+       "d": 180
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×290",
+       "w": 200,
+       "d": 290
+      },
+      {
+       "name": "240×340 (özel üretim)",
+       "w": 240,
+       "d": 340
+      },
+      {
+       "name": "280×380 (özel üretim)",
+       "w": 280,
+       "d": 380
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Yeşil",
+    "Ölçü": "80×150"
+   },
+   "variants": {
+    "Krem / 80×150": {
+     "price": 1950,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=80150"
+    },
+    "Krem / 80×300": {
+     "price": 3750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=80300"
+    },
+    "Krem / 120×180": {
+     "price": 3350,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=120180"
+    },
+    "Krem / 160×230": {
+     "price": 5500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=160230"
+    },
+    "Krem / 200×290": {
+     "price": 8750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=200290"
+    },
+    "Krem / 240×340 (özel üretim)": {
+     "price": 14000,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=240340"
+    },
+    "Krem / 280×380 (özel üretim)": {
+     "price": 18500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=280380"
+    },
+    "Bej / 80×150": {
+     "price": 1950,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=80150"
+    },
+    "Bej / 80×300": {
+     "price": 3750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=80300"
+    },
+    "Bej / 120×180": {
+     "price": 3350,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=120180"
+    },
+    "Bej / 160×230": {
+     "price": 5500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=160230"
+    },
+    "Bej / 200×290": {
+     "price": 8750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=200290"
+    },
+    "Bej / 240×340 (özel üretim)": {
+     "price": 14000,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=240340"
+    },
+    "Bej / 280×380 (özel üretim)": {
+     "price": 18500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=280380"
+    },
+    "Açık Gri / 80×150": {
+     "price": 1950,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=80150"
+    },
+    "Açık Gri / 80×300": {
+     "price": 3750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=80300"
+    },
+    "Açık Gri / 120×180": {
+     "price": 3350,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=120180"
+    },
+    "Açık Gri / 160×230": {
+     "price": 5500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=160230"
+    },
+    "Açık Gri / 200×290": {
+     "price": 8750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=200290"
+    },
+    "Açık Gri / 240×340 (özel üretim)": {
+     "price": 14000,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=240340"
+    },
+    "Açık Gri / 280×380 (özel üretim)": {
+     "price": 18500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=280380"
+    },
+    "Antrasit / 80×150": {
+     "price": 1950,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=80150"
+    },
+    "Antrasit / 80×300": {
+     "price": 3750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=80300"
+    },
+    "Antrasit / 120×180": {
+     "price": 3350,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=120180"
+    },
+    "Antrasit / 160×230": {
+     "price": 5500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=160230"
+    },
+    "Antrasit / 200×290": {
+     "price": 8750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=200290"
+    },
+    "Antrasit / 240×340 (özel üretim)": {
+     "price": 14000,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=240340"
+    },
+    "Antrasit / 280×380 (özel üretim)": {
+     "price": 18500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=280380"
+    },
+    "Yeşil / 80×150": {
+     "price": 1950,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=80150"
+    },
+    "Yeşil / 80×300": {
+     "price": 3750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=80300"
+    },
+    "Yeşil / 120×180": {
+     "price": 3350,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=120180"
+    },
+    "Yeşil / 160×230": {
+     "price": 5500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=160230"
+    },
+    "Yeşil / 200×290": {
+     "price": 8750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=200290"
+    },
+    "Yeşil / 240×340 (özel üretim)": {
+     "price": 14000,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=240340"
+    },
+    "Yeşil / 280×380 (özel üretim)": {
+     "price": 18500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=280380"
+    },
+    "Mavi / 80×150": {
+     "price": 1950,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=80150"
+    },
+    "Mavi / 80×300": {
+     "price": 3750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=80300"
+    },
+    "Mavi / 120×180": {
+     "price": 3350,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=120180"
+    },
+    "Mavi / 160×230": {
+     "price": 5500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=160230"
+    },
+    "Mavi / 200×290": {
+     "price": 8750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=200290"
+    },
+    "Mavi / 240×340 (özel üretim)": {
+     "price": 14000,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=240340"
+    },
+    "Mavi / 280×380 (özel üretim)": {
+     "price": 18500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=280380"
+    },
+    "Kiremit / 80×150": {
+     "price": 1950,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=80150"
+    },
+    "Kiremit / 80×300": {
+     "price": 3750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=80300"
+    },
+    "Kiremit / 120×180": {
+     "price": 3350,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=120180"
+    },
+    "Kiremit / 160×230": {
+     "price": 5500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=160230"
+    },
+    "Kiremit / 200×290": {
+     "price": 8750,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=200290"
+    },
+    "Kiremit / 240×340 (özel üretim)": {
+     "price": 14000,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=240340"
+    },
+    "Kiremit / 280×380 (özel üretim)": {
+     "price": 18500,
+     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=280380"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "weave": "grid",
+    "pitch": 1,
+    "edgeWidth": 1.2,
+    "note": "Izgara aralığı (~1 cm) ve biye eni yakın çekim fotoğraftan tahmini; ortalama renk fotoğrafla aynı."
    }
   },
   {

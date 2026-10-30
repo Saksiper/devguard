@@ -174,6 +174,10 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
     "set": [["masa-id", 0, 0, 0], ["sandalye-id", -72, -62, 0]],  // takım: parçalar [ref, dx, dy, açı] tek adımda eklenir
     "shape": { "type": "sofaL", "wing": 91 },  // L köşe koltuk: taban iki kanat; köşe yönü seçeneği part "corner"
     "variantOptions": ["Kumaş", "Ayak"],  // mağaza varyantını belirleyen seçenekler (diğerleri yalnızca yerleşim)
+    "options": [                          // seçenekler: renk örneği (color → part), ek parçalar (parts), ölçü (w/d/h)
+      { "name": "Renk", "part": "fabric", "values": [{ "name": "Yeşil", "color": "#b8bbaa", "parts": { "weaveCell": "#abae9d" } }] },
+      { "name": "Ölçü", "values": [{ "name": "80×150", "w": 80, "d": 150 }] } ],
+    "variants": { "Yeşil / 80×150": { "price": 1950, "url": "https://…" } },  // seçenek adları " / " ile; url verilirse o açılır
     "assumed": true,                      // ölçü örnek/varsayım ("örnek ölçü" etiketi)
     "sample": true                        // belirli bir ürün değil ama ölçü standart ("örnek" etiketi; ör. düz halılar)
   }

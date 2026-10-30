@@ -14,9 +14,10 @@ export function newUid(prefix = 'm') {
  * yerleşimde choice = { "Kumaş": "Sisli Yeşil", ... }. Döner: seçilen değerler, parça renkleri, varyant.
  */
 export function resolveChoice(base, entryChoice) {
-  if (!Array.isArray(base.options)) return { choice: null, parts: {}, variant: null };
+  if (!Array.isArray(base.options)) return { choice: null, parts: {}, variant: null, size: {} };
   const choice = { ...(base.defaultOptions ?? {}), ...(entryChoice ?? {}) };
   const parts = {};
+  const size = {}; // ölçü seçeneği (ör. halı 80×150 / 160×230): değerde w/d/h
   const picked = [];
   // variantOptions: mağaza varyantını belirleyen seçenekler (ör. köşe yönü varyant değil, yerleşim seçimi).
   const keyed = new Set(base.variantOptions ?? base.options.map((o) => o.name));
@@ -25,31 +26,33 @@ export function resolveChoice(base, entryChoice) {
     choice[opt.name] = v.name;
     if (keyed.has(opt.name)) picked.push(v.name);
     if (opt.part) parts[opt.part] = v.color ?? v.value;
+    if (v.parts) Object.assign(parts, v.parts); // ek parça renkleri (ör. halı dokusunun iki tonu)
+    for (const k of ['w', 'd', 'h']) if (Number.isFinite(v[k])) size[k] = v[k];
   }
   const variant = base.variants?.[picked.join(' / ')] ?? null;
-  return { choice, parts, variant };
+  return { choice, parts, variant, size };
 }
 
 /** Katalog + yerleşim kaydını birleştirir. Yerleşimdeki alanlar katalogdakini ezer. */
 export function resolveItem(entry, catalogById) {
   const base = entry.ref ? (catalogById.get(entry.ref) ?? {}) : {};
   const it = { ...base, ...entry };
-  const { choice, parts, variant } = resolveChoice(base, entry.choice);
+  const { choice, parts, variant, size } = resolveChoice(base, entry.choice);
   const baseUrl = it.url ?? null;
   return {
     uid: entry.uid,
     ref: entry.ref ?? null,
     name: it.name ?? entry.ref ?? 'Mobilya',
     category: it.category ?? '',
-    w: it.w,
-    d: it.d,
-    h: it.h,
+    w: entry.w ?? size.w ?? it.w,
+    d: entry.d ?? size.d ?? it.d,
+    h: entry.h ?? size.h ?? it.h,
     z: it.z ?? 0,
     x: entry.x,
     y: entry.y,
     rot: entry.rot ?? 0,
     color: entry.color ?? parts.fabric ?? it.color ?? '#a0a4ab',
-    url: baseUrl && variant ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}variant=${variant.id}` : baseUrl,
+    url: variant?.url ?? (baseUrl && variant?.id ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}variant=${variant.id}` : baseUrl),
     brand: it.brand ?? null,
     options: Array.isArray(base.options) ? base.options : null,
     choice,
