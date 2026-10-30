@@ -2,6 +2,7 @@
 
 import { normAngle } from '../core/geom.js';
 import { encodeShare } from '../store.js';
+import { resolveItem } from '../core/items.js';
 import { requestThumb } from '../view/thumbs.js';
 
 const esc = (s) =>
@@ -285,7 +286,7 @@ export class Panel {
     const parts = [];
     for (const opt of it.options ?? []) {
       const cur = it.choice?.[opt.name];
-      const swatches = opt.values.some((v) => v.color);
+      const swatches = opt.values.every((v) => v.color); // hepsi renkse örnek kutucuk, değilse liste
       parts.push(`<div class="opt"><span class="opt-name">${esc(opt.name)}: <b>${esc(cur)}</b></span>${
         swatches
           ? `<div class="swatches">${opt.values
@@ -320,21 +321,34 @@ export class Panel {
   cardHtml(c, mode = 'add') {
     const price = c.price ?? (c.variants ? Math.min(...Object.values(c.variants).map((v) => v.price)) : null);
     const sel = this.store.selection ? this.store.item(this.store.selection) : null;
-    const swatches = (c.options ?? []).find((o) => o.values.some((v) => v.color));
+    const swatches = (c.options ?? []).find((o) => o.values.every((v) => v.color));
     const sizes = (c.options ?? []).find((o) => o.values.some((v) => Number.isFinite(v.w)))?.values.length;
+    // Kartta seçilen renk: "Ekle" / "Yerine dene" bu renkle yapılır.
+    const picked = swatches ? (this.cardChoice?.[c.id]?.[swatches.name] ?? c.defaultOptions?.[swatches.name] ?? swatches.values[0].name) : null;
     return `<div class="card" data-ref="${esc(c.id)}">
       <img class="thumb" alt="" data-thumb="${esc(c.id)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
       <div class="card-body">
         <div class="card-title">${brandPrefix(c) ? `<span class="brand">${esc(c.brand)}</span> ` : ''}${esc(c.name)}</div>
         <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${sizes ? `${sizes} ölçü · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}</div>
-        ${swatches ? `<div class="swatches mini">${swatches.values.map((v) => `<span title="${esc(v.name)}" style="background:${esc(v.color)}"></span>`).join('')}</div>` : ''}
+        ${
+          swatches
+            ? `<div class="swatches mini">${swatches.values
+                .map((v) => `<button data-pick="${esc(c.id)}" data-opt="${esc(swatches.name)}" data-val="${esc(v.name)}" title="${esc(v.name)}" class="${v.name === picked ? 'on' : ''}" style="background:${esc(v.color)}"></button>`)
+                .join('')}<span class="pick-name">${esc(picked)}</span></div>`
+            : ''
+        }
         <div class="card-actions">
           ${(mode === 'swap' || sel) && !c.set ? `<button class="primary" data-swap="${esc(c.id)}" ${sel ? '' : 'disabled'}>Yerine dene</button>` : ''}
           ${mode === 'add' ? `<button data-add="${esc(c.id)}">Ekle</button>` : ''}
-          ${c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">Ürün ↗</a>` : ''}
+          ${c.url ? `<a data-link="${esc(c.id)}" href="${esc(this.cardItem(c).url ?? c.url)}" target="_blank" rel="noopener">Ürün ↗</a>` : ''}
         </div>
       </div>
     </div>`;
+  }
+
+  /** Kartta seçilmiş renkle çözülmüş ürün (link, fiyat ve küçük görsel için). */
+  cardItem(c) {
+    return resolveItem({ uid: 'kart', ref: c.id, x: 0, y: 0, choice: this.cardChoice?.[c.id] }, this.store.catalogById);
   }
 
   bindCards(root) {
@@ -343,12 +357,27 @@ export class Panel {
       b.addEventListener('click', () => {
         const uid = this.store.selection;
         if (!uid) return this.toast('Önce evdeki bir mobilyaya dokunun; sonra "Yerine dene".');
-        this.store.swap(uid, b.dataset.swap);
+        this.store.swap(uid, b.dataset.swap, this.cardChoice?.[b.dataset.swap] ?? null);
         this.toast(`${this.store.item(uid)?.name} denendi. Kontrol sonucu üstte; geri almak için ↶ ya da Ctrl+Z.`);
+      });
+    // Renk kutucuğu: kartın rengini seçer (görsel ve link güncellenir); sonra Ekle / Yerine dene o renkle.
+    for (const b of root.querySelectorAll('[data-pick]'))
+      b.addEventListener('click', () => {
+        const ref = b.dataset.pick;
+        this.cardChoice ??= {};
+        this.cardChoice[ref] = { ...(this.cardChoice[ref] ?? {}), [b.dataset.opt]: b.dataset.val };
+        const card = b.closest('.card');
+        for (const x of card.querySelectorAll('[data-pick]')) x.classList.toggle('on', x === b);
+        card.querySelector('.pick-name').textContent = b.dataset.val;
+        const c = this.store.catalogById.get(ref);
+        const link = card.querySelector('[data-link]');
+        if (link) link.href = this.cardItem(c).url ?? c.url;
+        const img = card.querySelector('img[data-thumb]');
+        this.thumb(c, this.cardChoice[ref], (url) => (img.src = url));
       });
     for (const img of root.querySelectorAll('img[data-thumb]')) {
       const c = this.store.catalogById.get(img.dataset.thumb);
-      if (c) this.thumb(c, null, (url) => (img.src = url));
+      if (c) this.thumb(c, this.cardChoice?.[c.id] ?? null, (url) => (img.src = url));
     }
   }
 
@@ -362,7 +391,8 @@ export class Panel {
       if (this.isMobile()) this.el.panel.classList.add('collapsed');
       return this.toast(`${c.name}: ${c.set.length} parça eklendi. Her parçayı ayrı taşıyabilirsin.`, 6000);
     }
-    this.store.add(ref, p.x, p.y, p.rot);
+    const choice = this.cardChoice?.[ref];
+    this.store.add(ref, p.x, p.y, p.rot, choice ? { choice: { ...choice } } : {});
     if (!this.isMobile()) this.showTab('selected');
     else this.el.panel.classList.add('collapsed');
     const where = spot

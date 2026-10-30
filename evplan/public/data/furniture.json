@@ -1722,9 +1722,9 @@
    "collides": false,
    "flatpack": true,
    "url": "https://nundekoratifhali.com/nun-lizbon-serisi",
-   "source": "nundekoratifhali.com ürün sayfası (renk, ölçü, fiyat, özellikler), 30.10.2026; renkler ürün fotoğraflarından ölçüldü",
+   "source": "nundekoratifhali.com ürün sayfası (renk, ölçü, fiyat, özellikler), 30.10.2026; her rengin ortalaması sitedeki tüm tepeden çekimlerden (perspektif çekimle sağlandı), hav/ızgara tonları yakın çekimlerden",
    "material": "Akrilik şönil + pamuk; hav yüksekliği 6 mm; 2100 g/m²; anti alerjik",
-   "notes": "Izgara dokulu şönil, ince açık renk biye. Özel ölçü de yapılıyor (80×150 – 280×380). Renkler beyaz fonlu ürün fotoğraflarının ortalaması; Mavi ve Kiremit fotoğrafları beyaz fonda değil, o ikisi yaklaşık.",
+   "notes": "Izgara dokulu şönil: renkli hav üstünde açık krem ızgara, ince açık biye. Özel ölçü de yapılıyor (80×150 – 280×380). Renkler sitedeki fotoğraflardan ölçüldü; uzaktan bakınca ortalama renk fotoğrafla aynı.",
    "options": [
     {
      "name": "Renk",
@@ -1734,56 +1734,56 @@
        "name": "Krem",
        "color": "#e4ded3",
        "parts": {
-        "weaveCell": "#e2dcd1",
-        "weaveLine": "#e7e1d7"
+        "weaveCell": "#d4cbbe",
+        "weaveLine": "#f2efe6"
        }
       },
       {
        "name": "Bej",
-       "color": "#baa999",
+       "color": "#b9a999",
        "parts": {
-        "weaveCell": "#ab9989",
-        "weaveLine": "#cebeae"
+        "weaveCell": "#9c8674",
+        "weaveLine": "#dad1c4"
        }
       },
       {
        "name": "Açık Gri",
-       "color": "#c1bbb2",
+       "color": "#c1bbb1",
        "parts": {
-        "weaveCell": "#b5afa6",
-        "weaveLine": "#d1cbc2"
+        "weaveCell": "#9c9389",
+        "weaveLine": "#e6e3d9"
        }
       },
       {
        "name": "Antrasit",
-       "color": "#88837f",
+       "color": "#87817e",
        "parts": {
-        "weaveCell": "#6b6562",
-        "weaveLine": "#aba5a2"
+        "weaveCell": "#504846",
+        "weaveLine": "#cfcbc6"
        }
       },
       {
        "name": "Yeşil",
        "color": "#b8bbaa",
        "parts": {
-        "weaveCell": "#abae9d",
-        "weaveLine": "#c9ccbc"
+        "weaveCell": "#959884",
+        "weaveLine": "#e3e4d8"
        }
       },
       {
        "name": "Mavi",
-       "color": "#8c9da6",
+       "color": "#8c9ca6",
        "parts": {
-        "weaveCell": "#81919b",
-        "weaveLine": "#9dadb7"
+        "weaveCell": "#647784",
+        "weaveLine": "#c0cbce"
        }
       },
       {
        "name": "Kiremit",
-       "color": "#b17f5d",
+       "color": "#b17e5c",
        "parts": {
-        "weaveCell": "#a3704f",
-        "weaveLine": "#c69370"
+        "weaveCell": "#925836",
+        "weaveLine": "#d8ae8c"
        }
       }
      ]
@@ -2595,6 +2595,953 @@
    "shape": {
     "type": "rug",
     "plain": true
+   }
+  },
+  {
+   "id": "silis-zeytin-175",
+   "name": "Yapay zeytin ağacı 170–180 cm",
+   "brand": "The Silis",
+   "category": "Gerçek ürünler",
+   "group": "Bitkiler",
+   "w": 68,
+   "d": 68,
+   "h": 175,
+   "color": "#525936",
+   "flatpack": true,
+   "url": "https://thesilis.com/products/170-180-cm-yapay-zeytin-agaci-xxl-buyuk-boy-25",
+   "source": "thesilis.com ürün verisi (boy, saksı, ayak, varyant fiyatları), 30.10.2026; saksı/yaprak renkleri ürün fotoğraflarından; tepe genişliği fotoğraftan (saksı ölçek alınarak) tahmini",
+   "material": "Yapay bitki; beton saksı (içinde plastik üretim saksısı), kayın ahşap modüler ayak",
+   "notes": "Boy saksı dahil: ayaksız 170–180 cm, ayaklı 200–210 cm. Yaprak tacı geçişi daraltır ama mobilyanın/duvarın üstüne taşabilir (çakışma sayılmaz). Kapıdan geçiş kontrolü yapılmaz (yapraklar esner).",
+   "options": [
+    {
+     "name": "Saksı",
+     "part": "pot",
+     "values": [
+      {
+       "name": "Plastik üretim saksısı",
+       "color": "#1f1f1f",
+       "parts": {
+        "potD": 21,
+        "potH": 18,
+        "potRough": 0.5
+       }
+      },
+      {
+       "name": "Gri beton 25×25",
+       "color": "#cdcec7",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Antrasit beton 25×25",
+       "color": "#535656",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Siyah beton 25×25",
+       "color": "#2b2c2c",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Beyaz beton 25×25",
+       "color": "#eceeee",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Krem (bej) beton 25×25",
+       "color": "#eceae1",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Bordo beton 25×25",
+       "color": "#501a18",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Terrakota beton 25×25",
+       "color": "#bf7a5e",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Zeytin yeşili beton 25×25",
+       "color": "#636847",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      },
+      {
+       "name": "Moka beton 25×25",
+       "color": "#aa9681",
+       "parts": {
+        "potD": 25,
+        "potH": 25
+       }
+      }
+     ]
+    },
+    {
+     "name": "Ayak",
+     "part": "stand",
+     "values": [
+      {
+       "name": "Ayaksız",
+       "h": 175
+      },
+      {
+       "name": "Siyah ayak (30 cm)",
+       "color": "#1d1d1d",
+       "h": 205,
+       "parts": {
+        "standH": 30
+       }
+      },
+      {
+       "name": "Doğal ahşap ayak (30 cm)",
+       "color": "#c9a27a",
+       "h": 205,
+       "parts": {
+        "standH": 30
+       }
+      },
+      {
+       "name": "Kahverengi ayak (30 cm)",
+       "color": "#6b4a33",
+       "h": 205,
+       "parts": {
+        "standH": 30
+       }
+      },
+      {
+       "name": "Beyaz ayak (30 cm)",
+       "color": "#efefec",
+       "h": 205,
+       "parts": {
+        "standH": 30
+       }
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Saksı": "Zeytin yeşili beton 25×25",
+    "Ayak": "Ayaksız"
+   },
+   "variants": {
+    "Plastik üretim saksısı / Ayaksız": {
+     "id": 50536928936111,
+     "price": 6900
+    },
+    "Plastik üretim saksısı / Siyah ayak (30 cm)": {
+     "id": 50536928968879,
+     "price": 6900
+    },
+    "Plastik üretim saksısı / Doğal ahşap ayak (30 cm)": {
+     "id": 50536929001647,
+     "price": 6900
+    },
+    "Plastik üretim saksısı / Kahverengi ayak (30 cm)": {
+     "id": 50536929034415,
+     "price": 6900
+    },
+    "Plastik üretim saksısı / Beyaz ayak (30 cm)": {
+     "id": 50536929067183,
+     "price": 6900
+    },
+    "Gri beton 25×25 / Ayaksız": {
+     "id": 50536929263791,
+     "price": 8700
+    },
+    "Gri beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536929296559,
+     "price": 9800
+    },
+    "Gri beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536929329327,
+     "price": 9800
+    },
+    "Gri beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536929362095,
+     "price": 9800
+    },
+    "Gri beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536929394863,
+     "price": 9800
+    },
+    "Antrasit beton 25×25 / Ayaksız": {
+     "id": 50536929427631,
+     "price": 9100
+    },
+    "Antrasit beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536929460399,
+     "price": 10200
+    },
+    "Antrasit beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536929493167,
+     "price": 10200
+    },
+    "Antrasit beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536929525935,
+     "price": 10200
+    },
+    "Antrasit beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536929558703,
+     "price": 10200
+    },
+    "Siyah beton 25×25 / Ayaksız": {
+     "id": 50536929591471,
+     "price": 9100
+    },
+    "Siyah beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536929624239,
+     "price": 10200
+    },
+    "Siyah beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536929657007,
+     "price": 10200
+    },
+    "Siyah beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536929689775,
+     "price": 10200
+    },
+    "Siyah beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536929722543,
+     "price": 10200
+    },
+    "Beyaz beton 25×25 / Ayaksız": {
+     "id": 50536929755311,
+     "price": 9100
+    },
+    "Beyaz beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536929788079,
+     "price": 10200
+    },
+    "Beyaz beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536929820847,
+     "price": 10200
+    },
+    "Beyaz beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536929853615,
+     "price": 10200
+    },
+    "Beyaz beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536929886383,
+     "price": 10200
+    },
+    "Krem (bej) beton 25×25 / Ayaksız": {
+     "id": 50536929919151,
+     "price": 9100
+    },
+    "Krem (bej) beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536929951919,
+     "price": 10200
+    },
+    "Krem (bej) beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536929984687,
+     "price": 10200
+    },
+    "Krem (bej) beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536930017455,
+     "price": 10200
+    },
+    "Krem (bej) beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536930050223,
+     "price": 10200
+    },
+    "Bordo beton 25×25 / Ayaksız": {
+     "id": 50536930082991,
+     "price": 9100
+    },
+    "Bordo beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536930115759,
+     "price": 10200
+    },
+    "Bordo beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536930148527,
+     "price": 10200
+    },
+    "Bordo beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536930181295,
+     "price": 10200
+    },
+    "Bordo beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536930214063,
+     "price": 10200
+    },
+    "Terrakota beton 25×25 / Ayaksız": {
+     "id": 50536930246831,
+     "price": 9100
+    },
+    "Terrakota beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536930279599,
+     "price": 10200
+    },
+    "Terrakota beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536930312367,
+     "price": 10200
+    },
+    "Terrakota beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536930345135,
+     "price": 10200
+    },
+    "Terrakota beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536930377903,
+     "price": 10200
+    },
+    "Zeytin yeşili beton 25×25 / Ayaksız": {
+     "id": 50536930410671,
+     "price": 9100
+    },
+    "Zeytin yeşili beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536930443439,
+     "price": 10200
+    },
+    "Zeytin yeşili beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536930476207,
+     "price": 10200
+    },
+    "Zeytin yeşili beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536930508975,
+     "price": 10200
+    },
+    "Zeytin yeşili beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536930541743,
+     "price": 10200
+    },
+    "Moka beton 25×25 / Ayaksız": {
+     "id": 50536930574511,
+     "price": 9100
+    },
+    "Moka beton 25×25 / Siyah ayak (30 cm)": {
+     "id": 50536930607279,
+     "price": 10200
+    },
+    "Moka beton 25×25 / Doğal ahşap ayak (30 cm)": {
+     "id": 50536930640047,
+     "price": 10200
+    },
+    "Moka beton 25×25 / Kahverengi ayak (30 cm)": {
+     "id": 50536930672815,
+     "price": 10200
+    },
+    "Moka beton 25×25 / Beyaz ayak (30 cm)": {
+     "id": 50536930705583,
+     "price": 10200
+    }
+   },
+   "shape": {
+    "type": "plant",
+    "kind": "olive",
+    "potD": 25,
+    "potH": 25,
+    "standH": 30,
+    "canopyFrom": 70,
+    "leaf": "#525936",
+    "leafBack": "#7e8a6c",
+    "trunk": "#463636",
+    "topping": "#7a5440",
+    "leaves": 1300
+   }
+  },
+  {
+   "id": "silis-muz-185",
+   "name": "Yapay muz ağacı 180–190 cm (üç gövdeli)",
+   "brand": "The Silis",
+   "category": "Gerçek ürünler",
+   "group": "Bitkiler",
+   "w": 85,
+   "d": 85,
+   "h": 185,
+   "color": "#3f6a1c",
+   "flatpack": true,
+   "url": "https://thesilis.com/products/190-200-cm-yapay-muz-agaci-xxl-ayakli-beton-saksi-dahil",
+   "source": "thesilis.com ürün verisi (boy, saksı, ayak, varyant fiyatları), 30.10.2026; saksı/yaprak renkleri ürün fotoğraflarından; tepe genişliği fotoğraftan (saksı ölçek alınarak) tahmini",
+   "material": "Yapay bitki; beton saksı (içinde plastik üretim saksısı), kayın ahşap modüler ayak",
+   "notes": "Boy saksı dahil: ayaksız 180–190 cm, ayaklı 200–210 cm. Yaprak tacı geçişi daraltır ama mobilyanın/duvarın üstüne taşabilir (çakışma sayılmaz). Kapıdan geçiş kontrolü yapılmaz (yapraklar esner).",
+   "options": [
+    {
+     "name": "Saksı",
+     "part": "pot",
+     "values": [
+      {
+       "name": "Plastik üretim saksısı",
+       "color": "#1f1f1f",
+       "parts": {
+        "potD": 21,
+        "potH": 18,
+        "potRough": 0.5
+       }
+      },
+      {
+       "name": "Gri beton 32×32",
+       "color": "#cdcec7",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Antrasit beton 32×32",
+       "color": "#535656",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Siyah beton 32×32",
+       "color": "#2b2c2c",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Beyaz beton 32×32",
+       "color": "#eceeee",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Krem (bej) beton 32×32",
+       "color": "#eceae1",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Bordo beton 32×32",
+       "color": "#501a18",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Terrakota beton 32×32",
+       "color": "#bf7a5e",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Zeytin yeşili beton 32×32",
+       "color": "#636847",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      },
+      {
+       "name": "Moka beton 32×32",
+       "color": "#aa9681",
+       "parts": {
+        "potD": 32,
+        "potH": 32
+       }
+      }
+     ]
+    },
+    {
+     "name": "Ayak",
+     "part": "stand",
+     "values": [
+      {
+       "name": "Ayaksız",
+       "h": 185
+      },
+      {
+       "name": "Siyah ayak (22 cm)",
+       "color": "#1d1d1d",
+       "h": 205,
+       "parts": {
+        "standH": 22
+       }
+      },
+      {
+       "name": "Doğal ahşap ayak (22 cm)",
+       "color": "#c9a27a",
+       "h": 205,
+       "parts": {
+        "standH": 22
+       }
+      },
+      {
+       "name": "Kahverengi ayak (22 cm)",
+       "color": "#6b4a33",
+       "h": 205,
+       "parts": {
+        "standH": 22
+       }
+      },
+      {
+       "name": "Beyaz ayak (22 cm)",
+       "color": "#efefec",
+       "h": 205,
+       "parts": {
+        "standH": 22
+       }
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Saksı": "Terrakota beton 32×32",
+    "Ayak": "Ayaksız"
+   },
+   "variants": {
+    "Plastik üretim saksısı / Ayaksız": {
+     "id": 47525737758895,
+     "price": 6890
+    },
+    "Plastik üretim saksısı / Siyah ayak (22 cm)": {
+     "id": 47525737791663,
+     "price": 6890
+    },
+    "Plastik üretim saksısı / Doğal ahşap ayak (22 cm)": {
+     "id": 47525737824431,
+     "price": 6890
+    },
+    "Plastik üretim saksısı / Kahverengi ayak (22 cm)": {
+     "id": 47525737857199,
+     "price": 6890
+    },
+    "Plastik üretim saksısı / Beyaz ayak (22 cm)": {
+     "id": 47525737889967,
+     "price": 6890
+    },
+    "Gri beton 32×32 / Ayaksız": {
+     "id": 47525738086575,
+     "price": 9690
+    },
+    "Gri beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47525738119343,
+     "price": 10790
+    },
+    "Gri beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47525738152111,
+     "price": 10790
+    },
+    "Gri beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47525738184879,
+     "price": 10790
+    },
+    "Gri beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47525738217647,
+     "price": 10790
+    },
+    "Antrasit beton 32×32 / Ayaksız": {
+     "id": 47525738250415,
+     "price": 10190
+    },
+    "Antrasit beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47525738283183,
+     "price": 11290
+    },
+    "Antrasit beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47525738315951,
+     "price": 11290
+    },
+    "Antrasit beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47525738348719,
+     "price": 11290
+    },
+    "Antrasit beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47525738381487,
+     "price": 11290
+    },
+    "Siyah beton 32×32 / Ayaksız": {
+     "id": 47525738414255,
+     "price": 10190
+    },
+    "Siyah beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47525738447023,
+     "price": 11290
+    },
+    "Siyah beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47525738479791,
+     "price": 11290
+    },
+    "Siyah beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47525738512559,
+     "price": 11290
+    },
+    "Siyah beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47525738545327,
+     "price": 11290
+    },
+    "Beyaz beton 32×32 / Ayaksız": {
+     "id": 47525738578095,
+     "price": 10190
+    },
+    "Beyaz beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47525738610863,
+     "price": 11290
+    },
+    "Beyaz beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47525738643631,
+     "price": 11290
+    },
+    "Beyaz beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47525738676399,
+     "price": 11290
+    },
+    "Beyaz beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47525738709167,
+     "price": 11290
+    },
+    "Krem (bej) beton 32×32 / Ayaksız": {
+     "id": 47525738741935,
+     "price": 10190
+    },
+    "Krem (bej) beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47525738774703,
+     "price": 11290
+    },
+    "Krem (bej) beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47525738807471,
+     "price": 11290
+    },
+    "Krem (bej) beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47525738840239,
+     "price": 11290
+    },
+    "Krem (bej) beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47525738873007,
+     "price": 11290
+    },
+    "Bordo beton 32×32 / Ayaksız": {
+     "id": 47525738905775,
+     "price": 10190
+    },
+    "Bordo beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47525738938543,
+     "price": 11290
+    },
+    "Bordo beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47525738971311,
+     "price": 11290
+    },
+    "Bordo beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47525739004079,
+     "price": 11290
+    },
+    "Bordo beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47525739036847,
+     "price": 11290
+    },
+    "Terrakota beton 32×32 / Ayaksız": {
+     "id": 47525739069615,
+     "price": 10190
+    },
+    "Terrakota beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47525739102383,
+     "price": 11290
+    },
+    "Terrakota beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47525739135151,
+     "price": 11290
+    },
+    "Terrakota beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47525739167919,
+     "price": 11290
+    },
+    "Terrakota beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47525739200687,
+     "price": 11290
+    },
+    "Zeytin yeşili beton 32×32 / Ayaksız": {
+     "id": 47529515090095,
+     "price": 10190
+    },
+    "Zeytin yeşili beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47529515122863,
+     "price": 11290
+    },
+    "Zeytin yeşili beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47529515155631,
+     "price": 11290
+    },
+    "Zeytin yeşili beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47529515188399,
+     "price": 11290
+    },
+    "Zeytin yeşili beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47529515221167,
+     "price": 11290
+    },
+    "Moka beton 32×32 / Ayaksız": {
+     "id": 47529515253935,
+     "price": 10190
+    },
+    "Moka beton 32×32 / Siyah ayak (22 cm)": {
+     "id": 47529515286703,
+     "price": 11290
+    },
+    "Moka beton 32×32 / Doğal ahşap ayak (22 cm)": {
+     "id": 47529515319471,
+     "price": 11290
+    },
+    "Moka beton 32×32 / Kahverengi ayak (22 cm)": {
+     "id": 47529515352239,
+     "price": 11290
+    },
+    "Moka beton 32×32 / Beyaz ayak (22 cm)": {
+     "id": 47529515385007,
+     "price": 11290
+    }
+   },
+   "shape": {
+    "type": "plant",
+    "kind": "banana",
+    "potD": 32,
+    "potH": 32,
+    "standH": 22,
+    "canopyFrom": 85,
+    "leaf": "#3f6a1c",
+    "vein": "#86a24e",
+    "trunk": "#9d866f",
+    "stem": "#6f8a3a",
+    "topping": "#7a5440"
+   }
+  },
+  {
+   "id": "silis-alocasia-175",
+   "name": "Yapay Alocasia (fil kulağı) 170–180 cm",
+   "brand": "The Silis",
+   "category": "Gerçek ürünler",
+   "group": "Bitkiler",
+   "w": 105,
+   "d": 105,
+   "h": 175,
+   "color": "#36502a",
+   "flatpack": true,
+   "url": "https://thesilis.com/products/yapay-alocasia-fil-kulagi-genis-yaprakli-xl-buyuk-boy-ayakli-beton-saksili-170-180-cm",
+   "source": "thesilis.com ürün verisi (boy, saksı, ayak, varyant fiyatları), 30.10.2026; renkler ürün fotoğrafından; tepe genişliği fotoğraftan (saksı ölçek alınarak) tahmini",
+   "material": "Yapay bitki, 12 geniş yaprak; ayaklı beton saksı, çakıl taş",
+   "notes": "Boy saksı ve ayak dahil 170–180 cm. Her bileşim satılmıyor (ör. gri saksı + beyaz ayak yok); o zaman fiyat gösterilmez. Yaprak tacı geçişi daraltır ama çakışma sayılmaz.",
+   "options": [
+    {
+     "name": "Saksı ölçüsü",
+     "values": [
+      {
+       "name": "25×25 (ayaklı, 55 cm)",
+       "parts": {
+        "potD": 25,
+        "potH": 25,
+        "standH": 30
+       }
+      },
+      {
+       "name": "32×32 (ayaklı, 55 cm; fotoğraftaki)",
+       "parts": {
+        "potD": 32,
+        "potH": 32,
+        "standH": 23
+       }
+      }
+     ]
+    },
+    {
+     "name": "Saksı rengi",
+     "part": "pot",
+     "values": [
+      {
+       "name": "Gri beton",
+       "color": "#cdcec7"
+      },
+      {
+       "name": "Antrasit beton",
+       "color": "#535656"
+      },
+      {
+       "name": "Beyaz beton",
+       "color": "#eceeee"
+      },
+      {
+       "name": "Siyah beton",
+       "color": "#2b2c2c"
+      }
+     ]
+    },
+    {
+     "name": "Ayak rengi",
+     "part": "stand",
+     "values": [
+      {
+       "name": "Siyah",
+       "color": "#1d1d1d"
+      },
+      {
+       "name": "Doğal ahşap",
+       "color": "#c9a27a"
+      },
+      {
+       "name": "Kahverengi",
+       "color": "#6b4a33"
+      },
+      {
+       "name": "Beyaz",
+       "color": "#efefec"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Saksı ölçüsü": "25×25 (ayaklı, 55 cm)",
+    "Saksı rengi": "Gri beton",
+    "Ayak rengi": "Siyah"
+   },
+   "variants": {
+    "25×25 (ayaklı, 55 cm) / Gri beton / Siyah": {
+     "id": 44952170528943,
+     "price": 7300
+    },
+    "25×25 (ayaklı, 55 cm) / Gri beton / Doğal ahşap": {
+     "id": 44952170561711,
+     "price": 7300
+    },
+    "25×25 (ayaklı, 55 cm) / Gri beton / Kahverengi": {
+     "id": 44952170594479,
+     "price": 7300
+    },
+    "25×25 (ayaklı, 55 cm) / Antrasit beton / Siyah": {
+     "id": 44952170627247,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Antrasit beton / Doğal ahşap": {
+     "id": 44952170660015,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Antrasit beton / Kahverengi": {
+     "id": 44952170692783,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Beyaz beton / Siyah": {
+     "id": 44952170725551,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Beyaz beton / Doğal ahşap": {
+     "id": 44952170758319,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Beyaz beton / Kahverengi": {
+     "id": 44952170791087,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Beyaz beton / Beyaz": {
+     "id": 44952170823855,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Siyah beton / Siyah": {
+     "id": 44952170856623,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Siyah beton / Doğal ahşap": {
+     "id": 44952170889391,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Siyah beton / Kahverengi": {
+     "id": 44952170922159,
+     "price": 7600
+    },
+    "25×25 (ayaklı, 55 cm) / Siyah beton / Beyaz": {
+     "id": 44952170954927,
+     "price": 7600
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Gri beton / Siyah": {
+     "id": 44952190877871,
+     "price": 8300
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Gri beton / Doğal ahşap": {
+     "id": 44952190910639,
+     "price": 8300
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Gri beton / Kahverengi": {
+     "id": 44952190943407,
+     "price": 8300
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Antrasit beton / Siyah": {
+     "id": 44952190976175,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Antrasit beton / Doğal ahşap": {
+     "id": 44952191008943,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Antrasit beton / Kahverengi": {
+     "id": 44952191041711,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Beyaz beton / Siyah": {
+     "id": 44952191074479,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Beyaz beton / Doğal ahşap": {
+     "id": 44952191107247,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Beyaz beton / Kahverengi": {
+     "id": 44952191140015,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Beyaz beton / Beyaz": {
+     "id": 44952191172783,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Siyah beton / Siyah": {
+     "id": 44952191205551,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Siyah beton / Doğal ahşap": {
+     "id": 44952191238319,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Siyah beton / Kahverengi": {
+     "id": 44952191271087,
+     "price": 8700
+    },
+    "32×32 (ayaklı, 55 cm; fotoğraftaki) / Siyah beton / Beyaz": {
+     "id": 44952191303855,
+     "price": 8700
+    }
+   },
+   "shape": {
+    "type": "plant",
+    "kind": "alocasia",
+    "potD": 25,
+    "potH": 25,
+    "standH": 30,
+    "canopyFrom": 85,
+    "leaf": "#36502a",
+    "vein": "#7d9a5e",
+    "stem": "#7c8f4e",
+    "topping": "#b9b1a5",
+    "leaves": 12
    }
   }
  ]

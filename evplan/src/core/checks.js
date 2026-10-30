@@ -46,6 +46,7 @@ export function buildObstacles(model, items) {
         z0: b.z,
         z1: b.z + b.h,
         movable: it.movable,
+        soft: !!b.soft, // bitki tacı: çakışma değil, yalnızca geçiş/yürüme engeli
       })),
     );
   return { walls, fixtures, furn, all: [...walls, ...fixtures, ...furn] };
@@ -153,7 +154,7 @@ export function runChecks(model, items, { passage = true } = {}) {
     for (const o of [...obs.walls, ...obs.fixtures]) {
       let worst = 0;
       for (const b of itemBoxes(it)) {
-        if (!zOverlap(b.z, b.z + b.h, o.z0, o.z1)) continue;
+        if (b.soft || !zOverlap(b.z, b.z + b.h, o.z0, o.z1)) continue;
         worst = Math.max(worst, convexOverlap(footprint(b), o.poly));
       }
       if (worst > TOUCH)
@@ -163,7 +164,9 @@ export function runChecks(model, items, { passage = true } = {}) {
         });
     }
     if (model.rooms.length) {
-      const inside = shrink(fp).every((p) => model.rooms.some((r) => pointInPolygon(p, r.poly)));
+      // Oda içinde mi: sert kutulara bakılır (bitkinin yaprakları duvara taşabilir).
+      const hard = itemBoxes(it).filter((b) => !b.soft);
+      const inside = (hard.length ? hard.flatMap((b) => shrink(footprint(b))) : shrink(fp)).every((p) => model.rooms.some((r) => pointInPolygon(p, r.poly)));
       if (!inside) {
         const room = roomAt(model, [it.x, it.y]);
         push('error', 'outside', `${it.name} oda sınırının dışına taşıyor${room ? ` (${room.name})` : ''}.`, {
@@ -179,6 +182,7 @@ export function runChecks(model, items, { passage = true } = {}) {
       const a = obs.furn[i];
       const b = obs.furn[j];
       if (a.uid === b.uid) continue; // aynı mobilyanın modülleri
+      if (a.soft || b.soft) continue; // bitki tacı başka mobilyanın üstüne taşabilir
       if (a.movable || b.movable) continue; // sandalye masanın altına girebilir
       if (!zOverlap(a.z0, a.z1, b.z0, b.z1)) continue;
       const ov = convexOverlap(a.poly, b.poly);
@@ -195,7 +199,7 @@ export function runChecks(model, items, { passage = true } = {}) {
   const swingBlockers = new Map(); // kapı id → engelleyen uid'ler
   for (const op of model.openings) {
     const name = op.name ?? (op.type === 'door' ? `Kapı ${op.id}` : `Pencere ${op.id}`);
-    const rel = obs.furn.filter((o) => zOverlap(op.zone.z0, op.zone.z1, o.z0, o.z1));
+    const rel = obs.furn.filter((o) => !o.soft && zOverlap(op.zone.z0, op.zone.z1, o.z0, o.z1));
     let worst = null;
     for (const leaf of op.leaves) {
       const r = sweepLeaf(leaf, rel);
@@ -218,7 +222,7 @@ export function runChecks(model, items, { passage = true } = {}) {
     const band = bandPolygon(w, d.s0, d.s1, w.oMin - 40, w.oMax + 40);
     const blocked = [];
     for (const o of obs.furn) {
-      if (o.movable || o.z0 >= d.top || convexOverlap(band, o.poly) <= TOUCH) continue;
+      if (o.movable || o.soft || o.z0 >= d.top || convexOverlap(band, o.poly) <= TOUCH) continue;
       const ss = o.poly.map((p) => dot(sub(p, w.from), w.d));
       blocked.push({ a: Math.max(d.s0, Math.min(...ss)), b: Math.min(d.s1, Math.max(...ss)), o });
     }
@@ -243,7 +247,7 @@ export function runChecks(model, items, { passage = true } = {}) {
 
   // 3) Mobilyanın kendi kapakları / çekmeceleri.
   for (const it of items) {
-    const others = obs.all.filter((o) => o.uid !== it.uid && !o.movable && zOverlap(it.z, it.z + it.h, o.z0, o.z1));
+    const others = obs.all.filter((o) => o.uid !== it.uid && !o.movable && !o.soft && zOverlap(it.z, it.z + it.h, o.z0, o.z1));
     for (const leaf of frontLeaves(it)) {
       const { max, by } = sweepLeaf(leaf, others);
       if (by)
@@ -270,7 +274,7 @@ export function runChecks(model, items, { passage = true } = {}) {
   }
 
   // 4) Kullanım alanı (yatak yanı, masa önü...): uyarı.
-  const bodyObs = obs.all.filter((o) => o.z0 < S.bodyHeight && !o.movable);
+  const bodyObs = obs.all.filter((o) => o.z0 < S.bodyHeight && !o.movable && !o.soft);
   for (const it of items) {
     for (const zone of useZones(it)) {
       const others = bodyObs.filter((o) => o.uid !== it.uid);
@@ -323,7 +327,7 @@ export function runChecks(model, items, { passage = true } = {}) {
     const supports = [];
     for (const o of items)
       if (o !== it && o.collides && !o.onTop)
-        for (const b of itemBoxes(o)) if (Math.abs(b.z + b.h - it.z) < 1) supports.push({ o, b });
+        for (const b of itemBoxes(o)) if (!b.soft && Math.abs(b.z + b.h - it.z) < 1) supports.push({ o, b });
     const at = (lx) => toWorld([lx, 0], it.x, it.y, it.rot);
     const feet = it.shape?.feet ? [-it.shape.feet.span / 2, it.shape.feet.span / 2].map(at) : [at(0)];
     const holders = feet.map((p) => supports.find((s) => pointInRect(p, s.b)));

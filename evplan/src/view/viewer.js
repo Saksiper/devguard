@@ -626,7 +626,7 @@ export class Viewer extends EventTarget {
   snap(it, off = false) {
     if (off) return [it.x, it.y];
     const obs = buildObstacles(this.model, this.store.items()).all.filter(
-      (o) => o.uid !== it.uid && o.z0 < it.z + it.h && o.z1 > it.z,
+      (o) => o.uid !== it.uid && !o.soft && o.z0 < it.z + it.h && o.z1 > it.z,
     );
     let { x, y } = it;
     for (const side of ['front', 'back', 'left', 'right']) {

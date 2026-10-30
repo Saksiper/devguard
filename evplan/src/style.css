@@ -191,6 +191,9 @@ button.danger {
 
 .label-layer {
   pointer-events: none;
+  /* Kendi katman bağlamı: CSS2DRenderer etiketlere sıra numarası z-index'i verir; telefondaki alt panelin
+     (z-index 5) üstüne taşmasınlar. */
+  z-index: 1;
 }
 
 .lbl {
@@ -822,11 +825,19 @@ details.demo summary {
   box-shadow: 0 0 0 2px var(--accent);
 }
 
-.swatches.mini span {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--line);
+.swatches.mini {
+  align-items: center;
+}
+
+.swatches.mini button {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.swatches.mini .pick-name {
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .opt {

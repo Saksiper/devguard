@@ -3,6 +3,7 @@ import { buildSofa, buildSofaL } from './sofa.js';
 import { buildCabinets } from './cabinets.js';
 import { buildTv } from './tv.js';
 import { buildTambour } from './tambour.js';
+import { buildPlant } from './plant.js';
 import {
   buildBed,
   buildBentwood,
@@ -36,6 +37,7 @@ export const MODEL_BUILDERS = {
   swivel: buildSwivel,
   trestle: buildTrestle,
   bentwood: buildBentwood,
+  plant: buildPlant,
 };
 
 export function buildModel(it) {

@@ -175,9 +175,25 @@ describe('gerçek ürünler', () => {
     const l = resolveItem({ uid: 'l', ref: 'nun-lizbon', x: 0, y: 0 }, byId);
     expect([l.w, l.d, l.color, l.price]).toEqual([80, 150, '#b8bbaa', 1950]);
     expect(l.url).toBe('https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=80150');
-    expect(l.parts).toMatchObject({ weaveCell: '#abae9d', weaveLine: '#c9ccbc' });
+    expect(l.parts).toMatchObject({ weaveCell: '#959884', weaveLine: '#e3e4d8' });
     const b = resolveItem({ uid: 'l', ref: 'nun-lizbon', x: 0, y: 0, choice: { Renk: 'Antrasit', Ölçü: '160×230' } }, byId);
     expect([b.w, b.d, b.price, b.collides]).toEqual([160, 230, 5500, false]);
     expect(b.url).toContain('renk=antrasit&olcu=160230');
+  });
+
+  it('bitkiler: linkteki varyant, ayak boyu, saksı sert / yaprak tacı yumuşak', () => {
+    const z = resolveItem({ uid: 'z', ref: 'silis-zeytin-175', x: 120, y: 120 }, byId);
+    expect([z.variant.id, z.price, z.h, z.parts.pot]).toEqual([50536930410671, 9100, 175, '#636847']);
+    const za = resolveItem({ uid: 'z', ref: 'silis-zeytin-175', x: 0, y: 0, choice: { Ayak: 'Siyah ayak (30 cm)' } }, byId);
+    expect([za.h, za.price]).toEqual([205, 10200]);
+    const [potBox, canopy] = itemBoxes(za);
+    expect([potBox.w, potBox.h, canopy.z, canopy.soft]).toEqual([25, 55, 100, true]);
+    const m = resolveItem({ uid: 'm', ref: 'silis-muz-185', x: 0, y: 0 }, byId);
+    expect([m.variant.id, m.price]).toEqual([47525739069615, 10190]);
+    // Duvar dibindeki ağaç: tacı duvara ve yandaki koltuğa taşar ama hata yok; saksı içeride.
+    const sofa = resolveItem({ uid: 's', ref: 'normod-klem-3-pk', x: 300, y: 50, rot: 0 }, byId);
+    const tree = resolveItem({ uid: 't', ref: 'silis-zeytin-175', x: 168, y: 20 }, byId);
+    const r = runChecks(buildPlanModel(room), [sofa, tree], { passage: false });
+    expect(r.issues.filter((i) => i.severity === 'error')).toEqual([]);
   });
 });

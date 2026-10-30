@@ -215,10 +215,29 @@ export function wingItems(it) {
   return [box(0, -it.d / 2 + B / 2, it.w, B, 0), box(sx * (it.w / 2 - B / 2), B / 2, B, it.d - B, 1)];
 }
 
-/** Mobilyanın çakışma kutuları: modüllüyse her modül, L koltukta iki kanat, değilse kendisi. */
+/**
+ * Bitki: sert kutu saksı (ve ayaklı sehpa), yumuşak kutu yaprak tacı. Yumuşak kutu duvar/mobilya çakışması
+ * sayılmaz (yapraklar esner, üstüne taşabilir) ama geçiş ve yürüme engelidir.
+ */
+export function plantItems(it) {
+  const S = it.shape;
+  const p = it.parts ?? {};
+  const potD = p.pot === 'none' ? 20 : (p.potD ?? S.potD ?? 25);
+  const standH = p.stand ? (p.standH ?? S.standH ?? 0) : 0;
+  const potTop = standH + (p.pot === 'none' ? 18 : (p.potH ?? S.potH ?? 25));
+  const z0 = standH + (S.canopyFrom ?? 80);
+  const base = { ...it, use: null, frontDoors: null, drawers: null };
+  return [
+    { ...base, w: potD, d: potD, h: potTop },
+    { ...base, z: it.z + z0, h: Math.max(10, it.h - z0), soft: true },
+  ];
+}
+
+/** Mobilyanın çakışma kutuları: modüllüyse her modül, L koltukta iki kanat, bitkide saksı + yaprak tacı. */
 export function itemBoxes(it) {
   if (it.modules) return moduleItems(it);
   if (it.shape?.type === 'sofaL') return wingItems(it);
+  if (it.shape?.type === 'plant') return plantItems(it);
   return [it];
 }
 
@@ -242,6 +261,7 @@ export function stackItems(list) {
     for (const o of list) {
       if (o === it || !o.collides || o.onTop) continue;
       for (const b of itemBoxes(o)) {
+        if (b.soft) continue; // bitki tacının üstüne bir şey oturmaz
         if (!pointInRect([it.x, it.y], b)) continue;
         const t = b.z + b.h;
         if (top === null || t > top) top = t;
