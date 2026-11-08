@@ -246,11 +246,18 @@ describe('gerçek ürünler', () => {
     const h = resolveItem({ uid: 'h', ref: 'montis-hiprepa-333008', x: 0, y: 0, choice: { Ölçü: '80×300' } }, byId);
     expect([h.w, h.d, h.price]).toEqual([80, 300, 4649.4]);
     expect(h.url).toMatch(/333008-multi-dokuma-taban-modern-hali\?olcu=80x300$/);
-    for (const id of ['montis-etiam-907011', 'montis-hiprepa-333005', 'montis-hiprepa-333008']) {
-      const png = fs.readFileSync(path.resolve(__dirname, '../public/data', byId.get(id).shape.map));
-      expect([png.toString('latin1', 1, 4), png.readUInt32BE(16)]).toEqual(['PNG', 240]); // ~1 cm/piksel
-      expect(Object.keys(byId.get(id).variants)).toEqual(byId.get(id).options[0].values.map((v) => v.name));
+    const mapped = realCat.items.filter((c) => c.shape?.map);
+    expect(mapped.length).toBe(13);
+    for (const c of mapped) {
+      const png = fs.readFileSync(path.resolve(__dirname, '../public/data', c.shape.map));
+      expect([c.id, png.toString('latin1', 1, 4), [240, 320].includes(png.readUInt32BE(16))]).toEqual([c.id, 'PNG', true]); // ~1 / ~0,6 cm/piksel
+      expect(Object.keys(c.variants)).toEqual(c.options[0].values.map((v) => v.name));
+      const def = resolveItem({ uid: 'x', ref: c.id, x: 0, y: 0 }, byId); // varsayılan ölçü = katalog ölçüsü (linkteki)
+      expect([def.w, def.d]).toEqual([c.w, c.d]);
     }
+    const q = resolveItem({ uid: 'q', ref: 'montis-quaestio-44004', x: 0, y: 0, choice: { Ölçü: '115×160' } }, byId);
+    expect([q.w, q.d, q.h, q.price]).toEqual([115, 160, 0.5, 4151.05]);
+    expect(q.url).toMatch(/\?bambu-doku-ebatlari=115x160$/);
   });
 
   it('Ficus lyrata: boy seçeneği boyu, taç ve saksıyı belirler; tükenmiş boy da seçilebilir', () => {

@@ -395,6 +395,23 @@ function kilimTex(pat, pal) {
 
 const mapCache = new Map();
 
+let fringeTexture = null;
+function fringeTex() {
+  if (fringeTexture) return fringeTexture;
+  const c = document.createElement('canvas');
+  c.width = 8;
+  c.height = 32;
+  const x = c.getContext('2d');
+  x.fillStyle = '#ffffff';
+  x.fillRect(0, 0, 8, 32);
+  x.fillStyle = '#b9b3a8'; // iplikler arası gölge
+  x.fillRect(6, 0, 2, 32);
+  fringeTexture = new THREE.CanvasTexture(c);
+  fringeTexture.wrapS = fringeTexture.wrapT = THREE.RepeatWrapping;
+  fringeTexture.colorSpace = THREE.SRGBColorSpace;
+  return fringeTexture;
+}
+
 /**
  * Desen haritalı halı (baskılı / ilmek dokuma): harita halıya "kaplayarak" oturur — oran korunur, taşan
  * kısım ortadan kırpılır (büyük ölçüde desen büyür, yollukta ortası görünür). Üstüne iplik gürültüsü;
@@ -447,11 +464,23 @@ export function buildRug(it) {
   const img = S.map ? rugImages.get(S.map) : null;
   if (img) {
     const h = Math.max(0.5, it.h);
-    const top = new THREE.MeshStandardMaterial({ color: 0xffffff, map: mapTex(img, it.w, it.d, S.texture), roughness: 1 });
+    const top = new THREE.MeshStandardMaterial({ color: 0xffffff, map: mapTex(img, it.w, it.d, S.texture), roughness: S.roughness ?? 1 }); // ipeksi (bambu tuşe) yüzey daha parlak
     const side = new THREE.MeshStandardMaterial({ color: col(S.edge ?? it.color), roughness: 1 });
     const rug = box(it.w, h, it.d, [side, side, top, side, side, side], 0, h / 2, 0);
     rug.castShadow = false;
     g.add(rug);
+    if (S.fringe) {
+      // Kısa kenarlarda saçak (ölçüye dahil değil, yalnız görsel): ince iplik çizgili şerit.
+      const t = fringeTex().clone();
+      t.repeat.set(it.w / 0.6, 1); // ~0,6 cm'de bir iplik
+      t.needsUpdate = true;
+      const fm = new THREE.MeshStandardMaterial({ color: col(S.fringeColor ?? '#ece6da'), map: t, roughness: 0.9 });
+      for (const sz of [-1, 1]) {
+        const f = box(it.w - 2, 0.25, S.fringe, fm, 0, 0.15, sz * (it.d / 2 + S.fringe / 2));
+        f.castShadow = false;
+        g.add(f);
+      }
+    }
     return done(g);
   }
   if (S.weave === 'kilim' && it.parts?.pattern) {

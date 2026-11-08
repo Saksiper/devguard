@@ -2107,6 +2107,579 @@
    }
   },
   {
+   "id": "montis-hiprepa-333002",
+   "name": "Hiprepa 333002 dokuma taban halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 240,
+   "d": 340,
+   "h": 1,
+   "color": "#a48868",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Dokuma taban, tüysüz baskılı yüzey (vintage kilim görünümü); pamuk rejenere + polyester; kenarlar çoban dikiş, saçaksız; makinede yıkanabilir; ürün kodu MHT4204",
+   "notes": "Yeşil-turuncu: kiremit zemin ve krem çubuklu kenarlar; ortada yeşil, hardal, mavi ve krem dikey çizgili bloklar, altta bej bant. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "80×150",
+       "w": 80,
+       "d": 150
+      },
+      {
+       "name": "80×200",
+       "w": 80,
+       "d": 200
+      },
+      {
+       "name": "80×300",
+       "w": 80,
+       "d": 300
+      },
+      {
+       "name": "100×200",
+       "w": 100,
+       "d": 200
+      },
+      {
+       "name": "100×300",
+       "w": 100,
+       "d": 300
+      },
+      {
+       "name": "120×180",
+       "w": 120,
+       "d": 180
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×300",
+       "w": 200,
+       "d": 300
+      },
+      {
+       "name": "240×340",
+       "w": 240,
+       "d": 340
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "240×340"
+   },
+   "variants": {
+    "80×150": {
+     "price": 2324.7,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=80x150"
+    },
+    "80×200": {
+     "price": 3099.6,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=80x200"
+    },
+    "80×300": {
+     "price": 4649.4,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=80x300"
+    },
+    "100×200": {
+     "price": 3874.5,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=100x200"
+    },
+    "100×300": {
+     "price": 5811.75,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=100x300"
+    },
+    "120×180": {
+     "price": 4184.46,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=120x180"
+    },
+    "160×230": {
+     "price": 7129.08,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=160x230"
+    },
+    "200×300": {
+     "price": 11623.5,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=200x300"
+    },
+    "240×340": {
+     "price": 15807.96,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=240x340"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-hiprepa-333002.png",
+    "texture": "flat",
+    "edge": "#b2a69c"
+   }
+  },
+  {
+   "id": "montis-quaestio-44004",
+   "name": "Quaestio 44004 parlak yumuşak dokuma taban halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 200,
+   "d": 300,
+   "h": 0.5,
+   "color": "#b3a59c",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "İnce makine halısı, bambu tuşe dokulu ipeksi parlak ve yumuşak yüzey (el halısı görünümü); pamuklu dokuma taban; pamuk, polyester; 5 mm; ürün kodu NKE3990",
+   "notes": "Turuncu: turuncu, buz mavisi, lacivert, pembe ve çizgili kemer (yay) biçimleri. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "80×160",
+       "w": 80,
+       "d": 160
+      },
+      {
+       "name": "100×200",
+       "w": 100,
+       "d": 200
+      },
+      {
+       "name": "115×160",
+       "w": 115,
+       "d": 160
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×300",
+       "w": 200,
+       "d": 300
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "200×300"
+   },
+   "variants": {
+    "80×160": {
+     "price": 2887.25,
+     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=80x160"
+    },
+    "100×200": {
+     "price": 4513.23,
+     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=100x200"
+    },
+    "115×160": {
+     "price": 4151.05,
+     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=115x160"
+    },
+    "160×230": {
+     "price": 8303.38,
+     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=160x230"
+    },
+    "200×300": {
+     "price": 13539.68,
+     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=200x300"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-quaestio-44004.png",
+    "texture": "flat",
+    "edge": "#9a958f",
+    "roughness": 0.62
+   }
+  },
+  {
+   "id": "montis-fortis-260005",
+   "name": "Fortis 260005 kabartmalı halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 250,
+   "d": 350,
+   "h": 1,
+   "color": "#9b8879",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Özel kabartmalı (yüksek/alçak efektli) dokuma, tıraşlanmış yün halı görünümü; pamuk, polyester ve jüt; kenarlar çoban dikiş, saçaksız; ürün kodu NVT3349",
+   "notes": "Yeşil-turuncu: antrasit zemin üstünde turuncu, yeşil, krem ve gri büyük bloklar. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×140",
+       "w": 75,
+       "d": 140
+      },
+      {
+       "name": "115×170",
+       "w": 115,
+       "d": 170
+      },
+      {
+       "name": "150×230",
+       "w": 150,
+       "d": 230
+      },
+      {
+       "name": "190×290",
+       "w": 190,
+       "d": 290
+      },
+      {
+       "name": "250×350",
+       "w": 250,
+       "d": 350
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "250×350"
+   },
+   "variants": {
+    "75×140": {
+     "price": 4017.73,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=75x140"
+    },
+    "115×170": {
+     "price": 7481.19,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=115x170"
+    },
+    "150×230": {
+     "price": 13012.17,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=150x230"
+    },
+    "190×290": {
+     "price": 25525.78,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=190x290"
+    },
+    "250×350": {
+     "price": 33486.46,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=250x350"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-fortis-260005.png",
+    "texture": "loop",
+    "edge": "#94908f"
+   }
+  },
+  {
+   "id": "montis-fortis-260031",
+   "name": "Fortis 260031 kabartmalı halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 250,
+   "d": 350,
+   "h": 1,
+   "color": "#766669",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Özel kabartmalı (yüksek/alçak efektli) dokuma, tıraşlanmış yün halı görünümü; pamuk, polyester ve jüt; kenarlar çoban dikiş, saçaksız; ürün kodu NVT4129",
+   "notes": "Mor-yeşil: mor, yeşil ve kırmızı şerit blokları; dama düzeni. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×140",
+       "w": 75,
+       "d": 140
+      },
+      {
+       "name": "115×170",
+       "w": 115,
+       "d": 170
+      },
+      {
+       "name": "150×230",
+       "w": 150,
+       "d": 230
+      },
+      {
+       "name": "190×290",
+       "w": 190,
+       "d": 290
+      },
+      {
+       "name": "250×350",
+       "w": 250,
+       "d": 350
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "250×350"
+   },
+   "variants": {
+    "75×140": {
+     "price": 4017.73,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=75x140"
+    },
+    "115×170": {
+     "price": 7481.19,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=115x170"
+    },
+    "150×230": {
+     "price": 13012.17,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=150x230"
+    },
+    "190×290": {
+     "price": 25525.78,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=190x290"
+    },
+    "250×350": {
+     "price": 33486.46,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=250x350"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-fortis-260031.png",
+    "texture": "loop",
+    "edge": "#8b8785"
+   }
+  },
+  {
+   "id": "montis-gemma-62003",
+   "name": "Gemma 62003 dokuma taban halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 200,
+   "d": 300,
+   "h": 1,
+   "color": "#cdb59f",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Dokuma taban, tüysüz baskılı yüzey (vintage kilim görünümü); pamuk, polyester; kenarlar çoban dikiş, saçaksız; makinede yıkanabilir; ürün kodu SŞD4290",
+   "notes": "Kahverengi: bej (jüt görünümlü) zemin üstünde kırmızı, turuncu, koyu yeşil ve açık yeşil ekose çizgiler. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "80×150",
+       "w": 80,
+       "d": 150
+      },
+      {
+       "name": "80×200",
+       "w": 80,
+       "d": 200
+      },
+      {
+       "name": "80×300",
+       "w": 80,
+       "d": 300
+      },
+      {
+       "name": "100×200",
+       "w": 100,
+       "d": 200
+      },
+      {
+       "name": "100×300",
+       "w": 100,
+       "d": 300
+      },
+      {
+       "name": "120×180",
+       "w": 120,
+       "d": 180
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×300",
+       "w": 200,
+       "d": 300
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "200×300"
+   },
+   "variants": {
+    "80×150": {
+     "price": 2242.8,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=80x150"
+    },
+    "80×200": {
+     "price": 2990.4,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=80x200"
+    },
+    "80×300": {
+     "price": 4485.6,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=80x300"
+    },
+    "100×200": {
+     "price": 3738,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=100x200"
+    },
+    "100×300": {
+     "price": 5607,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=100x300"
+    },
+    "120×180": {
+     "price": 4037.04,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=120x180"
+    },
+    "160×230": {
+     "price": 6877.92,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=160x230"
+    },
+    "200×300": {
+     "price": 11214,
+     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=200x300"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-gemma-62003.png",
+    "texture": "flat",
+    "edge": "#c8beb4"
+   }
+  },
+  {
+   "id": "montis-walorem-206002",
+   "name": "Walorem 206002 parlak kalın makine halısı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 80,
+   "d": 150,
+   "h": 1,
+   "color": "#9b8b86",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Parlak makine dokuması, m²'de 1.000.000 ilmek, yumuşak dolgun yüzey; pamuk, polyester; siparişe özel (5 iş günü); ürün kodu EDL2539",
+   "notes": "Siyah: lacivert-antrasit zemin, somon-pembe madalyon ve bordürler; eskitme (vintage) desen. Kısa kenarlarda beyaz saçak (fotoğraftan; uzunluğu 4 cm varsayım, ölçüye dahil sayılmadı). Kalınlık sitede yazmıyor (\"kalın\"): 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "80×150",
+       "w": 80,
+       "d": 150
+      },
+      {
+       "name": "80×200",
+       "w": 80,
+       "d": 200
+      },
+      {
+       "name": "80×300",
+       "w": 80,
+       "d": 300
+      },
+      {
+       "name": "100×200",
+       "w": 100,
+       "d": 200
+      },
+      {
+       "name": "100×300",
+       "w": 100,
+       "d": 300
+      },
+      {
+       "name": "120×180",
+       "w": 120,
+       "d": 180
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×290",
+       "w": 200,
+       "d": 290
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "80×150"
+   },
+   "variants": {
+    "80×150": {
+     "price": 4802.49,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=80x150"
+    },
+    "80×200": {
+     "price": 6403.32,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=80x200"
+    },
+    "80×300": {
+     "price": 9604.98,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=80x300"
+    },
+    "100×200": {
+     "price": 8004.15,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=100x200"
+    },
+    "100×300": {
+     "price": 12006.23,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=100x300"
+    },
+    "120×180": {
+     "price": 8644.48,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=120x180"
+    },
+    "160×230": {
+     "price": 14727.64,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=160x230"
+    },
+    "200×290": {
+     "price": 24012.45,
+     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=200x290"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-walorem-206002.png",
+    "texture": "flat",
+    "edge": "#3e3e44",
+    "roughness": 0.6,
+    "fringe": 4
+   }
+  },
+  {
    "id": "hali-80x150",
    "name": "Düz halı 80×150",
    "category": "Salon",
