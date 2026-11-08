@@ -1,6 +1,8 @@
-// Yapay bitkiler (shape.type 'plant'): beton saksı (isteğe bağlı ayaklı sehpa), gövde ve yapraklar.
-// shape.kind: 'olive' (ince gövde, oval tepe, küçük dar yapraklar), 'banana' (üç kalın gövde, iri kürek
-// yapraklar), 'alocasia' (uzun saplı, kalp biçimli iri yapraklar). Yerel eksenler: x/z yatay, y yukarı; cm.
+// Bitkiler (shape.type 'plant'): beton saksı (isteğe bağlı ayaklı sehpa) ya da konik plastik üretici saksısı
+// (shape.potShape 'nursery'), gövde ve yapraklar. shape.kind: 'olive' (ince gövde, oval tepe, küçük dar
+// yapraklar), 'banana' (üç kalın gövde, iri kürek yapraklar), 'alocasia' (uzun saplı, kalp biçimli iri
+// yapraklar), 'lyrata' (tek gövde ortada çatallanır, iri keman biçimli parlak yapraklar). Yerel eksenler:
+// x/z yatay, y yukarı; cm.
 // Yapraklar tek bir birleşik geometride (ışın izleme ve telefon için çizim çağrısı az olsun).
 // Saksı/sehpa ölçüleri üreticiden; tepe genişliği ve yaprak yerleşimi fotoğraftan tahmini.
 
@@ -24,11 +26,16 @@ class LeafBatch {
     this.idx = [];
   }
 
-  add(p, dir, len, wid, { profile, u0 = 0, droop = 0.25, fold = 0.06, nu = 8, nv = 4, color, vein, veinWidth = 4 }) {
+  add(p, dir, len, wid, { profile, u0 = 0, droop = 0.25, fold = 0.06, nu = 8, nv = 4, color, vein, veinWidth = 4, roll = 0 }) {
     const Y = dir.clone().normalize();
     const up = Math.abs(Y.y) > 0.98 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
     const X = new THREE.Vector3().crossVectors(up, Y).normalize();
     const Z = new THREE.Vector3().crossVectors(X, Y).normalize(); // yaprak yüzü (çoğunlukla yukarı)
+    if (roll) {
+      // yaprağı kendi orta damarı çevresinde döndür (yüzler farklı yönlere baksın)
+      X.applyAxisAngle(Y, roll);
+      Z.applyAxisAngle(Y, roll);
+    }
     const base = this.pos.length / 3;
     const c0 = col(color);
     const c1 = col(vein ?? color);
@@ -113,16 +120,31 @@ function pot(g, S, parts) {
     g.add(plate);
   }
   if (parts.pot !== null && parts.pot !== 'none') {
-    const mat = new THREE.MeshStandardMaterial({ color: col(parts.pot ?? '#cdcec7'), roughness: parts.potRough ?? 0.85 });
-    const prof = [
-      [0, 0],
-      [D / 2 - 1.5, 0],
-      [D / 2 - 0.2, 1.2],
-      [D / 2, 3],
-      [D / 2, H],
-      [D / 2 - 1.2, H],
-      [D / 2 - 1.2, H - 2],
-    ].map(([x, y]) => new THREE.Vector2(x, y));
+    const nursery = S.potShape === 'nursery';
+    const mat = new THREE.MeshStandardMaterial({ color: col(parts.pot ?? S.pot ?? '#cdcec7'), roughness: parts.potRough ?? (nursery ? 0.5 : 0.85) });
+    const rb = D / 2 - (nursery ? D * 0.11 : 0); // konik saksının taban yarıçapı
+    const prof = (
+      nursery
+        ? [
+            [0, 0],
+            [rb - 1, 0],
+            [rb, 1],
+            [D / 2 - 1.2, H - 3],
+            [D / 2, H - 2.6], // üstte dışa kıvrık ağız
+            [D / 2, H],
+            [D / 2 - 1.6, H],
+            [D / 2 - 1.6, H - 2],
+          ]
+        : [
+            [0, 0],
+            [D / 2 - 1.5, 0],
+            [D / 2 - 0.2, 1.2],
+            [D / 2, 3],
+            [D / 2, H],
+            [D / 2 - 1.2, H],
+            [D / 2 - 1.2, H - 2],
+          ]
+    ).map(([x, y]) => new THREE.Vector2(x, y));
     const body = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), mat);
     body.position.y = standH;
     body.castShadow = body.receiveShadow = true;
@@ -233,6 +255,63 @@ function buildAlocasia(g, it, S, { top, base }, R) {
   g.add(leaves.mesh(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, side: THREE.DoubleSide })));
 }
 
+/**
+ * Ficus lyrata (anaç çatallı): tek gövde tacın altında 3 dala ayrılır; dalların üst kısmında kısa saplı, iri,
+ * keman biçimli (tabanı dar, ortası hafif belli, ucu geniş ve yuvarlak) parlak yapraklar. Alttakiler dışa ve
+ * hafif sarkık, üsttekiler dik. Açık renkli orta damar köşe rengiyle.
+ */
+function buildLyrata(g, it, S, { top, base }, R) {
+  const H = it.h;
+  const parts = it.parts ?? {};
+  const bark = new THREE.MeshStandardMaterial({ color: col(S.trunk ?? '#6e5d4e'), roughness: 0.85 });
+  const cf = base + (parts.canopyFrom ?? S.canopyFrom ?? 90); // tacın altı
+  const fork = cf - 4;
+  const reach = it.w / 2;
+  g.add(tube([new THREE.Vector3(0, top - 3, 0), new THREE.Vector3(0.8, (top + fork) / 2, -0.4), new THREE.Vector3(0, fork, 0)], 2.1, 1.6, bark, 10));
+  const fiddle = (u) => {
+    const sm = Math.min(1, Math.max(0, u / 0.8));
+    const w = (0.36 + 0.64 * sm * sm * (3 - 2 * sm)) * (1 - 0.1 * Math.exp(-(((u - 0.45) / 0.12) ** 2)));
+    return u > 0.78 ? w * Math.sqrt(Math.max(0, 1 - ((u - 0.78) / 0.22) ** 2)) : w;
+  };
+  const leaves = new LeafBatch();
+  const nB = S.branches ?? 3;
+  const perBranch = Math.round((S.leaves ?? 84) / nB);
+  for (let b = 0; b < nB; b++) {
+    const a = (b / nB) * Math.PI * 2 + R() * 0.6;
+    const out = reach * (0.42 + R() * 0.14);
+    const endY = H - 10 - R() * 14;
+    const p0 = new THREE.Vector3(0, fork, 0);
+    const p1 = new THREE.Vector3(Math.cos(a) * out * 0.45, fork + (endY - fork) * 0.45, Math.sin(a) * out * 0.45);
+    const p2 = new THREE.Vector3(Math.cos(a) * out, endY, Math.sin(a) * out);
+    g.add(tube([p0, p1, p2], 1.25, 0.45, bark, 7));
+    const curve = new THREE.CatmullRomCurve3([p0, p1, p2]);
+    for (let i = 0; i < perBranch; i++) {
+      const t = 0.18 + 0.82 * (i / (perBranch - 1)) ** 0.8;
+      const at = curve.getPointAt(Math.min(1, t));
+      const la = a + (R() - 0.5) * 2.6 + i * 2.4; // sarmal dizilim, dal yönü ağırlıklı
+      const hi = (at.y - cf) / Math.max(1, H - cf); // 0: tacın altı, 1: tepe
+      const pet = 3 + R() * 3;
+      const dir0 = new THREE.Vector3(Math.cos(la), 0.15 + hi * 0.8 + R() * 0.35, Math.sin(la));
+      const p = at.clone().addScaledVector(dir0.clone().normalize(), pet);
+      const len = (S.leafLen ?? 28) * (0.8 + R() * 0.4) * (0.85 + 0.15 * (1 - hi));
+      const dir = dir0.clone().add(new THREE.Vector3(0, -0.15 + R() * 0.25, 0));
+      const back = R() < 0.18; // bazı yaprakların açık renkli alt yüzü görünür
+      leaves.add(p, dir, len, len * 0.75, {
+        profile: fiddle,
+        roll: (R() - 0.5) * 1.6,
+        droop: 0.12 + (1 - hi) * 0.18 + R() * 0.08,
+        fold: 0.12,
+        nu: 12,
+        nv: 6,
+        color: back ? S.leafBack ?? '#6b7d45' : S.leaf ?? '#3f5a22',
+        vein: S.vein ?? '#b5be78',
+        veinWidth: 9,
+      });
+    }
+  }
+  g.add(leaves.mesh(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.38, side: THREE.DoubleSide })));
+}
+
 export function buildPlant(it) {
   const S = it.shape ?? {};
   const parts = it.parts ?? {};
@@ -241,6 +320,7 @@ export function buildPlant(it) {
   const R = rnd([...String(it.ref ?? 'bitki')].reduce((a, c) => a * 31 + c.charCodeAt(0), 7));
   if (S.kind === 'banana') buildBanana(g, it, S, at, R);
   else if (S.kind === 'alocasia') buildAlocasia(g, it, S, at, R);
+  else if (S.kind === 'lyrata') buildLyrata(g, it, S, at, R);
   else buildOlive(g, it, S, at, R);
   g.scale.setScalar(0.01);
   return g;

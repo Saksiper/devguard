@@ -203,6 +203,31 @@ describe('gerçek ürünler', () => {
     expect([blocks(k), blocks(s)]).toEqual([5, 7]);
   });
 
+  it('Montis halılar: linkteki ölçü varsayılan, ölçüye göre fiyat ve link, desen haritası dosyası var', () => {
+    const e = resolveItem({ uid: 'e', ref: 'montis-etiam-907011', x: 0, y: 0 }, byId);
+    expect([e.w, e.d, e.h, e.price, e.collides]).toEqual([200, 290, 0.5, 14616, false]);
+    expect(e.url).toMatch(/elp4166\?olculer=200x290$/);
+    const h = resolveItem({ uid: 'h', ref: 'montis-hiprepa-333008', x: 0, y: 0, choice: { Ölçü: '80×300' } }, byId);
+    expect([h.w, h.d, h.price]).toEqual([80, 300, 4649.4]);
+    expect(h.url).toMatch(/333008-multi-dokuma-taban-modern-hali\?olcu=80x300$/);
+    for (const id of ['montis-etiam-907011', 'montis-hiprepa-333005', 'montis-hiprepa-333008']) {
+      const png = fs.readFileSync(path.resolve(__dirname, '../public/data', byId.get(id).shape.map));
+      expect([png.toString('latin1', 1, 4), png.readUInt32BE(16)]).toEqual(['PNG', 240]); // ~1 cm/piksel
+      expect(Object.keys(byId.get(id).variants)).toEqual(byId.get(id).options[0].values.map((v) => v.name));
+    }
+  });
+
+  it('Ficus lyrata: boy seçeneği boyu, taç ve saksıyı belirler; tükenmiş boy da seçilebilir', () => {
+    const f = resolveItem({ uid: 'f', ref: 'ccf-ficus-lyrata', x: 0, y: 0 }, byId);
+    expect([f.h, f.w, f.price]).toEqual([175, 85, 9390]);
+    expect(f.url).toMatch(/\?bitki-boyutu=170-180-cm$/);
+    const [potBox, canopy] = itemBoxes(f);
+    expect([potBox.w, potBox.h, canopy.z, canopy.h, canopy.soft]).toEqual([32, 30, 92, 83, true]);
+    const k = resolveItem({ uid: 'f', ref: 'ccf-ficus-lyrata', x: 0, y: 0, choice: { Boy: '130–140 cm' } }, byId);
+    const [kp, kc] = itemBoxes(k);
+    expect([k.h, k.w, k.price, kp.w, kc.z]).toEqual([135, 60, 4500, 24, 70]);
+  });
+
   it('bitkiler: linkteki varyant, ayak boyu, saksı sert / yaprak tacı yumuşak', () => {
     const z = resolveItem({ uid: 'z', ref: 'silis-zeytin-175', x: 120, y: 120 }, byId);
     expect([z.variant.id, z.price, z.h, z.parts.pot]).toEqual([50536930410671, 9100, 175, '#636847']);

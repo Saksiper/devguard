@@ -8,6 +8,9 @@ import { requestThumb } from '../view/thumbs.js';
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
+/** Fiyat: kuruş varsa iki hane (2.324,70), yoksa tam sayı (14.616). */
+const tl = (p) => Number(p).toLocaleString('tr-TR', Number.isInteger(Number(p)) ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 const SEV = { error: '!', warn: '!', info: 'i' };
 
 /** Marka adı ürün adında zaten geçiyorsa ("Samsung 55\" …") başa tekrar yazılmaz. */
@@ -303,7 +306,7 @@ export class Panel {
       const L = { seatWidth: 'oturum eni', seatDepth: 'oturum derinliği', seatHeight: 'oturum yüksekliği', legHeight: 'ayak' };
       info.push(Object.entries(it.dims).map(([k, v]) => `${L[k] ?? k} ${v}`).join(' · ') + ' cm');
     }
-    if (it.price) info.push(`<b>${Number(it.price).toLocaleString('tr-TR')} TL</b>${it.variant ? ` (seçili varyant)` : ''}`);
+    if (it.price) info.push(`<b>${tl(it.price)} TL</b>${it.variant ? ` (seçili varyant)` : ''}`);
     if (it.material) info.push(esc(it.material));
     if (it.url) info.push(`<a href="${esc(it.url)}" target="_blank" rel="noopener">Ürün sayfası ↗</a>`);
     return `${parts.join('')}<p class="kv">${info.join('<br>')}</p>${it.source ? `<p class="kv">Kaynak: ${esc(it.source)}</p>` : ''}`;
@@ -333,7 +336,7 @@ export class Panel {
       <img class="thumb" alt="" data-thumb="${esc(c.id)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
       <div class="card-body">
         <div class="card-title">${brandPrefix(c) ? `<span class="brand">${esc(c.brand)}</span> ` : ''}${esc(c.name)}</div>
-        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${sizes ? `${sizes} ölçü · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${Number(price).toLocaleString('tr-TR')} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}</div>
+        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${sizes ? `${sizes} ölçü · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${tl(price)} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}</div>
         ${
           swatches
             ? `<div class="swatches mini">${swatches.values

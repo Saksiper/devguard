@@ -2197,6 +2197,309 @@
    }
   },
   {
+   "id": "montis-etiam-907011",
+   "name": "Etiam 907011 loop dokuma şönil halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 200,
+   "d": 290,
+   "h": 0.5,
+   "color": "#9c8b7e",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~1 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Loop (ilmek) dokuma kilimvari makine halısı; pamuk, şönil, mikrofiber polyester; 5 mm; robot süpürge uyumlu; ürün kodu ELP4166",
+   "notes": "Lacivert, pas, zeytin yeşili ve krem bloklar; ince çizgi motifleri. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor (özellikle yolluklar): varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×150",
+       "w": 75,
+       "d": 150
+      },
+      {
+       "name": "115×170",
+       "w": 115,
+       "d": 170
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×290",
+       "w": 200,
+       "d": 290
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "200×290"
+   },
+   "variants": {
+    "75×150": {
+     "price": 2835,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=75x150"
+    },
+    "115×170": {
+     "price": 4926.6,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=115x170"
+    },
+    "160×230": {
+     "price": 9273.6,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=160x230"
+    },
+    "200×290": {
+     "price": 14616,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=200x290"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-etiam-907011.png",
+    "texture": "loop",
+    "edge": "#9e948b"
+   }
+  },
+  {
+   "id": "montis-hiprepa-333005",
+   "name": "Hiprepa 333005 dokuma taban halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 240,
+   "d": 340,
+   "h": 1,
+   "color": "#e2d7c6",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~1 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Dokuma taban, tüysüz baskılı yüzey (vintage kilim görünümü); pamuk rejenere + polyester; kenarlar çoban dikiş, saçaksız; makinede yıkanabilir; ürün kodu MHT4214",
+   "notes": "Krem zemin üstünde pembe, mint, hardal ve antrasit eğik bantlar; ızgara ve nokta dokuları. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor (özellikle yolluklar): varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "80×150",
+       "w": 80,
+       "d": 150
+      },
+      {
+       "name": "80×200",
+       "w": 80,
+       "d": 200
+      },
+      {
+       "name": "80×300",
+       "w": 80,
+       "d": 300
+      },
+      {
+       "name": "100×200",
+       "w": 100,
+       "d": 200
+      },
+      {
+       "name": "100×300",
+       "w": 100,
+       "d": 300
+      },
+      {
+       "name": "120×180",
+       "w": 120,
+       "d": 180
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×300",
+       "w": 200,
+       "d": 300
+      },
+      {
+       "name": "240×340",
+       "w": 240,
+       "d": 340
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "240×340"
+   },
+   "variants": {
+    "80×150": {
+     "price": 2324.7,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=80x150"
+    },
+    "80×200": {
+     "price": 3099.6,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=80x200"
+    },
+    "80×300": {
+     "price": 4649.4,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=80x300"
+    },
+    "100×200": {
+     "price": 3874.5,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=100x200"
+    },
+    "100×300": {
+     "price": 5811.75,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=100x300"
+    },
+    "120×180": {
+     "price": 4184.46,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=120x180"
+    },
+    "160×230": {
+     "price": 7129.08,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=160x230"
+    },
+    "200×300": {
+     "price": 11623.5,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=200x300"
+    },
+    "240×340": {
+     "price": 15807.96,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=240x340"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-hiprepa-333005.png",
+    "texture": "flat",
+    "edge": "#c7c1b9"
+   }
+  },
+  {
+   "id": "montis-hiprepa-333008",
+   "name": "Hiprepa 333008 dokuma taban halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 240,
+   "d": 340,
+   "h": 1,
+   "color": "#dfd4ca",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~1 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Dokuma taban, tüysüz baskılı yüzey (vintage kilim görünümü); pamuk rejenere + polyester; kenarlar çoban dikiş, saçaksız; makinede yıkanabilir; ürün kodu MHT4215",
+   "notes": "Krem noktalı zemin üstünde kiremit, açık mavi, vizon ve gri bloklar; ızgara dokuları. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor (özellikle yolluklar): varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "80×150",
+       "w": 80,
+       "d": 150
+      },
+      {
+       "name": "80×200",
+       "w": 80,
+       "d": 200
+      },
+      {
+       "name": "80×300",
+       "w": 80,
+       "d": 300
+      },
+      {
+       "name": "100×200",
+       "w": 100,
+       "d": 200
+      },
+      {
+       "name": "100×300",
+       "w": 100,
+       "d": 300
+      },
+      {
+       "name": "120×180",
+       "w": 120,
+       "d": 180
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×300",
+       "w": 200,
+       "d": 300
+      },
+      {
+       "name": "240×340",
+       "w": 240,
+       "d": 340
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "240×340"
+   },
+   "variants": {
+    "80×150": {
+     "price": 2324.7,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=80x150"
+    },
+    "80×200": {
+     "price": 3099.6,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=80x200"
+    },
+    "80×300": {
+     "price": 4649.4,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=80x300"
+    },
+    "100×200": {
+     "price": 3874.5,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=100x200"
+    },
+    "100×300": {
+     "price": 5811.75,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=100x300"
+    },
+    "120×180": {
+     "price": 4184.46,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=120x180"
+    },
+    "160×230": {
+     "price": 7129.08,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=160x230"
+    },
+    "200×300": {
+     "price": 11623.5,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=200x300"
+    },
+    "240×340": {
+     "price": 15807.96,
+     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=240x340"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-hiprepa-333008.png",
+    "texture": "flat",
+    "edge": "#c9c0bd"
+   }
+  },
+  {
    "id": "hali-80x150",
    "name": "Düz halı 80×150",
    "category": "Salon",
@@ -3699,6 +4002,110 @@
     "stem": "#7c8f4e",
     "topping": "#b9b1a5",
     "leaves": 12
+   }
+  },
+  {
+   "id": "ccf-ficus-lyrata",
+   "name": "Ficus lyrata (keman yapraklı kauçuk), anaç çatallı",
+   "brand": "Cool Concept Flower",
+   "category": "Gerçek ürünler",
+   "group": "Bitkiler",
+   "w": 85,
+   "d": 85,
+   "h": 175,
+   "color": "#3f5a22",
+   "flatpack": true,
+   "url": "https://coolconceptflower.com/lyrata-anac-catalli-ficus-lyrata",
+   "source": "coolconceptflower.com ürün sayfası (boylar, indirimli fiyatlar, stok), 08.11.2026; saksı ölçüsü, taç genişliği ve tacın başladığı yükseklik ürün fotoğraflarından oranla tahmini; renkler fotoğraflardan (duvar referanslı)",
+   "material": "Canlı bitki; siyah plastik üretici saksısında (fotoğraftaki)",
+   "notes": "Canlı bitki: boyu ve tacı tek tek bitkiye göre değişir. Saksı ölçüsü, taç genişliği ve tacın başladığı yükseklik varsayım (fotoğraftan). 180–200 cm sitede tükenmiş (08.11.2026). Bazı fotoğraflarda hasır sepet var; fiyatı bu sayfada yok. Parlak, dolaylı ışık ister; doğrudan güneşte yaprak yanabilir.",
+   "options": [
+    {
+     "name": "Boy",
+     "values": [
+      {
+       "name": "130–140 cm",
+       "h": 135,
+       "w": 60,
+       "d": 60,
+       "parts": {
+        "potD": 24,
+        "potH": 22,
+        "canopyFrom": 70
+       }
+      },
+      {
+       "name": "160–170 cm",
+       "h": 165,
+       "w": 80,
+       "d": 80,
+       "parts": {
+        "potD": 30,
+        "potH": 28,
+        "canopyFrom": 85
+       }
+      },
+      {
+       "name": "170–180 cm",
+       "h": 175,
+       "w": 85,
+       "d": 85,
+       "parts": {
+        "potD": 32,
+        "potH": 30,
+        "canopyFrom": 92
+       }
+      },
+      {
+       "name": "180–200 cm",
+       "h": 190,
+       "w": 95,
+       "d": 95,
+       "parts": {
+        "potD": 34,
+        "potH": 32,
+        "canopyFrom": 100
+       }
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Boy": "170–180 cm"
+   },
+   "variants": {
+    "130–140 cm": {
+     "price": 4500,
+     "url": "https://coolconceptflower.com/lyrata-anac-catalli-ficus-lyrata?bitki-boyutu=130-140-cm"
+    },
+    "160–170 cm": {
+     "price": 6900,
+     "url": "https://coolconceptflower.com/lyrata-anac-catalli-ficus-lyrata?bitki-boyutu=160-170-cm"
+    },
+    "170–180 cm": {
+     "price": 9390,
+     "url": "https://coolconceptflower.com/lyrata-anac-catalli-ficus-lyrata?bitki-boyutu=170-180-cm"
+    },
+    "180–200 cm": {
+     "price": 9390,
+     "url": "https://coolconceptflower.com/lyrata-anac-catalli-ficus-lyrata?bitki-boyutu=180-200-cm"
+    }
+   },
+   "shape": {
+    "type": "plant",
+    "kind": "lyrata",
+    "potShape": "nursery",
+    "pot": "#26282a",
+    "potD": 32,
+    "potH": 30,
+    "canopyFrom": 92,
+    "leaf": "#3f5a22",
+    "leafBack": "#6b7d45",
+    "vein": "#b5be78",
+    "trunk": "#6e5d4e",
+    "topping": "#4a3426",
+    "leaves": 100,
+    "leafLen": 32
    }
   }
  ]

@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { placed, woodGrain } from '../textures.js';
+import { rugImages } from '../rugmaps.js';
 
 const col = (c) => new THREE.Color(c);
 const wood = (c, w = 70, h = 140) => new THREE.MeshStandardMaterial({ color: col(c), map: placed(woodGrain(), [w, h]), roughness: 0.55 });
@@ -392,14 +393,67 @@ function kilimTex(pat, pal) {
   return tex;
 }
 
+const mapCache = new Map();
+
+/**
+ * Desen haritalı halı (baskılı / ilmek dokuma): harita halıya "kaplayarak" oturur — oran korunur, taşan
+ * kısım ortadan kırpılır (büyük ölçüde desen büyür, yollukta ortası görünür). Üstüne iplik gürültüsü;
+ * shape.texture === 'loop' → ilmek dokusu daha belirgin. Gürültü ortalama rengi değiştirmez.
+ */
+function mapTex(img, w, d, texture) {
+  const key = `${img.src}|${w}|${d}|${texture}`;
+  if (mapCache.has(key)) return mapCache.get(key);
+  const P = Math.min(3, 1024 / Math.max(w, d)); // piksel / cm
+  const cv = document.createElement('canvas');
+  cv.width = Math.round(w * P);
+  cv.height = Math.round(d * P);
+  const x = cv.getContext('2d');
+  const ia = img.width / img.height;
+  const ra = w / d;
+  const [sw, sh] = ra > ia ? [img.width, img.width / ra] : [img.height * ra, img.height];
+  x.imageSmoothingEnabled = true;
+  x.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, 0, 0, cv.width, cv.height);
+  const data = x.getImageData(0, 0, cv.width, cv.height);
+  const px = data.data;
+  let s = 11;
+  const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  const amp = texture === 'loop' ? 0.16 : 0.08;
+  for (let i = 0, n = 0; i < px.length; i += 4, n++) {
+    const xx = n % cv.width;
+    const yy = (n / cv.width) | 0;
+    const loop = texture === 'loop' ? ((xx + (yy >> 1)) % 3 === 0 ? -0.05 : 0.025) : 0; // ilmek sıraları
+    const k = 1 + loop + (rnd() - 0.5) * amp;
+    px[i] = Math.min(255, px[i] * k);
+    px[i + 1] = Math.min(255, px[i + 1] * k);
+    px[i + 2] = Math.min(255, px[i + 2] * k);
+  }
+  x.putImageData(data, 0, 0);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  mapCache.set(key, tex);
+  return tex;
+}
+
 /**
  * Halı: dokuma görünümlü yüzey, koyu kenar bordürü; shape.plain → bordürsüz tek renk;
  * shape.weave === 'grid' → ızgara dokulu şönil + ince açık biye (renkler parts.weaveCell / weaveLine);
- * shape.weave === 'kilim' → parts.pattern ızgarasından desenli düz dokuma (renkler shape.palette).
+ * shape.weave === 'kilim' → parts.pattern ızgarasından desenli düz dokuma (renkler shape.palette);
+ * shape.map → ürün görselinden çıkarılmış desen haritası (rugmaps.js; yüklenemezse düz renk).
  */
 export function buildRug(it) {
   const S = it.shape ?? {};
   const g = new THREE.Group();
+  const img = S.map ? rugImages.get(S.map) : null;
+  if (img) {
+    const h = Math.max(0.5, it.h);
+    const top = new THREE.MeshStandardMaterial({ color: 0xffffff, map: mapTex(img, it.w, it.d, S.texture), roughness: 1 });
+    const side = new THREE.MeshStandardMaterial({ color: col(S.edge ?? it.color), roughness: 1 });
+    const rug = box(it.w, h, it.d, [side, side, top, side, side, side], 0, h / 2, 0);
+    rug.castShadow = false;
+    g.add(rug);
+    return done(g);
+  }
   if (S.weave === 'kilim' && it.parts?.pattern) {
     // Desen halının üst yüzüne tam oturur (ölçü elle değiştirilirse desen esner).
     const h = Math.max(0.6, it.h);

@@ -6,6 +6,7 @@ import { runChecks } from './core/checks.js';
 import { normAngle } from './core/geom.js';
 import { Store, decodeShare } from './store.js';
 import { Viewer } from './view/viewer.js';
+import { preloadRugMaps } from './view/rugmaps.js';
 import { Panel } from './ui/panel.js';
 
 // Veri seti: ?veri=demo ile örnek daire; varsayılan olarak data/ev/ varsa o, yoksa demo.
@@ -116,6 +117,7 @@ async function boot() {
     }
     index.base = DATA;
   }
+  await preloadRugMaps(catalog);
   const vp = validatePlan(plan);
   const vc = validateCatalog(catalog);
   if (vp.errors.length || vc.errors.length) return fatal('Veri dosyalarında hata var', [...vp.errors, ...vc.errors]);

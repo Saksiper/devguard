@@ -225,7 +225,7 @@ export function plantItems(it) {
   const potD = p.pot === 'none' ? 20 : (p.potD ?? S.potD ?? 25);
   const standH = p.stand ? (p.standH ?? S.standH ?? 0) : 0;
   const potTop = standH + (p.pot === 'none' ? 18 : (p.potH ?? S.potH ?? 25));
-  const z0 = standH + (S.canopyFrom ?? 80);
+  const z0 = standH + (p.canopyFrom ?? S.canopyFrom ?? 80); // boy seçeneği tacın başladığı yüksekliği de değiştirebilir
   const base = { ...it, use: null, frontDoors: null, drawers: null };
   return [
     { ...base, w: potD, d: potD, h: potTop },

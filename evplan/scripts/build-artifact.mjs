@@ -44,4 +44,10 @@ fs.writeFileSync(path.join(outDir, 'index.html'), page);
 // ve aynı modül örneğini paylaşmaları gerekir.
 const parts = fs.readdirSync(path.join(dist, 'assets')).filter((f) => f.endsWith('.js'));
 for (const w of parts) fs.copyFileSync(path.join(dist, 'assets', w), path.join(outDir, w));
-console.log(`${path.join(outDir, 'index.html')} (${(page.length / 1024).toFixed(0)} KB) + ${parts.join(', ')}`);
+// Halı desen haritaları (shape.map) da yanında, aynı göreli yolda (data/textures/…) yayınlanır.
+const maps = [...new Set(catalog.items.map((c) => c.shape?.map).filter(Boolean))];
+for (const m of maps) {
+  fs.mkdirSync(path.dirname(path.join(outDir, 'data', m)), { recursive: true });
+  fs.copyFileSync(path.join(data, m), path.join(outDir, 'data', m));
+}
+console.log(`${path.join(outDir, 'index.html')} (${(page.length / 1024).toFixed(0)} KB) + ${[...parts, ...maps.map((m) => `data/${m}`)].join(', ')}`);

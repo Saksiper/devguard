@@ -180,6 +180,10 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
     // desenli kilim (shape: { "type": "rug", "weave": "kilim", "palette": { "k": "#d9cec0", "p": "#8c3b12" } }):
     // ölçü değerinin parts.pattern'i = { "xs": "0 20 37 …" (sütun sınırları, cm), "ys": "…", "rows": ["pkpm…", …] }
     // her satırda sütun başına bir palet harfi; ızgara ürün fotoğrafından çıkarılır, her ölçünün kendi deseni olur
+    // baskılı / ilmek halı (shape: { "type": "rug", "map": "textures/….png", "texture": "loop" | "flat", "edge": "#…" }):
+    // map = data/ altındaki paletli küçük PNG (~1 cm/piksel, ürün görselinden); oranı korunup halıya kaplanır
+    // bitki (shape: { "type": "plant", "kind": "lyrata", "potShape": "nursery", "pot": "#26282a", "canopyFrom": 92 }):
+    // boy seçeneği değeri h/w/d ile birlikte parts.potD / potH / canopyFrom verebilir (taç yumuşak kutu: geçişi daraltır)
     "variants": { "Yeşil / 80×150": { "price": 1950, "url": "https://…" } },  // seçenek adları " / " ile; url verilirse o açılır
     "assumed": true,                      // ölçü örnek/varsayım ("örnek ölçü" etiketi)
     "sample": true                        // belirli bir ürün değil ama ölçü standart ("örnek" etiketi; ör. düz halılar)
