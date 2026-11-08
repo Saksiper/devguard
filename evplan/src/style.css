@@ -835,6 +835,16 @@ details.demo summary {
   border-width: 2px;
 }
 
+.opt .chips,
+.chips.mini {
+  margin: 4px 0;
+}
+
+.chips.mini button {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
 .swatches.mini .pick-name {
   font-size: 11px;
   color: var(--muted);

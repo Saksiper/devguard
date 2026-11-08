@@ -181,6 +181,28 @@ describe('gerçek ürünler', () => {
     expect(b.url).toContain('renk=antrasit&olcu=160230');
   });
 
+  it('IKEA STOCKHOLM 2025: iki ölçü, her ölçünün kendi desen ızgarası, fiyat ve linki', () => {
+    const s = resolveItem({ uid: 's', ref: 'ikea-stockholm-2025-hali', x: 0, y: 0 }, byId);
+    expect([s.w, s.d, s.price, s.collides, s.flatpack]).toEqual([240, 350, 32999, false, true]);
+    expect(s.url).toMatch(/240x350-cm-el-dokumasi-hali-70593814$/);
+    const k = resolveItem({ uid: 's', ref: 'ikea-stockholm-2025-hali', x: 0, y: 0, choice: { Ölçü: '170×240' } }, byId);
+    expect([k.w, k.d, k.price]).toEqual([170, 240, 16999]);
+    expect(k.url).toMatch(/170x240-cm-el-dokumasi-hali-40593815$/);
+    // Izgara tutarlı: sınırlar 0'dan halı ölçüsüne artan, her satırda sütun sayısı kadar harf, harfler paletten.
+    const pal = byId.get('ikea-stockholm-2025-hali').shape.palette;
+    for (const it of [s, k]) {
+      const xs = it.parts.pattern.xs.split(' ').map(Number);
+      const ys = it.parts.pattern.ys.split(' ').map(Number);
+      expect([xs[0], xs.at(-1), ys[0], ys.at(-1)]).toEqual([0, it.w, 0, it.d]);
+      expect(xs.every((v, i) => i === 0 || v > xs[i - 1]) && ys.every((v, i) => i === 0 || v > ys[i - 1])).toBe(true);
+      expect(it.parts.pattern.rows).toHaveLength(ys.length - 1);
+      for (const r of it.parts.pattern.rows) expect([r.length, [...r].every((ch) => ch in pal)]).toEqual([xs.length - 1, true]);
+    }
+    // Büyük ölçüde blok sayısı artar (desen ölçeklenmez): 170×240'ta 5, 240×350'de 7 blok sütunu.
+    const blocks = (it) => it.parts.pattern.rows[4].replace(/[^p]+/g, ' ').trim().split(' ').length;
+    expect([blocks(k), blocks(s)]).toEqual([5, 7]);
+  });
+
   it('bitkiler: linkteki varyant, ayak boyu, saksı sert / yaprak tacı yumuşak', () => {
     const z = resolveItem({ uid: 'z', ref: 'silis-zeytin-175', x: 120, y: 120 }, byId);
     expect([z.variant.id, z.price, z.h, z.parts.pot]).toEqual([50536930410671, 9100, 175, '#636847']);

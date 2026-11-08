@@ -286,13 +286,15 @@ export class Panel {
     const parts = [];
     for (const opt of it.options ?? []) {
       const cur = it.choice?.[opt.name];
-      const swatches = opt.values.every((v) => v.color); // hepsi renkse örnek kutucuk, değilse liste
+      const swatches = opt.values.every((v) => v.color); // hepsi renkse örnek kutucuk, az seçenekse düğme, değilse liste
       parts.push(`<div class="opt"><span class="opt-name">${esc(opt.name)}: <b>${esc(cur)}</b></span>${
         swatches
           ? `<div class="swatches">${opt.values
               .map((v) => `<button data-opt="${esc(opt.name)}" data-sw="${esc(v.name)}" title="${esc(v.name)}" class="${v.name === cur ? 'on' : ''}" style="background:${esc(v.color)}"></button>`)
               .join('')}</div>`
-          : `<select data-opt="${esc(opt.name)}">${opt.values.map((v) => `<option ${v.name === cur ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select>`
+          : opt.values.length <= 4
+            ? `<div class="chips">${opt.values.map((v) => `<button data-opt="${esc(opt.name)}" data-sw="${esc(v.name)}" class="${v.name === cur ? 'on' : ''}">${esc(v.name)}</button>`).join('')}</div>`
+            : `<select data-opt="${esc(opt.name)}">${opt.values.map((v) => `<option ${v.name === cur ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select>`
       }</div>`);
     }
     const info = [];
@@ -322,9 +324,11 @@ export class Panel {
     const price = c.price ?? (c.variants ? Math.min(...Object.values(c.variants).map((v) => v.price)) : null);
     const sel = this.store.selection ? this.store.item(this.store.selection) : null;
     const swatches = (c.options ?? []).find((o) => o.values.every((v) => v.color));
-    const sizes = (c.options ?? []).find((o) => o.values.some((v) => Number.isFinite(v.w)))?.values.length;
-    // Kartta seçilen renk: "Ekle" / "Yerine dene" bu renkle yapılır.
-    const picked = swatches ? (this.cardChoice?.[c.id]?.[swatches.name] ?? c.defaultOptions?.[swatches.name] ?? swatches.values[0].name) : null;
+    const sizeOpt = (c.options ?? []).find((o) => o.values.some((v) => Number.isFinite(v.w)));
+    const sizes = sizeOpt?.values.length;
+    // Kartta seçilen renk (renk yoksa az sayıdaki ölçü): "Ekle" / "Yerine dene" bu seçimle yapılır.
+    const pick = swatches ?? (sizes <= 4 ? sizeOpt : null);
+    const picked = pick ? (this.cardChoice?.[c.id]?.[pick.name] ?? c.defaultOptions?.[pick.name] ?? pick.values[0].name) : null;
     return `<div class="card" data-ref="${esc(c.id)}">
       <img class="thumb" alt="" data-thumb="${esc(c.id)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
       <div class="card-body">
@@ -335,7 +339,11 @@ export class Panel {
             ? `<div class="swatches mini">${swatches.values
                 .map((v) => `<button data-pick="${esc(c.id)}" data-opt="${esc(swatches.name)}" data-val="${esc(v.name)}" title="${esc(v.name)}" class="${v.name === picked ? 'on' : ''}" style="background:${esc(v.color)}"></button>`)
                 .join('')}<span class="pick-name">${esc(picked)}</span></div>`
-            : ''
+            : pick
+              ? `<div class="chips mini">${pick.values
+                  .map((v) => `<button data-pick="${esc(c.id)}" data-opt="${esc(pick.name)}" data-val="${esc(v.name)}" class="${v.name === picked ? 'on' : ''}">${esc(v.name)}</button>`)
+                  .join('')}</div>`
+              : ''
         }
         <div class="card-actions">
           ${(mode === 'swap' || sel) && !c.set ? `<button class="primary" data-swap="${esc(c.id)}" ${sel ? '' : 'disabled'}>Yerine dene</button>` : ''}
@@ -368,7 +376,8 @@ export class Panel {
         this.cardChoice[ref] = { ...(this.cardChoice[ref] ?? {}), [b.dataset.opt]: b.dataset.val };
         const card = b.closest('.card');
         for (const x of card.querySelectorAll('[data-pick]')) x.classList.toggle('on', x === b);
-        card.querySelector('.pick-name').textContent = b.dataset.val;
+        const name = card.querySelector('.pick-name');
+        if (name) name.textContent = b.dataset.val;
         const c = this.store.catalogById.get(ref);
         const link = card.querySelector('[data-link]');
         if (link) link.href = this.cardItem(c).url ?? c.url;

@@ -338,13 +338,78 @@ function gridWeaveTex(cell, line, mean) {
   return tex;
 }
 
+const kilimCache = new Map();
+const nums = (v) => (typeof v === 'string' ? v.trim().split(/\s+/).map(Number) : v);
+
+/**
+ * Desenli düz dokuma (kilim, ör. IKEA STOCKHOLM 2025): desen, ürün fotoğrafından çıkarılmış ızgara.
+ * pattern = { xs: sütun sınırları (cm), ys: satır sınırları (cm), rows: her satır için hücre başına bir harf },
+ * palette = { harf: renk }. Renk sınırlarında atkı sırası başına hafif kayma (elde dokuma kenarı),
+ * atkı bantlarında hafif ton farkı ve iplik gürültüsü; gürültü ortalamayı değiştirmez.
+ */
+function kilimTex(pat, pal) {
+  const key = JSON.stringify([pat, pal]);
+  if (kilimCache.has(key)) return kilimCache.get(key);
+  const xs = nums(pat.xs);
+  const ys = nums(pat.ys);
+  const W = xs.at(-1);
+  const D = ys.at(-1);
+  const P = Math.min(4, 2048 / Math.max(W, D)); // piksel / cm
+  const cv = document.createElement('canvas');
+  cv.width = Math.round(W * P);
+  cv.height = Math.round(D * P);
+  const x = cv.getContext('2d');
+  let s = 7;
+  const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  const BAND = 2; // px: bir "atkı sırası"
+  for (let j = 0; j < pat.rows.length; j++) {
+    const y0 = Math.round(ys[j] * P);
+    const y1 = Math.round(ys[j + 1] * P);
+    for (let y = y0; y < y1; y += BAND) {
+      const jit = xs.map((v, i) => (i === 0 || i === xs.length - 1 ? v * P : v * P + (rnd() - 0.5) * 1.6));
+      for (let i = 0; i < xs.length - 1; i++) {
+        x.fillStyle = pal[pat.rows[j][i]] ?? '#888';
+        x.fillRect(jit[i], y, jit[i + 1] - jit[i] + 0.5, Math.min(BAND, y1 - y));
+      }
+    }
+  }
+  const img = x.getImageData(0, 0, cv.width, cv.height);
+  const d = img.data;
+  for (let y = 0; y < cv.height; y++) {
+    const row = 1 + (rnd() - 0.5) * 0.05; // atkı bandı tonu (el boyası yün)
+    for (let i = y * cv.width * 4, e = i + cv.width * 4; i < e; i += 4) {
+      const k = row * (1 + (rnd() - 0.5) * 0.12);
+      d[i] = Math.min(255, d[i] * k);
+      d[i + 1] = Math.min(255, d[i + 1] * k);
+      d[i + 2] = Math.min(255, d[i + 2] * k);
+    }
+  }
+  x.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  kilimCache.set(key, tex);
+  return tex;
+}
+
 /**
  * Halı: dokuma görünümlü yüzey, koyu kenar bordürü; shape.plain → bordürsüz tek renk;
- * shape.weave === 'grid' → ızgara dokulu şönil + ince açık biye (renkler parts.weaveCell / weaveLine).
+ * shape.weave === 'grid' → ızgara dokulu şönil + ince açık biye (renkler parts.weaveCell / weaveLine);
+ * shape.weave === 'kilim' → parts.pattern ızgarasından desenli düz dokuma (renkler shape.palette).
  */
 export function buildRug(it) {
   const S = it.shape ?? {};
   const g = new THREE.Group();
+  if (S.weave === 'kilim' && it.parts?.pattern) {
+    // Desen halının üst yüzüne tam oturur (ölçü elle değiştirilirse desen esner).
+    const h = Math.max(0.6, it.h);
+    const top = new THREE.MeshStandardMaterial({ color: 0xffffff, map: kilimTex(it.parts.pattern, S.palette ?? {}), roughness: 1 });
+    const side = new THREE.MeshStandardMaterial({ color: col(S.palette?.k ?? it.color), roughness: 1 });
+    const rug = box(it.w, h, it.d, [side, side, top, side, side, side], 0, h / 2, 0);
+    rug.castShadow = false;
+    g.add(rug);
+    return done(g);
+  }
   if (S.weave === 'grid') {
     const pitch = S.pitch ?? 1; // cm
     const tex = gridWeaveTex(it.parts?.weaveCell ?? it.color, it.parts?.weaveLine ?? it.color, it.color).clone();

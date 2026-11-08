@@ -2040,6 +2040,163 @@
    }
   },
   {
+   "id": "ikea-stockholm-2025-hali",
+   "name": "STOCKHOLM 2025 el dokuması halı",
+   "brand": "IKEA",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 240,
+   "d": 350,
+   "h": 1,
+   "color": "#aa9286",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/stockholm-2025-beyaz-kahverengi-acik-mavi-240x350-cm-el-dokumasi-hali-70593814",
+   "source": "ikea.com.tr ürün sayfaları (170×240 ve 240×350: ölçü, fiyat, malzeme), 08.11.2026; desen her ölçünün kendi tepeden ürün fotoğrafından ızgara olarak çıkarıldı, renkler iki fotoğrafın ortalaması",
+   "material": "El dokuması düz dokuma (kilim); yüzey %100 yün, çözgü %100 pamuk; iki yüzü aynı desen, ters çevrilebilir",
+   "notes": "Renk: beyaz-kahverengi-açık mavi (tek renk seçeneği). Krem zemin, pas rengi bloklar, koyu kahve bantlar, açık mavi şeritler; desen halı büyüdükçe ölçeklenmez, blok sayısı artar. Kalınlık sitede yazmıyor: 1 cm varsayım. Kaydırmaz altlık önerilir (240×350 için 2 adet STOPP FILT 165×235).",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "170×240",
+       "w": 170,
+       "d": 240,
+       "parts": {
+        "pattern": {
+         "xs": "0 20 37 54.2 57.4 74.4 91.7 95.1 112.3 129.2 132.6 149.9 170",
+         "ys": "0 2 5.9 9.5 16.4 24.3 32.3 39.9 46.8 54.7 62.7 70.7 77.3 85.3 93.4 101.5 108.4 116.2 124.2 132.1 138.8 146.9 154.8 162.7 169.6 177.6 185.6 193.5 200.3 208.3 216.3 224.2 230.5 234.5 238 240",
+         "rows": [
+          "cccccccccccc",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "pkpmkpmkpmkp",
+          "kkkkkkkkkkkk",
+          "pkpmkpmkpmkp",
+          "pcpmcpmcpmcp",
+          "cccccccccccc"
+         ]
+        }
+       }
+      },
+      {
+       "name": "240×350",
+       "w": 240,
+       "d": 350,
+       "parts": {
+        "pattern": {
+         "xs": "0 17.6 34.1 38.8 55.3 71.3 75.9 92.4 109 113.7 130.1 146.4 151.1 168 184 188.5 205.2 221.7 240",
+         "ys": "0 2.1 9 16.6 22.8 30.8 39.6 46.9 53.1 60.9 69.7 77.6 84.3 92.1 101.1 108.8 115.4 123.1 132.4 140 146.7 154.4 163.4 171.1 177.8 185.3 194.4 202.2 208.7 216.3 225.1 233.1 239.6 247 255.9 263.7 270.1 277.8 286.8 294.4 300.9 308.7 317.6 325.2 332 339.7 347.4 350",
+         "rows": [
+          "cccccccccccccccccc",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "pkmpkmpkmpkmpkmpkp",
+          "kkkkkkkkkkkkkkkkkk",
+          "pkmpkmpkmpkmpkmpkp",
+          "pcmpcmpcmpcmpcmpcp",
+          "cccccccccccccccccc"
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "240×350"
+   },
+   "variants": {
+    "170×240": {
+     "article": "405.938.15",
+     "price": 16999,
+     "url": "https://www.ikea.com.tr/urun/stockholm-2025-beyaz-kahverengi-acik-mavi-170x240-cm-el-dokumasi-hali-40593815"
+    },
+    "240×350": {
+     "article": "705.938.14",
+     "price": 32999,
+     "url": "https://www.ikea.com.tr/urun/stockholm-2025-beyaz-kahverengi-acik-mavi-240x350-cm-el-dokumasi-hali-70593814"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "weave": "kilim",
+    "palette": {
+     "k": "#d9cec0",
+     "p": "#8c3b12",
+     "c": "#25130f",
+     "m": "#869199"
+    }
+   }
+  },
+  {
    "id": "hali-80x150",
    "name": "Düz halı 80×150",
    "category": "Salon",
