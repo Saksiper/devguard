@@ -258,3 +258,55 @@ export function buildSofaL(it) {
   out.scale.setScalar(0.01);
   return out;
 }
+
+/**
+ * Platform kanepe (ör. Lazzoni Mony): metal bıçak ayaklar üstünde iki katlı döşemeli taban (alt bant +
+ * dikişli oturum), ortada yan yana sırt minderleri ve önlerinde uzun bel yastıkları, iki uçta oturumun
+ * üstüne oturan yassı, kaydırılabilir kolçaklar. Ölçüler shape'ten; varsayılanlar Mony'nin ürün görselinden.
+ */
+export function buildPlatformSofa(it) {
+  const S = it.shape ?? {};
+  const W = it.w;
+  const D = it.d;
+  const g = new THREE.Group();
+  const fab = fabricMaterial(it.color, false);
+  const seam = new THREE.MeshStandardMaterial({ color: new THREE.Color(it.color).multiplyScalar(0.62), roughness: 1 });
+  const metal = new THREE.MeshStandardMaterial({ color: new THREE.Color(S.feet ?? '#2b2b2e'), roughness: 0.35, metalness: 0.8 });
+  const feetH = S.feetH ?? 8;
+  const baseTop = S.baseTop ?? 22;
+  const seatH = S.seatHeight ?? 38;
+  const add = (m, x, y, z) => {
+    m.position.set(x, y, z);
+    g.add(m);
+    return m;
+  };
+  // Ayaklar: her uçta derinlik boyunca ince, hafif eğik metal bıçak.
+  for (const sx of [-1, 1]) {
+    const blade = add(new THREE.Mesh(new THREE.BoxGeometry(1.4, feetH + 2, D * 0.62), metal), sx * (W / 2 - W * 0.13), feetH / 2, 0);
+    blade.rotation.z = sx * 0.12;
+    blade.castShadow = true;
+  }
+  add(rbox(W - 1, baseTop - feetH, D - 2, 3, fab), 0, (feetH + baseTop) / 2, 0); // alt bant
+  // Oturum: iki parça (ortada dikiş), her birinde artı biçimli kapitone dikişi.
+  for (const sx of [-1, 1]) {
+    const sw = W / 2 - 0.4;
+    add(rbox(sw, seatH - baseTop, D, 4, fab), sx * (W / 4), (baseTop + seatH) / 2, 0);
+    add(new THREE.Mesh(new THREE.BoxGeometry(sw - 8, 0.35, 0.5), seam), sx * (W / 4), seatH + 0.05, D * 0.12);
+    add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, D * 0.55), seam), sx * (W / 4), seatH + 0.05, D * 0.2);
+  }
+  // Sırt minderleri ve bel yastıkları
+  const bw = S.backWidth ?? 60;
+  const bd = S.backDepth ?? 24;
+  const n = S.backs ?? 2;
+  const bz = -D / 2 + 1 + bd / 2;
+  for (let k = 0; k < n; k++) {
+    const x = (k - (n - 1) / 2) * (bw + 1);
+    add(rbox(bw, it.h - seatH, bd, 6, fab), x, (seatH + it.h) / 2, bz);
+    add(rbox(bw - 6, 20, 16, 7, fab), x, seatH + 11, bz + bd / 2 + 8);
+  }
+  // Kolçaklar: yassı minder, iki uçta önde.
+  const [aw, ad, at] = S.arm ?? [44, 58, 16];
+  for (const sx of [-1, 1]) add(rbox(aw, at, ad, 4, fab), sx * (W / 2 - aw / 2), seatH + at / 2 - 1.5, D / 2 - ad / 2);
+  g.scale.setScalar(0.01);
+  return g;
+}

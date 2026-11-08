@@ -264,6 +264,43 @@
    "notes": "Seçilen koltuk: Bej / Açık ayak / Kalıcı Form (43.530 TL). Renkler ürün fotoğraflarından; Kehribar'ın fotoğrafı sayfada yok, rengi tahmini."
   },
   {
+   "id": "lazzoni-mony-220",
+   "name": "Mony kanepe 220 cm",
+   "brand": "Lazzoni",
+   "category": "Gerçek ürünler",
+   "group": "Koltuklar",
+   "w": 220,
+   "d": 108,
+   "h": 81,
+   "color": "#c4b097",
+   "url": "https://lazzoni.com/en-tr/products/mony-sofa",
+   "source": "Ölçü görseli (kullanıcı) ve lazzoni.com MON200: G 199 × D 108 × Y 81 cm, oturum yüksekliği 38, oturum derinliği 55; bizimki 220 cm (kullanıcı), 08.11.2026",
+   "material": "Döşemeli platform kanepe; kaydırılabilir kolçaklar ve sırt minderleri (uzanma koltuğu / yatak olur); metal ayaklar",
+   "notes": "Genişlik 220 cm (kullanıcı). Derinlik, yükseklik ve oturum ölçüleri 199 cm'lik MON200'den: 220'de de aynı olduğu varsayım. Renk henüz belli değil: örnek bej. Sırt minderleri (2 × 60 cm), kolçaklar (44 × 58 × 16) ve bel yastıkları ürün görselinden tahmini; kolçaklar ve sırtlar gerçekte kaydırılabilir.",
+   "dims": {
+    "seatHeight": 38,
+    "seatDepth": 55,
+    "legHeight": 8
+   },
+   "use": {
+    "front": 45
+   },
+   "shape": {
+    "type": "platformSofa",
+    "seatHeight": 38,
+    "baseTop": 22,
+    "feetH": 8,
+    "backs": 2,
+    "backWidth": 60,
+    "backDepth": 24,
+    "arm": [
+     44,
+     58,
+     16
+    ]
+   }
+  },
+  {
    "id": "ikea-tonstad-342",
    "name": "TONSTAD TV ünitesi 342 cm",
    "brand": "IKEA",

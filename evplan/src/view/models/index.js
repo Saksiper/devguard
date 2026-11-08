@@ -1,5 +1,5 @@
 // Katalogdaki shape.type → parametrik model kurucu.
-import { buildSofa, buildSofaL } from './sofa.js';
+import { buildPlatformSofa, buildSofa, buildSofaL } from './sofa.js';
 import { buildCabinets } from './cabinets.js';
 import { buildTv } from './tv.js';
 import { buildTambour } from './tambour.js';
@@ -23,6 +23,7 @@ import {
 export const MODEL_BUILDERS = {
   sofa: buildSofa,
   sofaL: buildSofaL,
+  platformSofa: buildPlatformSofa,
   cabinets: buildCabinets,
   tv: buildTv,
   tambour: buildTambour,

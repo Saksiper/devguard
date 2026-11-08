@@ -37,7 +37,7 @@ describe('gerçek ürünler', () => {
     expect(it0.price).toBe(43530);
     expect(it0.url).toContain('performans-kadife-4?variant=51863732846959');
     expect(it0.parts).toMatchObject({ fabric: '#dad5cd', legs: '#b5814d', backStyle: 'firm' });
-    expect(cat.items.filter((c) => c.group === 'Koltuklar').map((c) => c.id)).toEqual(['normod-klem-3-pk']);
+    expect(cat.items.filter((c) => c.group === 'Koltuklar').map((c) => c.id)).toEqual(['normod-klem-3-pk', 'lazzoni-mony-220']);
   });
 
   it('TONSTAD modülleri ayrı kutu: TV 55 cm sehpanın üstüne oturur, çakışma yok; sürgü kapak kanat açmaz', () => {
