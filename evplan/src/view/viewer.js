@@ -334,9 +334,37 @@ export class Viewer extends EventTarget {
     return this.mode === 'plan' ? this.planCam : this.perspCam;
   }
 
+  /** Menteşeli kapıyı aç/kapat (yürürken dokununca); kanat yumuşakça döner, kapalı kanattan geçilmez. */
+  toggleDoor(pivot) {
+    const d = pivot.userData.door;
+    d.isOpen = !d.isOpen;
+    d.target = d.isOpen ? d.open : d.closed;
+    if (this.mode === 'walk') this._updateWalkWorld();
+    this.dispatchEvent(new CustomEvent('door', { detail: { id: d.id, open: d.isOpen } }));
+  }
+
+  _animateDoors(dt) {
+    for (const p of this.house.doorLeaves) {
+      const diff = p.userData.door.target - p.rotation.y;
+      if (Math.abs(diff) > 1e-4) p.rotation.y += Math.sign(diff) * Math.min(Math.abs(diff), dt * 2.6); // ~0,6 s'de 90°
+    }
+  }
+
   _updateWalkWorld() {
     const obs = buildObstacles(this.model, this.store.items());
     const blocking = obs.all.filter((o) => o.z0 < 150 && o.z1 > 25 && !(o.kind === 'item' && o.movable));
+    // Kapalı kanatlar yürüme engeli: menteşeden kapalı uca 4 cm kalınlığında şerit.
+    for (const p of this.house.doorLeaves) {
+      const d = p.userData.door;
+      if (d.isOpen) continue;
+      const a = -d.closed;
+      const u = [Math.cos(a), Math.sin(a)];
+      const n = [-u[1] * 2, u[0] * 2];
+      const [hx, hy] = d.hinge;
+      const ex = hx + u[0] * d.radius;
+      const ey = hy + u[1] * d.radius;
+      blocking.push({ kind: 'door', poly: [[hx + n[0], hy + n[1]], [ex + n[0], ey + n[1]], [ex - n[0], ey - n[1]], [hx - n[0], hy - n[1]]] });
+    }
     const walkable = [...this.model.rooms.map((r) => r.poly), ...this.model.doors.map((d) => d.portal)];
     this.walk.setWorld(blocking, walkable);
   }
@@ -456,8 +484,20 @@ export class Viewer extends EventTarget {
       return sorted[0]?.it ?? null;
     };
     this._pick = pick;
-    // Yürürken kısa dokunuş: altındaki mobilyayı seç (boşluğa dokunmak seçimi kaldırır).
+    // Yürürken kısa dokunuş: kapıya dokunmak kapıyı açar/kapatır; değilse altındaki mobilyayı seçer
+    // (boşluğa dokunmak seçimi kaldırır). Duvarın arkasındaki kapı ya da öndeki mobilya kapıyı örter.
+    const pickDoor = (e) => {
+      const r = dom.getBoundingClientRect();
+      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ndc, this.camera);
+      const hits = ray.intersectObjects([...this.house.walls.children, ...this.house.doorLeaves, ...this.furniture.pickables()], true);
+      const h = hits.find((x) => x.object.visible !== false);
+      const pivot = h && (h.object.userData.doorPivot ?? (h.object.parent?.userData.door ? h.object.parent : null));
+      return pivot && h.distance < 6 ? pivot : null;
+    };
     this.walk.onTap = (e) => {
+      const door = pickDoor(e);
+      if (door) return this.toggleDoor(door);
       const it = pick(e);
       this.store.select(it ? it.uid : null);
     };
@@ -731,6 +771,7 @@ export class Viewer extends EventTarget {
     this._updateLabels();
     this.clock.update();
     const dt = Math.min(0.05, this.clock.getDelta());
+    this._animateDoors(dt);
     if (this.mode === 'walk') {
       this.walk.update(dt);
       this.walk.applyToCamera(this.perspCam, this.model.settings.eyeHeight);

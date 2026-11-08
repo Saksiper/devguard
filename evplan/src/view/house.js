@@ -223,6 +223,7 @@ export function buildHouse(model) {
   root.add(walls, floors, ceilings, openings, fixtures, extras, planMarks, aboveMarks, roomLabels, fixtureLabels);
 
   const cuttables = [];
+  const doorLeaves = []; // menteşeli kapı kanatları (dönen gruplar)
   const edges = []; // planda okunurluk için kenar çizgileri (gerçekçi görünümde gizli)
   const inRoom = (p) => model.rooms.find((r) => pointInPolygon(p, r.poly));
 
@@ -330,35 +331,41 @@ export function buildHouse(model) {
       if (op.type === 'door' && op.glazed && op.leaves.length) {
         // Camlı kapı/balkon kapısı: kapalı cam olarak çizilir (planda açılma yayı yine görünür).
       } else if (op.type === 'door') {
-        // Kanat açık (openAngle) konumda çizilir; "closed" kapılar (ör. daire kapısı) kapalı.
-        const a = ((leaf.a0 + (op.closed ? 0 : leaf.sign * leaf.openAngle)) * Math.PI) / 180;
+        // Kanat açık (openAngle) konumda çizilir; "closed" kapılar (ör. daire kapısı) kapalı. Kanat ve kolları
+        // menteşede dönen bir grupta: yürürken kapıya dokununca açılıp kapanır (userData.door).
+        const closedA = (leaf.a0 * Math.PI) / 180;
+        const openA = ((leaf.a0 + leaf.sign * leaf.openAngle) * Math.PI) / 180;
+        const a = op.closed ? closedA : openA;
         const dir = [Math.cos(a), Math.sin(a)];
         const end = [leaf.hinge[0] + dir[0] * leaf.radius, leaf.hinge[1] + dir[1] * leaf.radius];
+        const pivot = new THREE.Group();
+        pivot.position.copy(v3(leaf.hinge[0], leaf.hinge[1], 0));
+        pivot.rotation.y = -a;
+        pivot.userData.z = [0, op.height];
+        pivot.userData.door = { id: op.id, hinge: leaf.hinge, radius: leaf.radius, closed: -closedA, open: -openA, isOpen: !op.closed, target: -a };
         const door = new THREE.Mesh(unitBox, op.glassLeaf ? MAT.frosted : op.leafMaterial === 'steel' ? MAT.steelDoor : MAT.door);
-        const mid = [(leaf.hinge[0] + end[0]) / 2, (leaf.hinge[1] + end[1]) / 2];
-        door.position.copy(v3(mid[0], mid[1], op.height / 2));
+        // Kanat yerel +x boyunca (menteşeden uca); yerel z kanadın iki yüzü.
+        door.position.set((leaf.radius / 2) * CM, (op.height / 2) * CM, 0);
         door.scale.set(leaf.radius * CM, (op.height - 1) * CM, 0.04);
-        door.rotation.y = -a;
-        door.userData.z = [0, op.height];
         door.castShadow = door.receiveShadow = true;
-        openings.add(door);
+        door.userData.doorPivot = pivot;
+        pivot.add(door);
         planMarks.add(polyLine([leaf.hinge, end], 0.013, 0x374151, { closed: false }));
         // Kapı kolu (iki yüzde, yerden 105 cm).
-        const hp = [end[0] - dir[0] * 7, end[1] - dir[1] * 7];
         for (const sg of [-1, 1]) {
-          const n = [-dir[1] * sg, dir[0] * sg];
           const lever = new THREE.Mesh(unitBox, MAT.handle);
-          const lc = [hp[0] + n[0] * 4 - dir[0] * 5, hp[1] + n[1] * 4 - dir[1] * 5];
-          lever.position.copy(v3(lc[0], lc[1], 105));
+          lever.position.set((leaf.radius - 12) * CM, 105 * CM, 4 * sg * CM);
           lever.scale.set(0.12, 0.018, 0.018);
-          lever.rotation.y = -a;
-          detail(lever, 0, op.height);
           const rose = new THREE.Mesh(unitBox, MAT.handle);
-          rose.position.copy(v3(hp[0] + n[0] * 2.4, hp[1] + n[1] * 2.4, 105));
+          rose.position.set((leaf.radius - 7) * CM, 105 * CM, 2.4 * sg * CM);
           rose.scale.set(0.05, 0.05, 0.008);
-          rose.rotation.y = -a;
-          detail(rose, 0, op.height);
+          for (const m of [lever, rose]) {
+            m.castShadow = m.receiveShadow = true;
+            pivot.add(m);
+          }
         }
+        openings.add(pivot);
+        doorLeaves.push(pivot);
       }
     }
   }
@@ -432,7 +439,7 @@ export function buildHouse(model) {
     if (f.z >= 120) aboveMarks.add(polyLine(f.poly, 1.25, 0x6b7280, { dashed: true }));
   }
 
-  return { root, walls, floors, ceilings, openings, fixtures, extras, planMarks, aboveMarks, roomLabels, fixtureLabels, cuttables, edges, realFloors };
+  return { root, walls, floors, ceilings, openings, fixtures, extras, planMarks, aboveMarks, roomLabels, fixtureLabels, cuttables, edges, realFloors, doorLeaves };
 }
 
 /** Gerçekçi görünüm (3D / yürü): dokulu zemin, kenar çizgisi yok. Plan: düz renk + kenar çizgileri. */

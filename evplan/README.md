@@ -42,7 +42,7 @@ Not: npm 10.9'daki bir hata yüzünden `npm install` (kilit dosyası yeniden ç�
 - Mobilyaya dokunun → seçilir; sürükleyin → taşınır (duvara/mobilyaya 6 cm'den yakınsa yapışır, Alt ile kapatılır).
 - Döndürme: üstteki çubuk (⟲90 ⟲15 ⟳15 ⟳90), telefonda **ikinci parmakla çevirme**, klavyede R / Q / E.
 - Seçili mobilyanın dört kenarından en yakın engele mesafe (cm) planda çizilir.
-- Yürü: masaüstünde WASD/oklar + sürükleyerek bakış; telefonda sol yarı joystick, sağ yarı bakış. Duvar ve mobilyalardan geçilmez. Sağ altta mini plan; **mini plana dokununca oraya geçilir** (koridor ölçülmediyse odalar arası).
+- Yürü: masaüstünde WASD/oklar + sürükleyerek bakış; telefonda sol yarı joystick, sağ yarı bakış. Duvar ve mobilyalardan geçilmez. **Kapıya dokununca açılır / kapanır** (menteşeli kanatlar; kapalı kapıdan geçilmez; kontroller kapıyı yine açık varsayar). Sağ altta mini plan; **mini plana dokununca oraya geçilir** (koridor ölçülmediyse odalar arası).
 - **Mezura** (Ölç): iki noktaya dokun → mesafe. Planda yatay (x × y bileşenleriyle), 3D'de gerçek mesafe.
 - **Katalog**: türlere göre (koltuk, TV ünitesi, televizyon, masa…) ürün kartları. "Ekle" görünümün ortasına (yürürken
   önünüze) koyar; aynı türden bir mobilya daha önce kullanıldıysa **son bırakıldığı yere** (arka kenarı hizalı) gelir.
