@@ -17,6 +17,7 @@ import {
   buildTable,
   buildTrestle,
   buildWasher,
+  buildWireShelf,
 } from './generic.js';
 
 export const MODEL_BUILDERS = {
@@ -38,6 +39,7 @@ export const MODEL_BUILDERS = {
   trestle: buildTrestle,
   bentwood: buildBentwood,
   plant: buildPlant,
+  wireShelf: buildWireShelf,
 };
 
 export function buildModel(it) {

@@ -532,6 +532,79 @@ export function buildRug(it) {
   return done(g);
 }
 
+/**
+ * Tel çerçeveli açık raf (ör. IKEA BYAKORRE / eski GUIDE): iki galvanizli çelik "merdiven" yan çerçeve
+ * (derinlik boyunca; üstte yuvarlatılmış, basamaklı), arkada alt çapraz gergi, beyaz melamin raflar ve
+ * önlerinde renkli kenar şeritleri. shape.frames = çerçeve merkezleri (cm, ortadan), shape.shelves = raf
+ * üst yüzü yükseklikleri; renkler parts.edges (alttan üste) / shape.edges. Ölçüler IKEA ölçü çiziminden tahmini.
+ */
+export function buildWireShelf(it) {
+  const S = it.shape ?? {};
+  const g = new THREE.Group();
+  const steel = new THREE.MeshStandardMaterial({ color: col(S.wire ?? '#c9cdd1'), roughness: 0.35, metalness: 0.85 });
+  const R = 0.45; // tel yarıçapı
+  const D = it.d - 2;
+  const rod = (a, b) => {
+    const v = new THREE.Vector3().subVectors(b, a);
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(R, R, v.length(), 8), steel);
+    m.position.copy(a).add(b).multiplyScalar(0.5);
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), v.normalize());
+    m.castShadow = true;
+    return m;
+  };
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const shelves = S.shelves ?? [27, 64, 101, 138];
+  const frames = S.frames ?? [-35, 35];
+  const top = it.h - 1;
+  for (const fx of frames) {
+    // Çift tel çerçeve (dış ve 2,5 cm içte), üst köşeler yuvarlatılmış (yay = kısa düz parçalar).
+    for (const inset of [0, 2.5]) {
+      const zf = D / 2 - inset;
+      const zb = -D / 2 + inset;
+      const y0 = 1 + inset * 0.4;
+      const yt = top - inset;
+      const r = 5;
+      g.add(rod(V(fx, y0, zf), V(fx, yt - r, zf)));
+      g.add(rod(V(fx, y0, zb), V(fx, yt - r, zb)));
+      g.add(rod(V(fx, yt, zf - r), V(fx, yt, zb + r)));
+      g.add(rod(V(fx, y0, zf), V(fx, y0, zb)));
+      for (const [zc, sgn] of [[zf - r, 1], [zb + r, -1]]) {
+        let prev = V(fx, yt - r, zc + sgn * r);
+        for (let k = 1; k <= 4; k++) {
+          const a = (k / 4) * (Math.PI / 2);
+          const p = V(fx, yt - r + Math.sin(a) * r, zc + sgn * Math.cos(a) * r);
+          g.add(rod(prev, p));
+          prev = p;
+        }
+      }
+    }
+    // Basamaklar: raf yüksekliklerinde (rafı taşır) ve aralarda.
+    const steps = new Set();
+    for (const h of shelves) steps.add(h - 1.2);
+    for (let k = 0; k < shelves.length - 1; k++) steps.add((shelves[k] + shelves[k + 1]) / 2);
+    steps.add(shelves[0] / 2);
+    for (const y of steps) g.add(rod(V(fx, y, D / 2), V(fx, y, -D / 2)));
+  }
+  // Arkada çapraz gergi: çerçeveler arasında, en alt rafın altında.
+  const [xa, xb] = [frames[0], frames.at(-1)];
+  const zb = -D / 2 + 1;
+  g.add(rod(V(xa, 3, zb), V(xb, shelves[0] - 3, zb)));
+  g.add(rod(V(xa, shelves[0] - 3, zb), V(xb, 3, zb)));
+  // Raflar + ön kenar şeridi.
+  const board = new THREE.MeshStandardMaterial({ color: col(it.parts?.board ?? S.board ?? '#eeeeea'), roughness: 0.55 });
+  const edges = it.parts?.edges ?? S.edges ?? [];
+  const T = 1.8;
+  shelves.forEach((h, k) => {
+    g.add(box(it.w, T, D - 0.4, board, 0, h - T / 2, -0.2));
+    const e = new THREE.MeshStandardMaterial({ color: col(edges[k] ?? it.parts?.board ?? S.board ?? '#eeeeea'), roughness: 0.45 });
+    g.add(box(it.w, T, 0.4, e, 0, h - T / 2, D / 2 - 0.2));
+    for (const sx of [-1, 1]) g.add(box(0.4, T, D - 0.4, e, sx * (it.w / 2 - 0.2), h - T / 2, -0.2)); // uç kenarlar da şeritli
+  });
+  // Ayarlanabilir ayaklar
+  for (const fx of frames) for (const z of [D / 2, -D / 2]) g.add(cyl(1.1, 1.1, 1, matte('#9aa0a6', 0.5, 0.4), fx, 0.5, z, 10));
+  return done(g);
+}
+
 /** Dönen berjer: siyah yuvarlak döner taban, yuvarlatılmış gövde, kolçaklar, minder, hafif yatık sırt. */
 export function buildSwivel(it) {
   const S = it.shape ?? {};

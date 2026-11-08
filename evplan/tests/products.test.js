@@ -239,6 +239,13 @@ describe('gerçek ürünler', () => {
     expect(s.item('u').x).toBe(350);
   });
 
+  it('BYAKORRE: alındı, 170×32×157; kenar seçeneği raf kenarlarını (alttan üste) belirler', () => {
+    const b = resolveItem({ uid: 'b', ref: 'ikea-byakorre-170', x: 0, y: 0 }, byId);
+    expect([b.w, b.d, b.h, b.price, b.owned, b.parts.edges]).toEqual([170, 32, 157, 11999, true, ['#04714e', '#e7cd46', '#0956a1', '#b64243']]);
+    const w = resolveItem({ uid: 'b', ref: 'ikea-byakorre-170', x: 0, y: 0, choice: { 'Raf kenarı': 'Beyaz' } }, byId);
+    expect(new Set(w.parts.edges)).toEqual(new Set(['#eeeeea']));
+  });
+
   it('Montis halılar: linkteki ölçü varsayılan, ölçüye göre fiyat ve link, desen haritası dosyası var', () => {
     const e = resolveItem({ uid: 'e', ref: 'montis-etiam-907011', x: 0, y: 0 }, byId);
     expect([e.w, e.d, e.h, e.price, e.collides]).toEqual([200, 290, 0.5, 14616, false]);

@@ -696,6 +696,75 @@
    }
   },
   {
+   "id": "ikea-byakorre-170",
+   "name": "BYAKORRE açık raf ünitesi",
+   "brand": "IKEA",
+   "category": "Gerçek ürünler",
+   "group": "Dolap ve raflar",
+   "w": 170,
+   "d": 32,
+   "h": 157,
+   "color": "#eeeeea",
+   "price": 11999,
+   "owned": true,
+   "flatpack": true,
+   "url": "https://www.ikea.com.tr/urun/byakorre-beyaz-acik-raf-unitesi-20586458",
+   "articleNo": "205.864.58",
+   "source": "ikea.com.tr ürün sayfası (ölçü 170×32×157, fiyat, malzeme) ve ölçü çizimi (PE953952), 08.11.2026; kenar renkleri ürün görselinden (PE957804)",
+   "material": "Yan çerçeve: galvanizli çelik tel; raf: sunta, beyaz melamin kaplama, plastik kenar",
+   "notes": "Alındı (08.11.2026). Niels Gammelgaard'ın 1985 GUIDE rafının yeniden üretimi (Nytillverkad). 4 raf; raf yükseklikleri (27/64/101/138 cm) ve çerçevelerin yeri ölçü çiziminden tahmini. Kenar şeritleri renkli (üstten kırmızı, mavi, sarı, yeşil) ya da beyaz kullanılabiliyor. Duvara sabitlenmeli.",
+   "use": {
+    "front": 40
+   },
+   "options": [
+    {
+     "name": "Raf kenarı",
+     "values": [
+      {
+       "name": "Renkli",
+       "parts": {
+        "edges": [
+         "#04714e",
+         "#e7cd46",
+         "#0956a1",
+         "#b64243"
+        ]
+       }
+      },
+      {
+       "name": "Beyaz",
+       "parts": {
+        "edges": [
+         "#eeeeea",
+         "#eeeeea",
+         "#eeeeea",
+         "#eeeeea"
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Raf kenarı": "Renkli"
+   },
+   "shape": {
+    "type": "wireShelf",
+    "shelves": [
+     27,
+     64,
+     101,
+     138
+    ],
+    "frames": [
+     -35,
+     35
+    ],
+    "board": "#eeeeea",
+    "wire": "#c9cdd1"
+   }
+  },
+  {
    "id": "cift-yatak",
    "name": "Çift kişilik yatak (160×200)",
    "category": "Yatak odası",
