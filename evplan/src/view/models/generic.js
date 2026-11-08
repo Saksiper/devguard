@@ -466,7 +466,11 @@ export function buildRug(it) {
     const h = Math.max(0.5, it.h);
     const top = new THREE.MeshStandardMaterial({ color: 0xffffff, map: mapTex(img, it.w, it.d, S.texture), roughness: S.roughness ?? 1 }); // ipeksi (bambu tuşe) yüzey daha parlak
     const side = new THREE.MeshStandardMaterial({ color: col(S.edge ?? it.color), roughness: 1 });
-    const rug = box(it.w, h, it.d, [side, side, top, side, side, side], 0, h / 2, 0);
+    // Yuvarlak ölçü (parts.round): disk; üst kapağın UV'si haritanın ortasındaki daireyi alır.
+    const rug = it.parts?.round
+      ? cyl(it.w / 2, it.w / 2, h, [side, top, side], 0, h / 2, 0, 64)
+      : box(it.w, h, it.d, [side, side, top, side, side, side], 0, h / 2, 0);
+    if (it.parts?.round) rug.rotation.y = Math.PI / 2; // kapak UV'si yerel z boyunca: desen satırları x'e (dikdörtgendeki gibi)
     rug.castShadow = false;
     g.add(rug);
     if (S.fringe) {

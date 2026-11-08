@@ -2786,6 +2786,191 @@
    }
   },
   {
+   "id": "turkiyehali-ck216",
+   "name": "Adaçayı yeşili etnik desenli halı CK 216",
+   "brand": "Türkiye Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 250,
+   "d": 350,
+   "h": 1,
+   "color": "#7f8e6a",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://turkiyehali.com/products/adacayi-yesili-etnik-desenli-hali-ck-216",
+   "source": "turkiyehali.com ürün verisi (ölçüler, indirimli fiyatlar, malzeme), 08.11.2026; desen duvara asılı ürün fotoğrafından (ışık düzeltilip örtülen yerler aynalanarak), zemin rengi tepeden yakın plan ve salon fotoğraflarının ortalaması",
+   "material": "Baskılı halı, pamuk dokuma taban, 6 mm hav, ~1500 g/m²; kaymaz taban, makinede yıkanabilir, robot süpürgeye uygun; kenarlar siyah overlok",
+   "notes": "Adaçayı yeşili zemin üstünde krem etnik (Berberi) motif sıraları. Sitede bej, turuncu, pembe, açık kahverengi, gri ve siyah renkleri de var ama fotoğrafları yok; yalnız adaçayı yeşili modellendi. Desenin sol alt ve sağ kenarı fotoğrafta örtülü olduğu için o kısımlar tahmini. Kalınlık yaklaşık 1 cm varsayım (hav 6 mm). Fiyatlar sitedeki indirimli fiyat.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×150",
+       "w": 75,
+       "d": 150
+      },
+      {
+       "name": "75×200",
+       "w": 75,
+       "d": 200
+      },
+      {
+       "name": "75×230",
+       "w": 75,
+       "d": 230
+      },
+      {
+       "name": "75×300",
+       "w": 75,
+       "d": 300
+      },
+      {
+       "name": "115×160",
+       "w": 115,
+       "d": 160
+      },
+      {
+       "name": "140×190",
+       "w": 140,
+       "d": 190
+      },
+      {
+       "name": "150×230",
+       "w": 150,
+       "d": 230
+      },
+      {
+       "name": "170×240",
+       "w": 170,
+       "d": 240
+      },
+      {
+       "name": "200×300",
+       "w": 200,
+       "d": 300
+      },
+      {
+       "name": "230×330",
+       "w": 230,
+       "d": 330
+      },
+      {
+       "name": "250×350",
+       "w": 250,
+       "d": 350
+      },
+      {
+       "name": "300×400",
+       "w": 300,
+       "d": 400
+      },
+      {
+       "name": "150×150 kare",
+       "w": 150,
+       "d": 150
+      },
+      {
+       "name": "150×150 daire",
+       "w": 150,
+       "d": 150,
+       "parts": {
+        "round": true
+       }
+      },
+      {
+       "name": "200×200 kare",
+       "w": 200,
+       "d": 200
+      },
+      {
+       "name": "200×200 daire",
+       "w": 200,
+       "d": 200,
+       "parts": {
+        "round": true
+       }
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "250×350"
+   },
+   "variants": {
+    "75×150": {
+     "id": 50516840054946,
+     "price": 1610.0
+    },
+    "75×200": {
+     "id": 50516840087714,
+     "price": 2600.0
+    },
+    "75×230": {
+     "id": 50516840120482,
+     "price": 3200.0
+    },
+    "75×300": {
+     "id": 50516840153250,
+     "price": 4025.0
+    },
+    "115×160": {
+     "id": 50516840186018,
+     "price": 4025.0
+    },
+    "140×190": {
+     "id": 50516840218786,
+     "price": 5060.0
+    },
+    "150×230": {
+     "id": 50516840251554,
+     "price": 6440.0
+    },
+    "170×240": {
+     "id": 50516840284322,
+     "price": 8050.0
+    },
+    "200×300": {
+     "id": 50516840317090,
+     "price": 9900.0
+    },
+    "230×330": {
+     "id": 50779206779042,
+     "price": 13800.0
+    },
+    "250×350": {
+     "id": 50779206811810,
+     "price": 16500.0
+    },
+    "300×400": {
+     "id": 50779206844578,
+     "price": 20000.0
+    },
+    "150×150 kare": {
+     "id": 50516840349858,
+     "price": 6325.0
+    },
+    "150×150 daire": {
+     "id": 50516840382626,
+     "price": 6325.0
+    },
+    "200×200 kare": {
+     "id": 50516840415394,
+     "price": 7475.0
+    },
+    "200×200 daire": {
+     "id": 50516840448162,
+     "price": 7475.0
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/turkiyehali-ck216.png",
+    "texture": "flat",
+    "edge": "#2a2a2a"
+   }
+  },
+  {
    "id": "hali-80x150",
    "name": "Düz halı 80×150",
    "category": "Salon",

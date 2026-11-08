@@ -254,7 +254,7 @@ describe('gerçek ürünler', () => {
     expect([h.w, h.d, h.price]).toEqual([80, 300, 4649.4]);
     expect(h.url).toMatch(/333008-multi-dokuma-taban-modern-hali\?olcu=80x300$/);
     const mapped = realCat.items.filter((c) => c.shape?.map);
-    expect(mapped.length).toBe(13);
+    expect(mapped.length).toBe(14);
     for (const c of mapped) {
       const png = fs.readFileSync(path.resolve(__dirname, '../public/data', c.shape.map));
       expect([c.id, png.toString('latin1', 1, 4), [240, 320].includes(png.readUInt32BE(16))]).toEqual([c.id, 'PNG', true]); // ~1 / ~0,6 cm/piksel
@@ -262,6 +262,10 @@ describe('gerçek ürünler', () => {
       const def = resolveItem({ uid: 'x', ref: c.id, x: 0, y: 0 }, byId); // varsayılan ölçü = katalog ölçüsü (linkteki)
       expect([def.w, def.d]).toEqual([c.w, c.d]);
     }
+    const ck = resolveItem({ uid: 'c', ref: 'turkiyehali-ck216', x: 0, y: 0 }, byId);
+    expect([ck.w, ck.d, ck.price, ck.url]).toEqual([250, 350, 16500, 'https://turkiyehali.com/products/adacayi-yesili-etnik-desenli-hali-ck-216?variant=50779206811810']);
+    const round = resolveItem({ uid: 'c', ref: 'turkiyehali-ck216', x: 0, y: 0, choice: { Ölçü: '200×200 daire' } }, byId);
+    expect([round.w, round.d, round.parts.round, round.price]).toEqual([200, 200, true, 7475]);
     const q = resolveItem({ uid: 'q', ref: 'montis-quaestio-44004', x: 0, y: 0, choice: { Ölçü: '115×160' } }, byId);
     expect([q.w, q.d, q.h, q.price]).toEqual([115, 160, 0.5, 4151.05]);
     expect(q.url).toMatch(/\?bambu-doku-ebatlari=115x160$/);
