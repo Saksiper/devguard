@@ -180,7 +180,7 @@ describe('gerçek ürünler', () => {
 
   it('düz örnek halılar: standart ölçüler, renk seçeneği, örnek etiketi, çakışmaz', () => {
     const rugs = cat.items.filter((c) => c.group === 'Halılar' && c.sample);
-    expect(rugs.map((c) => `${c.w}×${c.d}`)).toEqual(['80×150', '120×180', '160×230', '200×290', '200×300', '240×320', '240×340', '300×400', '80×300']);
+    expect(rugs.map((c) => `${c.w}×${c.d}`)).toEqual(['200×290', '200×300', '240×320', '240×340', '300×400']); // 200×300'den küçükler kaldırıldı
     const r = resolveItem({ uid: 'h', ref: 'hali-240x320', x: 0, y: 0, choice: { Renk: 'Antrasit' } }, byId);
     expect(r).toMatchObject({ color: '#4b4b4e', sample: true, assumed: false, collides: false });
     expect(rugs.every((c) => c.sample && !c.brand && c.options[0].values.some((v) => v.name === 'Kum'))).toBe(true);
@@ -188,24 +188,22 @@ describe('gerçek ürünler', () => {
 
   it('Nun Lizbon: ölçü seçeneği boyutu, renk iki tonlu dokuyu, varyant fiyat ve linki belirler', () => {
     const l = resolveItem({ uid: 'l', ref: 'nun-lizbon', x: 0, y: 0 }, byId);
-    expect([l.w, l.d, l.color, l.price]).toEqual([80, 150, '#b8bbaa', 1950]);
-    expect(l.url).toBe('https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=80150');
+    expect([l.w, l.d, l.color, l.price]).toEqual([200, 290, '#b8bbaa', 8750]);
+    expect(l.url).toBe('https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=200290');
     expect(l.parts).toMatchObject({ weaveCell: '#959884', weaveLine: '#e3e4d8' });
-    const b = resolveItem({ uid: 'l', ref: 'nun-lizbon', x: 0, y: 0, choice: { Renk: 'Antrasit', Ölçü: '160×230' } }, byId);
-    expect([b.w, b.d, b.price, b.collides]).toEqual([160, 230, 5500, false]);
-    expect(b.url).toContain('renk=antrasit&olcu=160230');
+    const b = resolveItem({ uid: 'l', ref: 'nun-lizbon', x: 0, y: 0, choice: { Renk: 'Antrasit', Ölçü: '240×340 (özel üretim)' } }, byId);
+    expect([b.w, b.d, b.price, b.collides]).toEqual([240, 340, 14000, false]);
+    expect(b.url).toContain('renk=antrasit&olcu=240340');
   });
 
-  it('IKEA STOCKHOLM 2025: iki ölçü, her ölçünün kendi desen ızgarası, fiyat ve linki', () => {
+  it('IKEA STOCKHOLM 2025: 240×350 (küçük ölçü kaldırıldı), fotoğraftan desen ızgarası, fiyat ve link', () => {
     const s = resolveItem({ uid: 's', ref: 'ikea-stockholm-2025-hali', x: 0, y: 0 }, byId);
     expect([s.w, s.d, s.price, s.collides, s.flatpack]).toEqual([240, 350, 32999, false, true]);
     expect(s.url).toMatch(/240x350-cm-el-dokumasi-hali-70593814$/);
-    const k = resolveItem({ uid: 's', ref: 'ikea-stockholm-2025-hali', x: 0, y: 0, choice: { Ölçü: '170×240' } }, byId);
-    expect([k.w, k.d, k.price]).toEqual([170, 240, 16999]);
-    expect(k.url).toMatch(/170x240-cm-el-dokumasi-hali-40593815$/);
+    expect(byId.get('ikea-stockholm-2025-hali').options[0].values.map((v) => v.name)).toEqual(['240×350']);
     // Izgara tutarlı: sınırlar 0'dan halı ölçüsüne artan, her satırda sütun sayısı kadar harf, harfler paletten.
     const pal = byId.get('ikea-stockholm-2025-hali').shape.palette;
-    for (const it of [s, k]) {
+    for (const it of [s]) {
       const xs = it.parts.pattern.xs.split(' ').map(Number);
       const ys = it.parts.pattern.ys.split(' ').map(Number);
       expect([xs[0], xs.at(-1), ys[0], ys.at(-1)]).toEqual([0, it.w, 0, it.d]);
@@ -213,9 +211,8 @@ describe('gerçek ürünler', () => {
       expect(it.parts.pattern.rows).toHaveLength(ys.length - 1);
       for (const r of it.parts.pattern.rows) expect([r.length, [...r].every((ch) => ch in pal)]).toEqual([xs.length - 1, true]);
     }
-    // Büyük ölçüde blok sayısı artar (desen ölçeklenmez): 170×240'ta 5, 240×350'de 7 blok sütunu.
-    const blocks = (it) => it.parts.pattern.rows[4].replace(/[^p]+/g, ' ').trim().split(' ').length;
-    expect([blocks(k), blocks(s)]).toEqual([5, 7]);
+    // 240×350'de 7 blok sütunu (fotoğraftaki gibi).
+    expect(s.parts.pattern.rows[4].replace(/[^p]+/g, ' ').trim().split(' ').length).toBe(7);
   });
 
   it('sabit (kilitli) mobilya taşınmaz, döndürülmez, silinmez, değiştirilmez; kilidi açılınca serbest', () => {
@@ -250,9 +247,13 @@ describe('gerçek ürünler', () => {
     const e = resolveItem({ uid: 'e', ref: 'montis-etiam-907011', x: 0, y: 0 }, byId);
     expect([e.w, e.d, e.h, e.price, e.collides]).toEqual([200, 290, 0.5, 14616, false]);
     expect(e.url).toMatch(/elp4166\?olculer=200x290$/);
-    const h = resolveItem({ uid: 'h', ref: 'montis-hiprepa-333008', x: 0, y: 0, choice: { Ölçü: '80×300' } }, byId);
-    expect([h.w, h.d, h.price]).toEqual([80, 300, 4649.4]);
-    expect(h.url).toMatch(/333008-multi-dokuma-taban-modern-hali\?olcu=80x300$/);
+    const h = resolveItem({ uid: 'h', ref: 'montis-hiprepa-333008', x: 0, y: 0, choice: { Ölçü: '200×300' } }, byId);
+    expect([h.w, h.d, h.price]).toEqual([200, 300, 11623.5]);
+    expect(h.url).toMatch(/333008-multi-dokuma-taban-modern-hali\?olcu=200x300$/);
+    // Halılarda 200×300 sınıfından küçük ölçü yok (kısa kenar ≥ 200, uzun kenar ≥ 290).
+    for (const c of realCat.items.filter((x) => x.group === 'Halılar'))
+      for (const v of c.options?.find((o) => o.values.some((x) => x.w))?.values ?? [{ w: c.w, d: c.d }])
+        expect([c.id, Math.min(v.w, v.d) >= 200 && Math.max(v.w, v.d) >= 290]).toEqual([c.id, true]);
     const mapped = realCat.items.filter((c) => c.shape?.map);
     expect(mapped.length).toBe(14);
     for (const c of mapped) {
@@ -264,11 +265,10 @@ describe('gerçek ürünler', () => {
     }
     const ck = resolveItem({ uid: 'c', ref: 'turkiyehali-ck216', x: 0, y: 0 }, byId);
     expect([ck.w, ck.d, ck.price, ck.url]).toEqual([250, 350, 16500, 'https://turkiyehali.com/products/adacayi-yesili-etnik-desenli-hali-ck-216?variant=50779206811810']);
-    const round = resolveItem({ uid: 'c', ref: 'turkiyehali-ck216', x: 0, y: 0, choice: { Ölçü: '200×200 daire' } }, byId);
-    expect([round.w, round.d, round.parts.round, round.price]).toEqual([200, 200, true, 7475]);
-    const q = resolveItem({ uid: 'q', ref: 'montis-quaestio-44004', x: 0, y: 0, choice: { Ölçü: '115×160' } }, byId);
-    expect([q.w, q.d, q.h, q.price]).toEqual([115, 160, 0.5, 4151.05]);
-    expect(q.url).toMatch(/\?bambu-doku-ebatlari=115x160$/);
+    expect(byId.get('turkiyehali-ck216').options[0].values.map((v) => v.name)).toEqual(['200×300', '230×330', '250×350', '300×400']);
+    const q = resolveItem({ uid: 'q', ref: 'montis-quaestio-44004', x: 0, y: 0 }, byId);
+    expect([q.w, q.d, q.h, q.price]).toEqual([200, 300, 0.5, 13539.68]);
+    expect(q.url).toMatch(/\?bambu-doku-ebatlari=200x300$/);
   });
 
   it('Ficus lyrata: boy seçeneği boyu, taç ve saksıyı belirler; tükenmiş boy da seçilebilir', () => {

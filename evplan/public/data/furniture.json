@@ -1126,8 +1126,8 @@
    "brand": "Nun Halı",
    "category": "Gerçek ürünler",
    "group": "Halılar",
-   "w": 80,
-   "d": 150,
+   "w": 200,
+   "d": 290,
    "h": 1,
    "color": "#b8bbaa",
    "collides": false,
@@ -1203,26 +1203,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "80×150",
-       "w": 80,
-       "d": 150
-      },
-      {
-       "name": "80×300",
-       "w": 80,
-       "d": 300
-      },
-      {
-       "name": "120×180",
-       "w": 120,
-       "d": 180
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×290",
        "w": 200,
        "d": 290
@@ -1242,25 +1222,9 @@
    ],
    "defaultOptions": {
     "Renk": "Yeşil",
-    "Ölçü": "80×150"
+    "Ölçü": "200×290"
    },
    "variants": {
-    "Krem / 80×150": {
-     "price": 1950,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=80150"
-    },
-    "Krem / 80×300": {
-     "price": 3750,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=80300"
-    },
-    "Krem / 120×180": {
-     "price": 3350,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=120180"
-    },
-    "Krem / 160×230": {
-     "price": 5500,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=160230"
-    },
     "Krem / 200×290": {
      "price": 8750,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=200290"
@@ -1272,22 +1236,6 @@
     "Krem / 280×380 (özel üretim)": {
      "price": 18500,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=krem&olcu=280380"
-    },
-    "Bej / 80×150": {
-     "price": 1950,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=80150"
-    },
-    "Bej / 80×300": {
-     "price": 3750,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=80300"
-    },
-    "Bej / 120×180": {
-     "price": 3350,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=120180"
-    },
-    "Bej / 160×230": {
-     "price": 5500,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=160230"
     },
     "Bej / 200×290": {
      "price": 8750,
@@ -1301,22 +1249,6 @@
      "price": 18500,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=bej&olcu=280380"
     },
-    "Açık Gri / 80×150": {
-     "price": 1950,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=80150"
-    },
-    "Açık Gri / 80×300": {
-     "price": 3750,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=80300"
-    },
-    "Açık Gri / 120×180": {
-     "price": 3350,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=120180"
-    },
-    "Açık Gri / 160×230": {
-     "price": 5500,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=160230"
-    },
     "Açık Gri / 200×290": {
      "price": 8750,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=200290"
@@ -1328,22 +1260,6 @@
     "Açık Gri / 280×380 (özel üretim)": {
      "price": 18500,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=acik-gri&olcu=280380"
-    },
-    "Antrasit / 80×150": {
-     "price": 1950,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=80150"
-    },
-    "Antrasit / 80×300": {
-     "price": 3750,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=80300"
-    },
-    "Antrasit / 120×180": {
-     "price": 3350,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=120180"
-    },
-    "Antrasit / 160×230": {
-     "price": 5500,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=160230"
     },
     "Antrasit / 200×290": {
      "price": 8750,
@@ -1357,22 +1273,6 @@
      "price": 18500,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=antrasit&olcu=280380"
     },
-    "Yeşil / 80×150": {
-     "price": 1950,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=80150"
-    },
-    "Yeşil / 80×300": {
-     "price": 3750,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=80300"
-    },
-    "Yeşil / 120×180": {
-     "price": 3350,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=120180"
-    },
-    "Yeşil / 160×230": {
-     "price": 5500,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=160230"
-    },
     "Yeşil / 200×290": {
      "price": 8750,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=200290"
@@ -1385,22 +1285,6 @@
      "price": 18500,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=yesil&olcu=280380"
     },
-    "Mavi / 80×150": {
-     "price": 1950,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=80150"
-    },
-    "Mavi / 80×300": {
-     "price": 3750,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=80300"
-    },
-    "Mavi / 120×180": {
-     "price": 3350,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=120180"
-    },
-    "Mavi / 160×230": {
-     "price": 5500,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=160230"
-    },
     "Mavi / 200×290": {
      "price": 8750,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=200290"
@@ -1412,22 +1296,6 @@
     "Mavi / 280×380 (özel üretim)": {
      "price": 18500,
      "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=mavi&olcu=280380"
-    },
-    "Kiremit / 80×150": {
-     "price": 1950,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=80150"
-    },
-    "Kiremit / 80×300": {
-     "price": 3750,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=80300"
-    },
-    "Kiremit / 120×180": {
-     "price": 3350,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=120180"
-    },
-    "Kiremit / 160×230": {
-     "price": 5500,
-     "url": "https://nundekoratifhali.com/nun-lizbon-serisi?renk=kiremit&olcu=160230"
     },
     "Kiremit / 200×290": {
      "price": 8750,
@@ -1470,54 +1338,6 @@
     {
      "name": "Ölçü",
      "values": [
-      {
-       "name": "170×240",
-       "w": 170,
-       "d": 240,
-       "parts": {
-        "pattern": {
-         "xs": "0 20 37 54.2 57.4 74.4 91.7 95.1 112.3 129.2 132.6 149.9 170",
-         "ys": "0 2 5.9 9.5 16.4 24.3 32.3 39.9 46.8 54.7 62.7 70.7 77.3 85.3 93.4 101.5 108.4 116.2 124.2 132.1 138.8 146.9 154.8 162.7 169.6 177.6 185.6 193.5 200.3 208.3 216.3 224.2 230.5 234.5 238 240",
-         "rows": [
-          "cccccccccccc",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "pkpmkpmkpmkp",
-          "kkkkkkkkkkkk",
-          "pkpmkpmkpmkp",
-          "pcpmcpmcpmcp",
-          "cccccccccccc"
-         ]
-        }
-       }
-      },
       {
        "name": "240×350",
        "w": 240,
@@ -1585,11 +1405,6 @@
     "Ölçü": "240×350"
    },
    "variants": {
-    "170×240": {
-     "article": "405.938.15",
-     "price": 16999,
-     "url": "https://www.ikea.com.tr/urun/stockholm-2025-beyaz-kahverengi-acik-mavi-170x240-cm-el-dokumasi-hali-40593815"
-    },
     "240×350": {
      "article": "705.938.14",
      "price": 32999,
@@ -1628,21 +1443,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×150",
-       "w": 75,
-       "d": 150
-      },
-      {
-       "name": "115×170",
-       "w": 115,
-       "d": 170
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×290",
        "w": 200,
        "d": 290
@@ -1654,18 +1454,6 @@
     "Ölçü": "200×290"
    },
    "variants": {
-    "75×150": {
-     "price": 2835,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=75x150"
-    },
-    "115×170": {
-     "price": 4926.6,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=115x170"
-    },
-    "160×230": {
-     "price": 9273.6,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=160x230"
-    },
     "200×290": {
      "price": 14616,
      "url": "https://montishali.com.tr/montis-hali-etiam-907011-loop-dokuma-yumusak-sonil-krem-modern-hali-elp4166?olculer=200x290"
@@ -1699,41 +1487,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "80×150",
-       "w": 80,
-       "d": 150
-      },
-      {
-       "name": "80×200",
-       "w": 80,
-       "d": 200
-      },
-      {
-       "name": "80×300",
-       "w": 80,
-       "d": 300
-      },
-      {
-       "name": "100×200",
-       "w": 100,
-       "d": 200
-      },
-      {
-       "name": "100×300",
-       "w": 100,
-       "d": 300
-      },
-      {
-       "name": "120×180",
-       "w": 120,
-       "d": 180
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×300",
        "w": 200,
        "d": 300
@@ -1750,34 +1503,6 @@
     "Ölçü": "240×340"
    },
    "variants": {
-    "80×150": {
-     "price": 2324.7,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=80x150"
-    },
-    "80×200": {
-     "price": 3099.6,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=80x200"
-    },
-    "80×300": {
-     "price": 4649.4,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=80x300"
-    },
-    "100×200": {
-     "price": 3874.5,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=100x200"
-    },
-    "100×300": {
-     "price": 5811.75,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=100x300"
-    },
-    "120×180": {
-     "price": 4184.46,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=120x180"
-    },
-    "160×230": {
-     "price": 7129.08,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=160x230"
-    },
     "200×300": {
      "price": 11623.5,
      "url": "https://montishali.com.tr/montis-hali-hiprepa-333005-multi-dokuma-taban-modern-hali?olcu=200x300"
@@ -1815,41 +1540,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "80×150",
-       "w": 80,
-       "d": 150
-      },
-      {
-       "name": "80×200",
-       "w": 80,
-       "d": 200
-      },
-      {
-       "name": "80×300",
-       "w": 80,
-       "d": 300
-      },
-      {
-       "name": "100×200",
-       "w": 100,
-       "d": 200
-      },
-      {
-       "name": "100×300",
-       "w": 100,
-       "d": 300
-      },
-      {
-       "name": "120×180",
-       "w": 120,
-       "d": 180
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×300",
        "w": 200,
        "d": 300
@@ -1866,34 +1556,6 @@
     "Ölçü": "240×340"
    },
    "variants": {
-    "80×150": {
-     "price": 2324.7,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=80x150"
-    },
-    "80×200": {
-     "price": 3099.6,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=80x200"
-    },
-    "80×300": {
-     "price": 4649.4,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=80x300"
-    },
-    "100×200": {
-     "price": 3874.5,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=100x200"
-    },
-    "100×300": {
-     "price": 5811.75,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=100x300"
-    },
-    "120×180": {
-     "price": 4184.46,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=120x180"
-    },
-    "160×230": {
-     "price": 7129.08,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=160x230"
-    },
     "200×300": {
      "price": 11623.5,
      "url": "https://montishali.com.tr/montis-hali-hiprepa-333008-multi-dokuma-taban-modern-hali?olcu=200x300"
@@ -1931,21 +1593,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×150",
-       "w": 75,
-       "d": 150
-      },
-      {
-       "name": "115×170",
-       "w": 115,
-       "d": 170
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×290",
        "w": 200,
        "d": 290
@@ -1957,18 +1604,6 @@
     "Ölçü": "200×290"
    },
    "variants": {
-    "75×150": {
-     "price": 2835,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=75x150"
-    },
-    "115×170": {
-     "price": 4926.6,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=115x170"
-    },
-    "160×230": {
-     "price": 9273.6,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=160x230"
-    },
     "200×290": {
      "price": 14616,
      "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=200x290"
@@ -2002,21 +1637,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×150",
-       "w": 75,
-       "d": 150
-      },
-      {
-       "name": "115×170",
-       "w": 115,
-       "d": 170
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×290",
        "w": 200,
        "d": 290
@@ -2028,18 +1648,6 @@
     "Ölçü": "200×290"
    },
    "variants": {
-    "75×150": {
-     "price": 2835,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=75x150"
-    },
-    "115×170": {
-     "price": 4926.6,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=115x170"
-    },
-    "160×230": {
-     "price": 9273.6,
-     "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=160x230"
-    },
     "200×290": {
      "price": 14616,
      "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=200x290"
@@ -2073,26 +1681,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×140",
-       "w": 75,
-       "d": 140
-      },
-      {
-       "name": "115×170",
-       "w": 115,
-       "d": 170
-      },
-      {
-       "name": "150×230",
-       "w": 150,
-       "d": 230
-      },
-      {
-       "name": "190×290",
-       "w": 190,
-       "d": 290
-      },
-      {
        "name": "250×350",
        "w": 250,
        "d": 350
@@ -2104,22 +1692,6 @@
     "Ölçü": "250×350"
    },
    "variants": {
-    "75×140": {
-     "price": 4017.73,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=75x140"
-    },
-    "115×170": {
-     "price": 7481.19,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=115x170"
-    },
-    "150×230": {
-     "price": 13012.17,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=150x230"
-    },
-    "190×290": {
-     "price": 25525.78,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=190x290"
-    },
     "250×350": {
      "price": 33486.46,
      "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=250x350"
@@ -2153,26 +1725,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×140",
-       "w": 75,
-       "d": 140
-      },
-      {
-       "name": "115×170",
-       "w": 115,
-       "d": 170
-      },
-      {
-       "name": "150×230",
-       "w": 150,
-       "d": 230
-      },
-      {
-       "name": "190×290",
-       "w": 190,
-       "d": 290
-      },
-      {
        "name": "250×350",
        "w": 250,
        "d": 350
@@ -2184,22 +1736,6 @@
     "Ölçü": "250×350"
    },
    "variants": {
-    "75×140": {
-     "price": 4017.73,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=75x140"
-    },
-    "115×170": {
-     "price": 7481.19,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=115x170"
-    },
-    "150×230": {
-     "price": 13012.17,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=150x230"
-    },
-    "190×290": {
-     "price": 25525.78,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=190x290"
-    },
     "250×350": {
      "price": 33486.46,
      "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=250x350"
@@ -2233,41 +1769,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "80×150",
-       "w": 80,
-       "d": 150
-      },
-      {
-       "name": "80×200",
-       "w": 80,
-       "d": 200
-      },
-      {
-       "name": "80×300",
-       "w": 80,
-       "d": 300
-      },
-      {
-       "name": "100×200",
-       "w": 100,
-       "d": 200
-      },
-      {
-       "name": "100×300",
-       "w": 100,
-       "d": 300
-      },
-      {
-       "name": "120×180",
-       "w": 120,
-       "d": 180
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×300",
        "w": 200,
        "d": 300
@@ -2284,34 +1785,6 @@
     "Ölçü": "240×340"
    },
    "variants": {
-    "80×150": {
-     "price": 2324.7,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=80x150"
-    },
-    "80×200": {
-     "price": 3099.6,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=80x200"
-    },
-    "80×300": {
-     "price": 4649.4,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=80x300"
-    },
-    "100×200": {
-     "price": 3874.5,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=100x200"
-    },
-    "100×300": {
-     "price": 5811.75,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=100x300"
-    },
-    "120×180": {
-     "price": 4184.46,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=120x180"
-    },
-    "160×230": {
-     "price": 7129.08,
-     "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=160x230"
-    },
     "200×300": {
      "price": 11623.5,
      "url": "https://montishali.com.tr/montis-hali-hiprepa-333002-yesil-turuncu-dokuma-taban-modern-hali?olcu=200x300"
@@ -2349,26 +1822,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "80×160",
-       "w": 80,
-       "d": 160
-      },
-      {
-       "name": "100×200",
-       "w": 100,
-       "d": 200
-      },
-      {
-       "name": "115×160",
-       "w": 115,
-       "d": 160
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×300",
        "w": 200,
        "d": 300
@@ -2380,22 +1833,6 @@
     "Ölçü": "200×300"
    },
    "variants": {
-    "80×160": {
-     "price": 2887.25,
-     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=80x160"
-    },
-    "100×200": {
-     "price": 4513.23,
-     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=100x200"
-    },
-    "115×160": {
-     "price": 4151.05,
-     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=115x160"
-    },
-    "160×230": {
-     "price": 8303.38,
-     "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=160x230"
-    },
     "200×300": {
      "price": 13539.68,
      "url": "https://montishali.com.tr/montis-hali-quaestio-44004-turuncu-parlak-yumusak-dokuma-taban-modern-hali?bambu-doku-ebatlari=200x300"
@@ -2430,26 +1867,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×140",
-       "w": 75,
-       "d": 140
-      },
-      {
-       "name": "115×170",
-       "w": 115,
-       "d": 170
-      },
-      {
-       "name": "150×230",
-       "w": 150,
-       "d": 230
-      },
-      {
-       "name": "190×290",
-       "w": 190,
-       "d": 290
-      },
-      {
        "name": "250×350",
        "w": 250,
        "d": 350
@@ -2461,22 +1878,6 @@
     "Ölçü": "250×350"
    },
    "variants": {
-    "75×140": {
-     "price": 4017.73,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=75x140"
-    },
-    "115×170": {
-     "price": 7481.19,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=115x170"
-    },
-    "150×230": {
-     "price": 13012.17,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=150x230"
-    },
-    "190×290": {
-     "price": 25525.78,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=190x290"
-    },
     "250×350": {
      "price": 33486.46,
      "url": "https://montishali.com.tr/montis-hali-fortis-260005-yesil-turuncu-modern-kabartmali-hali?secenekler=250x350"
@@ -2510,26 +1911,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×140",
-       "w": 75,
-       "d": 140
-      },
-      {
-       "name": "115×170",
-       "w": 115,
-       "d": 170
-      },
-      {
-       "name": "150×230",
-       "w": 150,
-       "d": 230
-      },
-      {
-       "name": "190×290",
-       "w": 190,
-       "d": 290
-      },
-      {
        "name": "250×350",
        "w": 250,
        "d": 350
@@ -2541,22 +1922,6 @@
     "Ölçü": "250×350"
    },
    "variants": {
-    "75×140": {
-     "price": 4017.73,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=75x140"
-    },
-    "115×170": {
-     "price": 7481.19,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=115x170"
-    },
-    "150×230": {
-     "price": 13012.17,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=150x230"
-    },
-    "190×290": {
-     "price": 25525.78,
-     "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=190x290"
-    },
     "250×350": {
      "price": 33486.46,
      "url": "https://montishali.com.tr/montis-hali-fortis-260031-mor-yesil-modern-kabartmali-hali?secenekler=250x350"
@@ -2590,41 +1955,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "80×150",
-       "w": 80,
-       "d": 150
-      },
-      {
-       "name": "80×200",
-       "w": 80,
-       "d": 200
-      },
-      {
-       "name": "80×300",
-       "w": 80,
-       "d": 300
-      },
-      {
-       "name": "100×200",
-       "w": 100,
-       "d": 200
-      },
-      {
-       "name": "100×300",
-       "w": 100,
-       "d": 300
-      },
-      {
-       "name": "120×180",
-       "w": 120,
-       "d": 180
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×300",
        "w": 200,
        "d": 300
@@ -2636,34 +1966,6 @@
     "Ölçü": "200×300"
    },
    "variants": {
-    "80×150": {
-     "price": 2242.8,
-     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=80x150"
-    },
-    "80×200": {
-     "price": 2990.4,
-     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=80x200"
-    },
-    "80×300": {
-     "price": 4485.6,
-     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=80x300"
-    },
-    "100×200": {
-     "price": 3738,
-     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=100x200"
-    },
-    "100×300": {
-     "price": 5607,
-     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=100x300"
-    },
-    "120×180": {
-     "price": 4037.04,
-     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=120x180"
-    },
-    "160×230": {
-     "price": 6877.92,
-     "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=160x230"
-    },
     "200×300": {
      "price": 11214,
      "url": "https://montishali.com.tr/montis-hali-gemma-62003-kahverengi-dokuma-taban-modern-hali?olcu=200x300"
@@ -2682,8 +1984,8 @@
    "brand": "Montis Halı",
    "category": "Gerçek ürünler",
    "group": "Halılar",
-   "w": 80,
-   "d": 150,
+   "w": 200,
+   "d": 290,
    "h": 1,
    "color": "#9b8b86",
    "collides": false,
@@ -2697,41 +1999,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "80×150",
-       "w": 80,
-       "d": 150
-      },
-      {
-       "name": "80×200",
-       "w": 80,
-       "d": 200
-      },
-      {
-       "name": "80×300",
-       "w": 80,
-       "d": 300
-      },
-      {
-       "name": "100×200",
-       "w": 100,
-       "d": 200
-      },
-      {
-       "name": "100×300",
-       "w": 100,
-       "d": 300
-      },
-      {
-       "name": "120×180",
-       "w": 120,
-       "d": 180
-      },
-      {
-       "name": "160×230",
-       "w": 160,
-       "d": 230
-      },
-      {
        "name": "200×290",
        "w": 200,
        "d": 290
@@ -2740,37 +2007,9 @@
     }
    ],
    "defaultOptions": {
-    "Ölçü": "80×150"
+    "Ölçü": "200×290"
    },
    "variants": {
-    "80×150": {
-     "price": 4802.49,
-     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=80x150"
-    },
-    "80×200": {
-     "price": 6403.32,
-     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=80x200"
-    },
-    "80×300": {
-     "price": 9604.98,
-     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=80x300"
-    },
-    "100×200": {
-     "price": 8004.15,
-     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=100x200"
-    },
-    "100×300": {
-     "price": 12006.23,
-     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=100x300"
-    },
-    "120×180": {
-     "price": 8644.48,
-     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=120x180"
-    },
-    "160×230": {
-     "price": 14727.64,
-     "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=160x230"
-    },
     "200×290": {
      "price": 24012.45,
      "url": "https://montishali.com.tr/montis-hali-walorem-206002-siyah-parlak-kalin-sik-makine-halisi?olculer=200x290"
@@ -2806,46 +2045,6 @@
      "name": "Ölçü",
      "values": [
       {
-       "name": "75×150",
-       "w": 75,
-       "d": 150
-      },
-      {
-       "name": "75×200",
-       "w": 75,
-       "d": 200
-      },
-      {
-       "name": "75×230",
-       "w": 75,
-       "d": 230
-      },
-      {
-       "name": "75×300",
-       "w": 75,
-       "d": 300
-      },
-      {
-       "name": "115×160",
-       "w": 115,
-       "d": 160
-      },
-      {
-       "name": "140×190",
-       "w": 140,
-       "d": 190
-      },
-      {
-       "name": "150×230",
-       "w": 150,
-       "d": 230
-      },
-      {
-       "name": "170×240",
-       "w": 170,
-       "d": 240
-      },
-      {
        "name": "200×300",
        "w": 200,
        "d": 300
@@ -2864,32 +2063,6 @@
        "name": "300×400",
        "w": 300,
        "d": 400
-      },
-      {
-       "name": "150×150 kare",
-       "w": 150,
-       "d": 150
-      },
-      {
-       "name": "150×150 daire",
-       "w": 150,
-       "d": 150,
-       "parts": {
-        "round": true
-       }
-      },
-      {
-       "name": "200×200 kare",
-       "w": 200,
-       "d": 200
-      },
-      {
-       "name": "200×200 daire",
-       "w": 200,
-       "d": 200,
-       "parts": {
-        "round": true
-       }
       }
      ]
     }
@@ -2898,38 +2071,6 @@
     "Ölçü": "250×350"
    },
    "variants": {
-    "75×150": {
-     "id": 50516840054946,
-     "price": 1610.0
-    },
-    "75×200": {
-     "id": 50516840087714,
-     "price": 2600.0
-    },
-    "75×230": {
-     "id": 50516840120482,
-     "price": 3200.0
-    },
-    "75×300": {
-     "id": 50516840153250,
-     "price": 4025.0
-    },
-    "115×160": {
-     "id": 50516840186018,
-     "price": 4025.0
-    },
-    "140×190": {
-     "id": 50516840218786,
-     "price": 5060.0
-    },
-    "150×230": {
-     "id": 50516840251554,
-     "price": 6440.0
-    },
-    "170×240": {
-     "id": 50516840284322,
-     "price": 8050.0
-    },
     "200×300": {
      "id": 50516840317090,
      "price": 9900.0
@@ -2945,22 +2086,6 @@
     "300×400": {
      "id": 50779206844578,
      "price": 20000.0
-    },
-    "150×150 kare": {
-     "id": 50516840349858,
-     "price": 6325.0
-    },
-    "150×150 daire": {
-     "id": 50516840382626,
-     "price": 6325.0
-    },
-    "200×200 kare": {
-     "id": 50516840415394,
-     "price": 7475.0
-    },
-    "200×200 daire": {
-     "id": 50516840448162,
-     "price": 7475.0
     }
    },
    "shape": {
@@ -2968,192 +2093,6 @@
     "map": "textures/turkiyehali-ck216.png",
     "texture": "flat",
     "edge": "#2a2a2a"
-   }
-  },
-  {
-   "id": "hali-80x150",
-   "name": "Düz halı 80×150",
-   "category": "Salon",
-   "group": "Halılar",
-   "w": 80,
-   "d": 150,
-   "h": 1,
-   "color": "#cbb994",
-   "collides": false,
-   "flatpack": true,
-   "sample": true,
-   "url": null,
-   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
-   "options": [
-    {
-     "name": "Renk",
-     "part": "fabric",
-     "values": [
-      {
-       "name": "Kum",
-       "color": "#cbb994"
-      },
-      {
-       "name": "Bej",
-       "color": "#d6c5a8"
-      },
-      {
-       "name": "Krem",
-       "color": "#e9e1cf"
-      },
-      {
-       "name": "Vizon",
-       "color": "#a89886"
-      },
-      {
-       "name": "Açık gri",
-       "color": "#c9c8c3"
-      },
-      {
-       "name": "Gri",
-       "color": "#9b9b98"
-      },
-      {
-       "name": "Antrasit",
-       "color": "#4b4b4e"
-      },
-      {
-       "name": "Adaçayı",
-       "color": "#a3ad95"
-      }
-     ]
-    }
-   ],
-   "defaultOptions": {
-    "Renk": "Kum"
-   },
-   "shape": {
-    "type": "rug",
-    "plain": true
-   }
-  },
-  {
-   "id": "hali-120x180",
-   "name": "Düz halı 120×180",
-   "category": "Salon",
-   "group": "Halılar",
-   "w": 120,
-   "d": 180,
-   "h": 1,
-   "color": "#d6c5a8",
-   "collides": false,
-   "flatpack": true,
-   "sample": true,
-   "url": null,
-   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
-   "options": [
-    {
-     "name": "Renk",
-     "part": "fabric",
-     "values": [
-      {
-       "name": "Kum",
-       "color": "#cbb994"
-      },
-      {
-       "name": "Bej",
-       "color": "#d6c5a8"
-      },
-      {
-       "name": "Krem",
-       "color": "#e9e1cf"
-      },
-      {
-       "name": "Vizon",
-       "color": "#a89886"
-      },
-      {
-       "name": "Açık gri",
-       "color": "#c9c8c3"
-      },
-      {
-       "name": "Gri",
-       "color": "#9b9b98"
-      },
-      {
-       "name": "Antrasit",
-       "color": "#4b4b4e"
-      },
-      {
-       "name": "Adaçayı",
-       "color": "#a3ad95"
-      }
-     ]
-    }
-   ],
-   "defaultOptions": {
-    "Renk": "Bej"
-   },
-   "shape": {
-    "type": "rug",
-    "plain": true
-   }
-  },
-  {
-   "id": "hali-160x230",
-   "name": "Düz halı 160×230",
-   "category": "Salon",
-   "group": "Halılar",
-   "w": 160,
-   "d": 230,
-   "h": 1,
-   "color": "#e9e1cf",
-   "collides": false,
-   "flatpack": true,
-   "sample": true,
-   "url": null,
-   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
-   "options": [
-    {
-     "name": "Renk",
-     "part": "fabric",
-     "values": [
-      {
-       "name": "Kum",
-       "color": "#cbb994"
-      },
-      {
-       "name": "Bej",
-       "color": "#d6c5a8"
-      },
-      {
-       "name": "Krem",
-       "color": "#e9e1cf"
-      },
-      {
-       "name": "Vizon",
-       "color": "#a89886"
-      },
-      {
-       "name": "Açık gri",
-       "color": "#c9c8c3"
-      },
-      {
-       "name": "Gri",
-       "color": "#9b9b98"
-      },
-      {
-       "name": "Antrasit",
-       "color": "#4b4b4e"
-      },
-      {
-       "name": "Adaçayı",
-       "color": "#a3ad95"
-      }
-     ]
-    }
-   ],
-   "defaultOptions": {
-    "Renk": "Krem"
-   },
-   "shape": {
-    "type": "rug",
-    "plain": true
    }
   },
   {
@@ -3460,68 +2399,6 @@
    ],
    "defaultOptions": {
     "Renk": "Gri"
-   },
-   "shape": {
-    "type": "rug",
-    "plain": true
-   }
-  },
-  {
-   "id": "yolluk-80x300",
-   "name": "Düz yolluk 80×300",
-   "category": "Salon",
-   "group": "Halılar",
-   "w": 80,
-   "d": 300,
-   "h": 1,
-   "color": "#4b4b4e",
-   "collides": false,
-   "flatpack": true,
-   "sample": true,
-   "url": null,
-   "notes": "Örnek: belirli bir ürün değil; standart ölçü, düz (desensiz) kısa tüylü halı. Renk seçeneklerden.",
-   "options": [
-    {
-     "name": "Renk",
-     "part": "fabric",
-     "values": [
-      {
-       "name": "Kum",
-       "color": "#cbb994"
-      },
-      {
-       "name": "Bej",
-       "color": "#d6c5a8"
-      },
-      {
-       "name": "Krem",
-       "color": "#e9e1cf"
-      },
-      {
-       "name": "Vizon",
-       "color": "#a89886"
-      },
-      {
-       "name": "Açık gri",
-       "color": "#c9c8c3"
-      },
-      {
-       "name": "Gri",
-       "color": "#9b9b98"
-      },
-      {
-       "name": "Antrasit",
-       "color": "#4b4b4e"
-      },
-      {
-       "name": "Adaçayı",
-       "color": "#a3ad95"
-      }
-     ]
-    }
-   ],
-   "defaultOptions": {
-    "Renk": "Antrasit"
    },
    "shape": {
     "type": "rug",
