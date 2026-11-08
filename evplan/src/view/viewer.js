@@ -494,7 +494,10 @@ export class Viewer extends EventTarget {
         const p = toPlan(e);
         if (!p) return;
         this.store.select(it.uid);
-        if (it.locked) return; // sabit mobilya: seçilir, kamera dönmeye devam eder
+        if (it.locked) {
+          this.store.emit('locked', { uid: it.uid }); // neden kıpırdamadığını söyle
+          return; // sabit mobilya: seçilir, kamera dönmeye devam eder
+        }
         this.store.beginDrag();
         drag = { uid: it.uid, off: [it.x - p[0], it.y - p[1]], moved: false, id: e.pointerId };
         setControls(false);
