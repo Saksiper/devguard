@@ -5,7 +5,7 @@
   "items": [
     { "uid": "b1", "ref": "normod-klem-3-pk", "x": 471.5, "y": 200, "rot": 90, "choice": {"Kumaş": "Bej", "Ayak": "Açık", "Sırt Minderi": "Kalıcı Form"} },
     { "uid": "b2", "ref": "orta-sehpa", "x": 365, "y": 200, "rot": 90 },
-    { "uid": "b3", "ref": "tv-unitesi", "x": 36, "y": 200, "rot": 270 },
+    { "uid": "b3", "ref": "ikea-tonstad-sehpa-178", "x": 34.6, "y": 200.0, "rot": 270 },
     { "uid": "b4", "ref": "tv-55", "x": 34, "y": 200, "rot": 270 },
     { "uid": "b5", "ref": "yemek-masasi", "x": 200, "y": 330, "rot": 0 },
     { "uid": "b6", "ref": "sandalye", "x": 160, "y": 258, "rot": 0 },

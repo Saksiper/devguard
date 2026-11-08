@@ -1,11 +1,13 @@
 // Parametrik dolap / TV ünitesi modeli: katalogdaki "modules" listesinden.
 // Her modül: gövde (ön yüzü iç renk), isteğe bağlı kaide, alttan üste ön yüz satırları
 // (door | drawer | glass | open | sliding | slidingGlass). Yerel eksenler: x genişlik, y yukarı, +z ön; cm.
+// shape.style 'tonstad': panel yapısı (üst tabla, yere inen yanlar, içe çekik kaide ve alt tabla, iki rayda
+// sürgü kapak, kapağın dış ucunda gömme oval ahşap kulp) ve meşe kaplama dokusu; ölçüler IKEA ölçü çiziminden.
 
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { rowColumns } from '../../core/items.js';
-import { woodGrain } from '../textures.js';
+import { oakVeneer, woodGrain } from '../textures.js';
 
 function woodMat(color, wCm, hCm) {
   const t = woodGrain().clone();
@@ -48,10 +50,139 @@ const box = (w, h, d, mat) => {
   return m;
 };
 
+/** Meşe kaplama paneli malzemesi: doku gerçek ölçüde, panel başına farklı bölge; vertical → lif dikey. */
+function veneer(color, wCm, hCm, seed, vertical = false) {
+  const base = oakVeneer();
+  const t = base.clone();
+  const [tw, th] = base.userData.size;
+  t.repeat.set(wCm / tw, hCm / th);
+  t.offset.set((seed * 0.37) % 1, (seed * 0.61) % 1);
+  if (vertical) {
+    t.center.set(0.5, 0.5);
+    t.rotation = Math.PI / 2;
+    t.repeat.set(hCm / tw, wCm / th);
+  }
+  t.needsUpdate = true;
+  const c = new THREE.Color(color).multiplyScalar(1 / base.userData.mean); // ortalama = ürün rengi
+  return new THREE.MeshStandardMaterial({ color: c, map: t, bumpMap: t, bumpScale: 0.5, roughness: 0.58 });
+}
+
+/** Stadyum (iki ucu yarım daire) şekli: w × h, merkez (0, 0). */
+function stadium(w, h) {
+  const r = w / 2;
+  const sh = new THREE.Shape();
+  sh.moveTo(-r, -h / 2 + r);
+  sh.lineTo(-r, h / 2 - r);
+  sh.absarc(0, h / 2 - r, r, Math.PI, 0, true);
+  sh.lineTo(r, -h / 2 + r);
+  sh.absarc(0, -h / 2 + r, r, 0, Math.PI, true);
+  return sh;
+}
+
+/** Gömme oval ahşap kulp: yuvarlatılmış kenarlı çerçeve + koyu (gölgeli) iç çukur. Ön yüze (z) oturur. */
+function ovalPull(color, x, y, z) {
+  const W = 2.8;
+  const H = 10.4;
+  const g = new THREE.Group();
+  const ring = stadium(W, H);
+  ring.holes.push(stadium(W - 1.0, H - 1.0));
+  const rimGeo = new THREE.ExtrudeGeometry(ring, { depth: 0.12, bevelEnabled: true, bevelThickness: 0.12, bevelSize: 0.12, bevelSegments: 3, curveSegments: 16 });
+  const rim = new THREE.Mesh(rimGeo, new THREE.MeshStandardMaterial({ color: new THREE.Color(color).multiplyScalar(1.06), roughness: 0.5 }));
+  rim.castShadow = true;
+  g.add(rim);
+  const cup = new THREE.Mesh(new THREE.ShapeGeometry(stadium(W - 1.0, H - 1.0), 16), new THREE.MeshStandardMaterial({ color: new THREE.Color(color).multiplyScalar(0.55), roughness: 0.7 }));
+  cup.position.z = 0.02;
+  g.add(cup);
+  g.position.set(x, y, z);
+  return g;
+}
+
+/**
+ * TONSTAD modülü (TV sehpası 178×37×55, sürgü kapaklı dolap 82×37×120…): ölçüler IKEA ölçü çiziminden
+ * (yan 2,4 · üst 2,5 · kaide 9 · alt tabla şeridi 1,9 cm; kapak dış ucunda 2,8 × 10,4 cm kulp).
+ */
+function tonstadModule(g, S, m, cx, back, md, k, color) {
+  const SIDE = 2.4;
+  const TOP = 2.5;
+  const FEET = 0.6;
+  const PL = m.plinth ?? 9;
+  const DECK = 1.9;
+  const DT = 1.8; // kapak kalınlığı
+  const front = back + md;
+  const IW = m.w - 2 * SIDE;
+  const interior = veneer(S.interior ?? '#a98763', IW, m.h, k * 7 + 5);
+  const add = (mesh, x, y, z) => {
+    mesh.position.set(x, y, z);
+    g.add(mesh);
+  };
+  // Yüz başına doğru ölçek: ince kenar şeritlerinde doku gerilmesin (BoxGeometry yüz sırası: +x −x +y −y +z −z).
+  // Kapak çevresindeki yarıklarda görünen gizli yüzler gölgede: koyu (HD'de yarık sürekli gölge çizgisi gibi okunur).
+  const shade = new THREE.MeshStandardMaterial({ color: new THREE.Color(color).multiplyScalar(0.4), roughness: 0.8 });
+  const topFace = veneer(color, m.w, md, k * 7 + 1);
+  const topEdge = veneer(color, m.w, TOP, k * 7 + 6);
+  const topEnd = veneer(color, md, TOP, k * 7 + 8);
+  add(box(m.w, TOP, md, [topEnd, topEnd, topFace, shade, topEdge, topEdge]), cx, m.h - TOP / 2, back + md / 2);
+  const sideH = m.h - TOP - FEET;
+  for (const sx of [-1, 1]) {
+    const sm = veneer(color, md, sideH, k * 7 + 2 + sx, true);
+    const edge = veneer(color, SIDE, sideH, k * 7 + 12 + sx, true);
+    add(box(SIDE, sideH, md, sx > 0 ? [sm, shade, sm, sm, edge, sm] : [shade, sm, sm, sm, edge, sm]), cx + sx * (m.w / 2 - SIDE / 2), FEET + sideH / 2, back + md / 2);
+  }
+  add(box(IW, PL - FEET, md - 3, veneer(color, IW, PL, k * 7 + 3)), cx, FEET + (PL - FEET) / 2, back + (md - 3) / 2 + 2); // kaide: önü 1 cm içeride
+  const deck = veneer(color, IW, DECK, k * 7 + 4);
+  add(box(IW, DECK, md - 2.2, [deck, deck, shade, deck, deck, deck]), cx, PL + DECK / 2, back + (md - 2.2) / 2); // alt tabla: önü 2,2 cm içeride
+  add(box(IW, m.h - TOP - PL, 0.8, interior), cx, PL + (m.h - TOP - PL) / 2, back + 0.4); // arkalık
+  const foot = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.6 });
+  for (const fx of [-1, 0, 1])
+    for (const fz of [-1, 1]) {
+      if (fx === 0 && m.w < 120) continue;
+      add(new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, FEET, 12), foot), cx + fx * (m.w / 2 - 3), FEET / 2, back + md / 2 + fz * (md / 2 - 3));
+    }
+  // İki sürgü kapak: sol arka rayda, sağ ön rayda; ortada 1'er cm bindirme.
+  const y0 = PL + DECK + 0.3;
+  const DH = m.h - TOP - 0.3 - y0;
+  const DW = IW / 2 + 1;
+  const type = m.fronts?.[0]?.type ?? 'sliding';
+  for (const side of [-1, 1]) {
+    const dx = cx + side * (IW / 2 - DW / 2);
+    const dz = side < 0 ? front - 3.2 - DT / 2 : front - 1.0 - DT / 2;
+    if (type === 'slidingGlass') {
+      const fw = 4.5;
+      for (const [i, [bw, bh, bx, by]] of [
+        [DW, fw, dx, y0 + DH - fw / 2],
+        [DW, fw, dx, y0 + fw / 2],
+        [fw, DH, dx - DW / 2 + fw / 2, y0 + DH / 2],
+        [fw, DH, dx + DW / 2 - fw / 2, y0 + DH / 2],
+      ].entries())
+        add(box(bw, bh, DT, veneer(color, bw, bh, k * 7 + 11 + i + side, bh > bw)), bx, by, dz);
+      const pane = new THREE.Mesh(new THREE.PlaneGeometry(DW - 2 * fw, DH - 2 * fw), new THREE.MeshPhysicalMaterial({ color: 0xeef3f2, transparent: true, opacity: 0.18, roughness: 0.05, depthWrite: false }));
+      pane.renderOrder = 3;
+      add(pane, dx, y0 + DH / 2, dz);
+    } else {
+      add(box(DW, DH, DT, veneer(color, DW, DH, k * 7 + 9 + side)), dx, y0 + DH / 2, dz);
+    }
+    // Kulp: kapağın dış ucunda, yan panelin iç yüzünden 2,6 cm içeride, kapak yüksekliğinin ortasında.
+    const px = cx + side * (IW / 2 - 2.6);
+    g.add(ovalPull(color, px, y0 + DH / 2, dz + DT / 2 + 0.01));
+  }
+  // Raflar (camlı kapakta görünür): sehpada her bölmede bir, dolapta iki.
+  const shelves = m.h > 80 ? [1 / 3, 2 / 3] : [0.5];
+  for (const f of shelves) add(box(IW - 0.4, 1.8, md - 7, interior), cx, y0 + DH * f, back + (md - 7) / 2 + 1);
+}
+
 export function buildCabinets(it) {
   const S = it.shape ?? {};
   const g = new THREE.Group();
   const modules = it.modules ?? [{ w: it.w, h: it.h, fronts: [] }];
+  if (S.style === 'tonstad') {
+    let tx = -it.w / 2;
+    modules.forEach((m, k) => {
+      tonstadModule(g, S, m, tx + m.w / 2, -it.d / 2, m.d ?? it.d, k, S.front ?? it.color);
+      tx += m.w;
+    });
+    g.scale.setScalar(0.01);
+    return g;
+  }
   const back = -it.d / 2;
   const interior = new THREE.MeshStandardMaterial({ color: new THREE.Color(S.interior ?? '#8a7a6a'), roughness: 0.8 });
   const plinthMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(S.plinth ?? S.carcass ?? it.color), roughness: 0.7 });

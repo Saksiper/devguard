@@ -199,6 +199,10 @@ async function boot() {
 
   store.addEventListener('change', (e) => {
     const t = e.detail.type;
+    if (t === 'locked') {
+      const it = store.item(e.detail.uid);
+      return toast(`${it?.name ?? 'Mobilya'} sabit (kilitli). Taşımak, döndürmek ya da silmek için Seçili sekmesinden kilidi aç.`, 5000);
+    }
     if (t === 'live') {
       viewer.refresh();
       panel.renderSelbar();

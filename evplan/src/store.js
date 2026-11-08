@@ -41,6 +41,9 @@ function slug(s) {
   );
 }
 
+// Kilitli mobilyada değişmesine izin verilmeyen alanlar (renk, ad, gizleme, kilit serbest).
+const LOCKED_KEYS = ['x', 'y', 'rot', 'w', 'd', 'h', 'z', 'ref'];
+
 export class Store extends EventTarget {
   constructor({ plan, catalog, fileLayouts }) {
     super();
@@ -212,9 +215,16 @@ export class Store extends EventTarget {
     this._dragBase = null;
   }
 
+  /** Sabit (kilitli) mobilya: alınmış, yeri belli; taşıma / döndürme / ölçü / silme / değiştirme engellenir. */
+  _lockedBlocks(e, patch = null) {
+    if (!e?.locked || (patch && !LOCKED_KEYS.some((k) => k in patch))) return false;
+    this.emit('locked', { uid: e.uid });
+    return true;
+  }
+
   update(uid, patch, { live = false } = {}) {
     const e = this.active.items.find((i) => i.uid === uid);
-    if (!e) return;
+    if (!e || this._lockedBlocks(e, patch)) return;
     if (!live && this._dragBase === null) this._snapshot();
     for (const [k, v] of Object.entries(patch)) {
       if (v === undefined || v === null || v === '') delete e[k];
@@ -330,7 +340,7 @@ export class Store extends EventTarget {
     const e = this.active.items.find((i) => i.uid === uid);
     const next = this.catalogById.get(ref);
     const old = this.item(uid);
-    if (!e || !next || !old) return;
+    if (!e || !next || !old || this._lockedBlocks(e)) return;
     this._snapshot();
     // Üstündeki TV gibi parçalar yeni ünitenin sehpa kısmına taşınacak.
     const riders = this.items().filter((o) => o.onTop && o.uid !== uid && pointInRect([o.x, o.y], old));
@@ -358,6 +368,7 @@ export class Store extends EventTarget {
   }
 
   remove(uid) {
+    if (this._lockedBlocks(this.active.items.find((i) => i.uid === uid))) return;
     this._recordSpot(uid);
     this._snapshot();
     this.active.items = this.active.items.filter((i) => i.uid !== uid);
@@ -370,6 +381,7 @@ export class Store extends EventTarget {
     if (!e) return null;
     this._snapshot();
     const copy = { ...clone(e), uid: newUid(), x: e.x + 20, y: e.y + 20 };
+    delete copy.locked; // kopya serbest (deneme için)
     this.active.items.push(copy);
     this.selection = copy.uid;
     this._changed('commit', { uid: copy.uid });

@@ -175,6 +175,77 @@ export function woodGrain() {
 }
 
 /**
+ * Meşe kaplama (ör. IKEA TONSTAD, fırçalanmış meşe): düz biçilmiş kaplama yaprakları (11–16 cm), her yaprakta
+ * kütüğün kesim düzlemine uzaklığı boy boyunca değişen halkalar → katedral damarlar; koyu geç odun bantları,
+ * ince gözenek çizgileri, hafif ton dalgalanması. Gri tonlu (rengi malzeme verir); userData.mean = doğrusal
+ * ortalama (malzeme rengi buna bölünerek ortalama ürün rengine eşitlenir). Doku x'i lif yönü; 180 × 45 cm.
+ */
+export function oakVeneer() {
+  return once('oakVeneer', () => {
+    const W = 2048;
+    const H = 512;
+    const SU = 180 / W; // cm / piksel
+    const SV = 45 / H;
+    const r = rng(41);
+    // Değer gürültüsü (yumuşak), fbm
+    const G = 64;
+    const grid = new Float32Array(G * G).map(() => r());
+    const vn = (x, y) => {
+      const xi = Math.floor(x);
+      const yi = Math.floor(y);
+      const fx = x - xi;
+      const fy = y - yi;
+      const a = (i, j) => grid[(((yi + j) % G) + G) % G * G + ((((xi + i) % G) + G) % G)];
+      const sx = fx * fx * (3 - 2 * fx);
+      const sy = fy * fy * (3 - 2 * fy);
+      return (a(0, 0) * (1 - sx) + a(1, 0) * sx) * (1 - sy) + (a(0, 1) * (1 - sx) + a(1, 1) * sx) * sy;
+    };
+    const fbm = (x, y) => vn(x, y) * 0.55 + vn(x * 2.1, y * 2.1) * 0.3 + vn(x * 4.3, y * 4.3) * 0.15;
+    const leaves = [];
+    for (let v = 0; v < 45; ) {
+      const w = 11 + r() * 5;
+      // merkez yaprağın dışındaysa düz lif, içindeyse katedral (fotoğrafta düz lif ağırlıklı)
+      leaves.push({ v0: v, w, c: v + w * (-0.9 + r() * 2.8), d0: 3 + r() * 8, ph: r() * 6.28, f: 30 + r() * 30, k: r() * 50 });
+      v += w;
+    }
+    const [c, x] = canvas(W, H);
+    const img = x.createImageData(W, H);
+    const lum = new Float32Array(W * H);
+    let L = leaves[0];
+    for (let py = 0; py < H; py++) {
+      const v = py * SV;
+      L = leaves.find((l) => v >= l.v0 && v < l.v0 + l.w) ?? leaves.at(-1);
+      for (let px = 0; px < W; px++) {
+        const u = px * SU;
+        const depth = L.d0 + 2 * Math.sin(u / L.f + L.ph) + 2.5 * (fbm(u / 40 + L.k, 0.5) - 0.5);
+        const vl = v - L.c + 0.35 * (fbm(u / 12 + L.k, v / 3) - 0.5);
+        const rr = Math.sqrt(vl * vl + depth * depth);
+        const ring = (rr / 0.32 + 0.3 * fbm(u / 6, v / 1.5)) % 1;
+        const late = ring > 0.62 ? Math.min(1, (ring - 0.62) / 0.22) * (ring > 0.93 ? (1 - ring) / 0.07 : 1) : 0;
+        const pore = Math.max(0, vn(u * 0.9 + L.k, v * 11) - 0.6) * 2;
+        const streak = vn(u * 0.12 + L.k, v * 16) - 0.5; // ince düz lif çizgileri
+        const tone = fbm(u / 25 + L.k, v / 6) - 0.5;
+        const val = 0.86 * (1 - 0.085 * late - 0.05 * pore + 0.035 * streak + 0.045 * tone);
+        lum[py * W + px] = val;
+      }
+    }
+    let mean = 0;
+    for (let i = 0; i < W * H; i++) {
+      const g = Math.round(Math.max(0, Math.min(1, lum[i])) * 255);
+      img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = g;
+      img.data[i * 4 + 3] = 255;
+      const s = g / 255;
+      mean += s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    }
+    x.putImageData(img, 0, 0);
+    const t = tex(c);
+    t.userData.mean = mean / (W * H);
+    t.userData.size = [180, 45];
+    return t;
+  });
+}
+
+/**
  * Dokuyu metre cinsinden UV'li bir yüzeye ölçekli yerleştirir.
  * size: dokunun kapladığı alan (cm) [u, v]; rotate: doku 90° döndürülsün mü (ör. parke uzun kenar boyunca).
  */

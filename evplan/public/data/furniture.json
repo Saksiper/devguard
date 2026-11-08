@@ -264,91 +264,6 @@
    "notes": "Seçilen koltuk: Bej / Açık ayak / Kalıcı Form (43.530 TL). Renkler ürün fotoğraflarından; Kehribar'ın fotoğrafı sayfada yok, rengi tahmini."
   },
   {
-   "id": "ikea-besta-300",
-   "name": "BESTÅ TV ünitesi 300 cm",
-   "brand": "IKEA",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 300,
-   "d": 42,
-   "h": 193,
-   "color": "#dccab1",
-   "price": 34570,
-   "flatpack": true,
-   "url": "https://www.ikea.com.tr/urun/besta-agartilmis-mese-gorunumlu-beyaz-mese-gorunumlu-seffaf-cam-300x42x193-cm-tv-unitesi-09406388",
-   "articleNo": "094.063.88",
-   "source": "ikea.com.tr ürün sayfası (Ebatlar, İçerdiği ürünler), 24.10.2026; renkler ürün görselinden örneklendi",
-   "material": "Ağartılmış meşe görünümlü / beyaz meşe görünümlü, şeffaf temperli cam",
-   "notes": "İçerik: BESTÅ iskelet 60×40×192 + TV sehpası iskeleti 180×40×38 + iskelet 60×40×128; LAPPVIKEN kapaklar, SINDVIK cam kapaklar. Duvara sabitlenmeli.",
-   "shape": {
-    "type": "cabinets",
-    "carcass": "#cdb9a0",
-    "front": "#dccab1",
-    "frame": "#d6c3a8",
-    "interior": "#b9a48c"
-   },
-   "modules": [
-    {
-     "name": "boy dolap 60×40×192",
-     "w": 60,
-     "h": 193,
-     "fronts": [
-      {
-       "type": "door",
-       "h": 64,
-       "hinge": "left"
-      },
-      {
-       "type": "glass",
-       "h": 64,
-       "hinge": "left"
-      },
-      {
-       "type": "glass",
-       "h": 64,
-       "hinge": "left"
-      }
-     ]
-    },
-    {
-     "name": "TV sehpası 180×40×38",
-     "w": 180,
-     "h": 38,
-     "fronts": [
-      {
-       "type": "drawer",
-       "h": 26,
-       "count": 3,
-       "depth": 33
-      },
-      {
-       "type": "open",
-       "h": 11,
-       "count": 3
-      }
-     ]
-    },
-    {
-     "name": "dolap 60×40×128",
-     "w": 60,
-     "h": 129,
-     "fronts": [
-      {
-       "type": "door",
-       "h": 64,
-       "hinge": "right"
-      },
-      {
-       "type": "glass",
-       "h": 64,
-       "hinge": "right"
-      }
-     ]
-    }
-   ],
-   "maxTopLoad": 50
-  },
-  {
    "id": "ikea-tonstad-342",
    "name": "TONSTAD TV ünitesi 342 cm",
    "brand": "IKEA",
@@ -368,21 +283,22 @@
    "shape": {
     "type": "cabinets",
     "carcass": "#c29f7a",
-    "front": "#c8a682",
+    "front": "#c7a681",
     "frame": "#bf9c77",
     "interior": "#a98763",
-    "plinth": "#a8875f"
+    "plinth": "#a8875f",
+    "style": "tonstad"
    },
    "modules": [
     {
      "name": "cam sürgü kapaklı dolap 82×37×120",
      "w": 81.8,
      "h": 119.9,
-     "plinth": 5,
+     "plinth": 9,
      "fronts": [
       {
        "type": "slidingGlass",
-       "h": 112,
+       "h": 105.9,
        "count": 2
       }
      ]
@@ -391,17 +307,12 @@
      "name": "TV sehpası 178×37×55",
      "w": 178,
      "h": 55,
-     "plinth": 5,
+     "plinth": 9,
      "fronts": [
       {
        "type": "sliding",
-       "h": 36,
+       "h": 41.0,
        "count": 2
-      },
-      {
-       "type": "open",
-       "h": 12,
-       "count": 1
       }
      ]
     },
@@ -409,11 +320,11 @@
      "name": "sürgü kapaklı dolap 82×37×120",
      "w": 82,
      "h": 119.9,
-     "plinth": 5,
+     "plinth": 9,
      "fronts": [
       {
        "type": "sliding",
-       "h": 112,
+       "h": 105.9,
        "count": 2
       }
      ]
@@ -435,37 +346,34 @@
    "flatpack": true,
    "url": "https://www.ikea.com.tr/urun/tonstad-mese-kaplama-178x37x55-cm-tv-sehpasi-00489302",
    "articleNo": "004.893.02",
-   "source": "ikea.com.tr ürün sayfası, 25.10.2026 (kullanıcının güncel model verisi)",
+   "source": "ikea.com.tr ürün sayfası ve ölçü çizimi (PE917690), 08.11.2026; kullanıcının fotoğrafları (ürün görseli, kulp yakın çekimi)",
    "material": "Meşe kaplama",
    "shape": {
     "type": "cabinets",
     "carcass": "#c29f7a",
-    "front": "#c8a682",
+    "front": "#c7a681",
     "frame": "#bf9c77",
     "interior": "#a98763",
-    "plinth": "#a8875f"
+    "plinth": "#a8875f",
+    "style": "tonstad"
    },
    "modules": [
     {
      "w": 178.4,
      "h": 54.9,
-     "plinth": 5,
+     "plinth": 9,
      "fronts": [
       {
        "type": "sliding",
-       "h": 36,
+       "h": 40.9,
        "count": 2
-      },
-      {
-       "type": "open",
-       "h": 12,
-       "count": 1
       }
      ]
     }
    ],
    "maxTopLoad": 30,
-   "notes": "70 inç / 30 kg televizyona kadar. TONSTAD TV ünitesinin ortasındaki sehpanın tek satılanı; kapak düzeni tahmini."
+   "notes": "70 inç / 30 kg televizyona kadar. Alındı (kullanıcı, 08.11.2026). Yapı IKEA ölçü çiziminden: iki sürgü kapak kaidenin üstündeki tüm yüksekliği kaplar (açık bölme yok); içte 36/46/46/36 cm bölmeler, 28 cm derin raflar; kaide 9 cm; kapakların dış ucunda gömme oval ahşap kulp. Renk ve damar ürün görselinden (fırçalanmış meşe kaplama).",
+   "owned": true
   },
   {
    "id": "ikea-tonstad-cam-82",
@@ -486,20 +394,21 @@
    "shape": {
     "type": "cabinets",
     "carcass": "#c29f7a",
-    "front": "#c8a682",
+    "front": "#c7a681",
     "frame": "#bf9c77",
     "interior": "#a98763",
-    "plinth": "#a8875f"
+    "plinth": "#a8875f",
+    "style": "tonstad"
    },
    "modules": [
     {
      "w": 81.7,
      "h": 119.9,
-     "plinth": 5,
+     "plinth": 9,
      "fronts": [
       {
        "type": "slidingGlass",
-       "h": 112,
+       "h": 105.9,
        "count": 2
       }
      ]
@@ -526,608 +435,27 @@
    "shape": {
     "type": "cabinets",
     "carcass": "#c29f7a",
-    "front": "#c8a682",
+    "front": "#c7a681",
     "frame": "#bf9c77",
     "interior": "#a98763",
-    "plinth": "#a8875f"
+    "plinth": "#a8875f",
+    "style": "tonstad"
    },
    "modules": [
     {
      "w": 81.7,
      "h": 119.9,
-     "plinth": 5,
+     "plinth": 9,
      "fronts": [
       {
        "type": "sliding",
-       "h": 112,
+       "h": 105.9,
        "count": 2
       }
      ]
     }
    ],
    "notes": "Meşe kaplama sürgü kapaklar, 2 ayarlanabilir + 1 sabit raf."
-  },
-  {
-   "id": "ikea-lanesund-322",
-   "name": "LANESUND TV ünitesi 322 cm",
-   "brand": "IKEA",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 322,
-   "d": 47,
-   "h": 81,
-   "color": "#a08773",
-   "price": 69998,
-   "flatpack": true,
-   "url": "https://www.ikea.com.tr/urun/lanesund-kahverengi-322x47x81-cm-tv-unitesi-29514730",
-   "articleNo": "295.147.30",
-   "source": "ikea.com.tr ürün sayfası (Ebatlar, İçerdiği ürünler), 24.10.2026; renkler ürün görselinden örneklendi",
-   "material": "Kayın kaplama (kahverengi), masif kayın; temperli cam kapaklar, alüminyum çerçeve",
-   "notes": "İçerik: LANESUND konsol 161×47×81 + TV sehpası 161×47×55. Sehpa 63 inç'e kadar TV için; üst panel maks. 30 kg.",
-   "shape": {
-    "type": "cabinets",
-    "carcass": "#a08773",
-    "front": "#a58a75",
-    "frame": "#202020",
-    "interior": "#8a7362",
-    "plinth": "#8f7765",
-    "handle": "#202020"
-   },
-   "modules": [
-    {
-     "name": "konsol 161×47×81",
-     "w": 161,
-     "h": 81,
-     "plinth": 8,
-     "fronts": [
-      {
-       "type": "glass",
-       "h": 69,
-       "count": 4
-      }
-     ]
-    },
-    {
-     "name": "TV sehpası 161×47×55",
-     "w": 161,
-     "h": 55,
-     "plinth": 8,
-     "fronts": [
-      {
-       "h": 43,
-       "cols": [
-        {
-         "type": "glass",
-         "w": 48,
-         "hinge": "left"
-        },
-        {
-         "type": "open",
-         "w": 65
-        },
-        {
-         "type": "glass",
-         "w": 48,
-         "hinge": "right"
-        }
-       ]
-      }
-     ]
-    }
-   ],
-   "maxTopLoad": 30
-  },
-  {
-   "id": "ikea-stockholm-2025-179",
-   "name": "STOCKHOLM 2025 TV sehpası 179 cm",
-   "brand": "IKEA",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 178.8,
-   "d": 42,
-   "h": 56.2,
-   "color": "#cfa46f",
-   "price": 24499,
-   "flatpack": true,
-   "maxTopLoad": 40,
-   "url": "https://www.ikea.com.tr/urun/stockholm-2025-mese-kaplama-179x42x56-cm-tv-sehpasi-40586508",
-   "articleNo": "405.865.08",
-   "source": "ikea.com.tr ürün sayfası (Ebatlar), 24.10.2026; ayak yüksekliği ve renk ürün görselinden",
-   "material": "Meşe kaplama (fırçalanmış), şeffaf akrilik vernik; sürgü kapaklar",
-   "notes": "70 inç'e kadar TV, maks. TV ağırlığı 40 kg. Ayarlanabilir ayaklar. Panel ayak yüksekliği ≈15 cm görselden tahmini.",
-   "shape": {
-    "type": "cabinets",
-    "singleBody": true,
-    "radius": 0.4,
-    "carcass": "#c99d68",
-    "front": "#cfa46f",
-    "interior": "#9a7448",
-    "plinth": "#c39760",
-    "legs": {
-     "type": "block",
-     "h": 15,
-     "w": 3.6,
-     "depth": 32,
-     "radius": 0.6,
-     "inset": [
-      36
-     ]
-    }
-   },
-   "modules": [
-    {
-     "name": "sol sürgü kapak",
-     "w": 89.4,
-     "h": 56.2,
-     "fronts": [
-      {
-       "type": "sliding",
-       "h": 38
-      }
-     ]
-    },
-    {
-     "name": "sağ sürgü kapak",
-     "w": 89.4,
-     "h": 56.2,
-     "fronts": [
-      {
-       "type": "sliding",
-       "h": 38
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "id": "jysk-hillested-160",
-   "name": "HILLESTED TV sehpası 160 cm",
-   "brand": "JYSK",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 160,
-   "d": 40,
-   "h": 50,
-   "color": "#b08a64",
-   "price": 15000,
-   "flatpack": true,
-   "articleNo": "3620317",
-   "url": "https://jysk.com.tr/oturma-odasi/tv-unitesi/tv-sehpasi-hillested-2-kapi-sicak-mese-polirattan",
-   "source": "jysk.com.tr ürün sayfası (Özellikler), 24.10.2026; ayak yüksekliği ve renkler ürün görselinden",
-   "material": "Sıcak meşe görünümlü MDF/sunta, polirattan (hasır) kapaklar, masif kauçuk ağacı ayaklar",
-   "notes": "2 kapı, 3 raf; üst maks. 40 kg. Ayak yüksekliği ≈15 cm görselden tahmini.",
-   "shape": {
-    "type": "cabinets",
-    "carcass": "#b08a64",
-    "front": "#b48d66",
-    "interior": "#3a312e",
-    "cane": "#c39868",
-    "plinth": "#986f44",
-    "knob": "#8a6a48"
-   },
-   "modules": [
-    {
-     "name": "gövde",
-     "w": 160,
-     "h": 50,
-     "legs": {
-      "h": 15,
-      "d": 4.5,
-      "inset": [
-       12,
-       5
-      ]
-     },
-     "fronts": [
-      {
-       "h": 31,
-       "cols": [
-        {
-         "type": "cane",
-         "w": 52,
-         "hinge": "left"
-        },
-        {
-         "type": "open",
-         "w": 56
-        },
-        {
-         "type": "cane",
-         "w": 52,
-         "hinge": "right"
-        }
-       ]
-      }
-     ]
-    }
-   ],
-   "maxTopLoad": 40
-  },
-  {
-   "id": "jysk-lyngvig-120",
-   "name": "LYNGVIG TV sehpası 120 cm",
-   "brand": "JYSK",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 120,
-   "d": 40,
-   "h": 50,
-   "color": "#bd936d",
-   "price": 15000,
-   "flatpack": true,
-   "url": "https://jysk.com.tr/oturma-odasi/tv-unitesi/tv-sehpasi-lyngvig-120cm-2-surgulu-dolap-dogal-mese",
-   "source": "jysk.com.tr ürün sayfası (Özellikler), 24.10.2026; ayak yüksekliği ve renkler ürün görselinden",
-   "material": "Doğal meşe kaplama, 2 sürgülü (çıtalı) kapak, meşe kaplama ayaklar",
-   "notes": "Üst maks. 20 kg. Uçlar yuvarlak. Ayak yüksekliği ≈17 cm görselden tahmini.",
-   "shape": {
-    "type": "tambour",
-    "wood": "#bd936d",
-    "top": "#c9a888",
-    "legs": "#a5754f",
-    "legHeight": 17
-   },
-   "maxTopLoad": 20
-  },
-  {
-   "id": "jysk-lyngvig-160",
-   "name": "LYNGVIG TV sehpası 160 cm",
-   "brand": "JYSK",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 160,
-   "d": 40,
-   "h": 50,
-   "color": "#bd936d",
-   "price": 17500,
-   "flatpack": true,
-   "url": "https://jysk.com.tr/oturma-odasi/tv-unitesi/tv-sehpasi-lyngvig-160-cm-2-surgulu-kapak-dogal-mese",
-   "source": "jysk.com.tr ürün sayfası (Özellikler), 24.10.2026; ayak yüksekliği ve renkler ürün görselinden",
-   "material": "Doğal meşe kaplama, 2 sürgülü (çıtalı) kapak, meşe kaplama ayaklar",
-   "notes": "Üst maks. 30 kg. Uçlar yuvarlak. Ayak yüksekliği ≈17 cm görselden tahmini.",
-   "shape": {
-    "type": "tambour",
-    "wood": "#bd936d",
-    "top": "#c9a888",
-    "legs": "#a5754f",
-    "legHeight": 17
-   },
-   "maxTopLoad": 30
-  },
-  {
-   "id": "somass-watkins-180",
-   "name": "Watkins TV ünitesi 180 cm",
-   "brand": "SO-MASS",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 180,
-   "d": 44,
-   "h": 60,
-   "color": "#c99a6e",
-   "price": 62490,
-   "url": "https://so-mass.com/products/watkins-tv-unitesi-180-cm-naturel-mese",
-   "articleNo": "MAML000773",
-   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
-   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
-   "notes": "Monte gelir. Kulpsuz ön yüz, yuvarlatılmış köşeler, iki blok ayak. Bölme genişlikleri ve ayak yüksekliği (≈12 cm) görselden tahmini.",
-   "shape": {
-    "type": "cabinets",
-    "singleBody": true,
-    "radius": 6,
-    "carcass": "#c79a70",
-    "front": "#cc9f72",
-    "interior": "#5a3a22",
-    "plinth": "#c18e64",
-    "legs": {
-     "type": "block",
-     "h": 12,
-     "w": 11,
-     "depth": 30,
-     "radius": 5,
-     "inset": [
-      48.6
-     ]
-    }
-   },
-   "modules": [
-    {
-     "name": "açık bölme",
-     "w": 27.0,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "open",
-       "h": 45
-      }
-     ]
-    },
-    {
-     "name": "sürgü kapak",
-     "w": 41.4,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "sliding",
-       "h": 45
-      }
-     ]
-    },
-    {
-     "name": "geniş sürgü kapak",
-     "w": 75.6,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "sliding",
-       "h": 45
-      }
-     ]
-    },
-    {
-     "name": "çekmece + açık bölme",
-     "w": 36.0,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "open",
-       "h": 30
-      },
-      {
-       "type": "drawer",
-       "h": 15,
-       "depth": 34
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "id": "somass-watkins-210",
-   "name": "Watkins TV ünitesi 210 cm",
-   "brand": "SO-MASS",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 210,
-   "d": 44,
-   "h": 60,
-   "color": "#c99a6e",
-   "price": 69990,
-   "url": "https://so-mass.com/products/watkins-tv-unitesi-210-cm-naturel-mese",
-   "articleNo": "MAML000718",
-   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
-   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
-   "notes": "Monte gelir. Kulpsuz ön yüz, yuvarlatılmış köşeler, iki blok ayak. Bölme genişlikleri ve ayak yüksekliği (≈12 cm) görselden tahmini.",
-   "shape": {
-    "type": "cabinets",
-    "singleBody": true,
-    "radius": 6,
-    "carcass": "#c79a70",
-    "front": "#cc9f72",
-    "interior": "#5a3a22",
-    "plinth": "#c18e64",
-    "legs": {
-     "type": "block",
-     "h": 12,
-     "w": 11,
-     "depth": 30,
-     "radius": 5,
-     "inset": [
-      56.7
-     ]
-    }
-   },
-   "modules": [
-    {
-     "name": "açık bölme",
-     "w": 31.5,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "open",
-       "h": 45
-      }
-     ]
-    },
-    {
-     "name": "sürgü kapak",
-     "w": 48.3,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "sliding",
-       "h": 45
-      }
-     ]
-    },
-    {
-     "name": "geniş sürgü kapak",
-     "w": 88.2,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "sliding",
-       "h": 45
-      }
-     ]
-    },
-    {
-     "name": "çekmece + açık bölme",
-     "w": 42.0,
-     "h": 60,
-     "fronts": [
-      {
-       "type": "open",
-       "h": 30
-      },
-      {
-       "type": "drawer",
-       "h": 15,
-       "depth": 34
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "id": "somass-avila-150",
-   "name": "Avila TV ünitesi 150 cm",
-   "brand": "SO-MASS",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 150,
-   "d": 45,
-   "h": 50,
-   "color": "#c99a6e",
-   "price": 44990,
-   "url": "https://so-mass.com/products/avila-tv-unitesi-150-cm-naturel-mese",
-   "articleNo": "DMAML000829",
-   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
-   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
-   "notes": "Ayak 18 cm (üretici). Gövde monte, ayaklar demonte gelir. Kapak/çekmece bölümleri görselden tahmini.",
-   "dims": {
-    "legHeight": 18
-   },
-   "shape": {
-    "type": "cabinets",
-    "singleBody": true,
-    "radius": 0.6,
-    "carcass": "#c79a70",
-    "front": "#cc9f72",
-    "interior": "#3b2618",
-    "plinth": "#c18e64",
-    "legs": {
-     "type": "round",
-     "h": 18,
-     "d": 4.5,
-     "taper": true,
-     "inset": [
-      9,
-      6
-     ]
-    }
-   },
-   "modules": [
-    {
-     "name": "sol kapak",
-     "w": 50.0,
-     "h": 50,
-     "fronts": [
-      {
-       "type": "door",
-       "h": 29,
-       "hinge": "left"
-      }
-     ]
-    },
-    {
-     "name": "çekmece + niş",
-     "w": 50.0,
-     "h": 50,
-     "fronts": [
-      {
-       "type": "drawer",
-       "h": 16,
-       "depth": 35
-      },
-      {
-       "type": "open",
-       "h": 13
-      }
-     ]
-    },
-    {
-     "name": "sağ kapak",
-     "w": 50.0,
-     "h": 50,
-     "fronts": [
-      {
-       "type": "door",
-       "h": 29,
-       "hinge": "right"
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "id": "somass-avila-180",
-   "name": "Avila TV ünitesi 180 cm",
-   "brand": "SO-MASS",
-   "group": "TV üniteleri",
-   "category": "Gerçek ürünler",
-   "w": 180,
-   "d": 45,
-   "h": 50,
-   "color": "#c99a6e",
-   "price": 49990,
-   "url": "https://so-mass.com/products/avila-tv-unitesi-180-cm-naturel-mese",
-   "articleNo": "DMAML000830",
-   "source": "so-mass.com ürün sayfası (Ölçüler), 24.10.2026; ön yüz bölmeleri ve ayak biçimi ürün görselinden",
-   "material": "Amerikan beyaz meşe masif, Avrupa beyaz meşe kaplama, E1 sunta; akrilik vernik (natürel meşe)",
-   "notes": "Ayak 18 cm (üretici). Gövde monte, ayaklar demonte gelir. Kapak/çekmece bölümleri görselden tahmini.",
-   "dims": {
-    "legHeight": 18
-   },
-   "shape": {
-    "type": "cabinets",
-    "singleBody": true,
-    "radius": 0.6,
-    "carcass": "#c79a70",
-    "front": "#cc9f72",
-    "interior": "#3b2618",
-    "plinth": "#c18e64",
-    "legs": {
-     "type": "round",
-     "h": 18,
-     "d": 4.5,
-     "taper": true,
-     "inset": [
-      9,
-      6
-     ]
-    }
-   },
-   "modules": [
-    {
-     "name": "sol kapak",
-     "w": 60.0,
-     "h": 50,
-     "fronts": [
-      {
-       "type": "door",
-       "h": 29,
-       "hinge": "left"
-      }
-     ]
-    },
-    {
-     "name": "çekmece + niş",
-     "w": 60.0,
-     "h": 50,
-     "fronts": [
-      {
-       "type": "drawer",
-       "h": 16,
-       "depth": 35
-      },
-      {
-       "type": "open",
-       "h": 13
-      }
-     ]
-    },
-    {
-     "name": "sağ kapak",
-     "w": 60.0,
-     "h": 50,
-     "fronts": [
-      {
-       "type": "door",
-       "h": 29,
-       "hinge": "right"
-      }
-     ]
-    }
-   ]
   },
   {
    "id": "samsung-qe55q60d",
@@ -1293,29 +621,6 @@
     "leg": 3.5,
     "top": 2.5,
     "inset": 3
-   }
-  },
-  {
-   "id": "tv-unitesi",
-   "name": "TV ünitesi",
-   "category": "Salon",
-   "w": 180,
-   "d": 40,
-   "h": 50,
-   "color": "#3f3f46",
-   "drawers": {
-    "depth": 35
-   },
-   "flatpack": true,
-   "assumed": true,
-   "url": null,
-   "group": "TV üniteleri",
-   "shape": {
-    "type": "case",
-    "fronts": "drawers",
-    "rows": 1,
-    "cols": 3,
-    "legs": 10
    }
   },
   {
@@ -2497,6 +1802,308 @@
     "map": "textures/montis-hiprepa-333008.png",
     "texture": "flat",
     "edge": "#c9c0bd"
+   }
+  },
+  {
+   "id": "montis-etiam-907009",
+   "name": "Etiam 907009 loop dokuma şönil halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 200,
+   "d": 290,
+   "h": 0.5,
+   "color": "#988a7a",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Loop (ilmek) dokuma kilimvari makine halısı; pamuk, şönil, mikrofiber polyester; 5 mm; robot süpürge uyumlu; ürün kodu ELP4356",
+   "notes": "Yeşil-turuncu: üstte yeşil-somon dama, ortada pas ve yeşil dikey çizgiler, altta koyu pas-yeşil ince çizgili bant. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×150",
+       "w": 75,
+       "d": 150
+      },
+      {
+       "name": "115×170",
+       "w": 115,
+       "d": 170
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×290",
+       "w": 200,
+       "d": 290
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "200×290"
+   },
+   "variants": {
+    "75×150": {
+     "price": 2835,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=75x150"
+    },
+    "115×170": {
+     "price": 4926.6,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=115x170"
+    },
+    "160×230": {
+     "price": 9273.6,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=160x230"
+    },
+    "200×290": {
+     "price": 14616,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907009-loop-dokuma-yumusak-sonil-yesil-turuncu-modern-hali-elp4356?olculer=200x290"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-etiam-907009.png",
+    "texture": "loop",
+    "edge": "#9d9489"
+   }
+  },
+  {
+   "id": "montis-etiam-907007",
+   "name": "Etiam 907007 loop dokuma şönil halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 200,
+   "d": 290,
+   "h": 0.5,
+   "color": "#979186",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Loop (ilmek) dokuma kilimvari makine halısı; pamuk, şönil, mikrofiber polyester; 5 mm; robot süpürge uyumlu; ürün kodu ELP4366",
+   "notes": "Yeşil: gri-mavi, hardal, petrol ve krem bloklar; ince dikey ve yatay çizgiler, altta yeşil ve koyu kahve bloklar. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×150",
+       "w": 75,
+       "d": 150
+      },
+      {
+       "name": "115×170",
+       "w": 115,
+       "d": 170
+      },
+      {
+       "name": "160×230",
+       "w": 160,
+       "d": 230
+      },
+      {
+       "name": "200×290",
+       "w": 200,
+       "d": 290
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "200×290"
+   },
+   "variants": {
+    "75×150": {
+     "price": 2835,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=75x150"
+    },
+    "115×170": {
+     "price": 4926.6,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=115x170"
+    },
+    "160×230": {
+     "price": 9273.6,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=160x230"
+    },
+    "200×290": {
+     "price": 14616,
+     "url": "https://montishali.com.tr/montis-hali-etiam-907007-loop-dokuma-yumusak-sonil-yesil-modern-hali-elp4366?olculer=200x290"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-etiam-907007.png",
+    "texture": "loop",
+    "edge": "#9f948a"
+   }
+  },
+  {
+   "id": "montis-fortis-260036",
+   "name": "Fortis 260036 kabartmalı halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 250,
+   "d": 350,
+   "h": 1,
+   "color": "#b7a494",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Özel kabartmalı (yüksek/alçak efektli) dokuma, tıraşlanmış yün halı görünümü; pamuk, polyester ve jüt; kenarlar çoban dikiş, saçaksız; ürün kodu NVT4125",
+   "notes": "Krem zemin üstünde kırmızı, yeşil ve bej şerit blokları; yatay ve dikey düzen. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×140",
+       "w": 75,
+       "d": 140
+      },
+      {
+       "name": "115×170",
+       "w": 115,
+       "d": 170
+      },
+      {
+       "name": "150×230",
+       "w": 150,
+       "d": 230
+      },
+      {
+       "name": "190×290",
+       "w": 190,
+       "d": 290
+      },
+      {
+       "name": "250×350",
+       "w": 250,
+       "d": 350
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "250×350"
+   },
+   "variants": {
+    "75×140": {
+     "price": 4017.73,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=75x140"
+    },
+    "115×170": {
+     "price": 7481.19,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=115x170"
+    },
+    "150×230": {
+     "price": 13012.17,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=150x230"
+    },
+    "190×290": {
+     "price": 25525.78,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=190x290"
+    },
+    "250×350": {
+     "price": 33486.46,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260036-kirmizi-yesil-modern-kabartmali-hali?secenekler=250x350"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-fortis-260036.png",
+    "texture": "loop",
+    "edge": "#d8cdc3"
+   }
+  },
+  {
+   "id": "montis-fortis-260034",
+   "name": "Fortis 260034 kabartmalı halı",
+   "brand": "Montis Halı",
+   "category": "Gerçek ürünler",
+   "group": "Halılar",
+   "w": 250,
+   "d": 350,
+   "h": 1,
+   "color": "#b3aea3",
+   "collides": false,
+   "flatpack": true,
+   "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali",
+   "source": "montishali.com.tr ürün sayfası (ölçü, indirimli fiyat, malzeme), 08.11.2026; desen haritası tepeden ürün görselinden (~0,6 cm/piksel, 16 renklik palet; ortalama renk görselle aynı)",
+   "material": "Özel kabartmalı (yüksek/alçak efektli) dokuma, tıraşlanmış yün halı görünümü; pamuk, polyester ve jüt; kenarlar çoban dikiş, saçaksız; ürün kodu NVT4130",
+   "notes": "Krem zemin üstünde kırmızı ve petrol yeşili şerit blokları; dama düzeni. Kalınlık sitede yazmıyor: 1 cm varsayım. Sitedeki fiyatlar indirimli fiyat (sepette ek indirim hariç). Özel sipariş, 10 iş günü. Desen halıya oranı korunarak oturtulur, taşan kısım ortadan kırpılır; her ölçüde desenin üreticide nasıl yerleştiği bilinmiyor: varsayım.",
+   "options": [
+    {
+     "name": "Ölçü",
+     "values": [
+      {
+       "name": "75×140",
+       "w": 75,
+       "d": 140
+      },
+      {
+       "name": "115×170",
+       "w": 115,
+       "d": 170
+      },
+      {
+       "name": "150×230",
+       "w": 150,
+       "d": 230
+      },
+      {
+       "name": "190×290",
+       "w": 190,
+       "d": 290
+      },
+      {
+       "name": "250×350",
+       "w": 250,
+       "d": 350
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ölçü": "250×350"
+   },
+   "variants": {
+    "75×140": {
+     "price": 4017.73,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=75x140"
+    },
+    "115×170": {
+     "price": 7481.19,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=115x170"
+    },
+    "150×230": {
+     "price": 13012.17,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=150x230"
+    },
+    "190×290": {
+     "price": 25525.78,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=190x290"
+    },
+    "250×350": {
+     "price": 33486.46,
+     "url": "https://montishali.com.tr/montis-hali-fortis-260034-kirmizi-yesil-modern-kabartmali-hali?secenekler=250x350"
+    }
+   },
+   "shape": {
+    "type": "rug",
+    "map": "textures/montis-fortis-260034.png",
+    "texture": "loop",
+    "edge": "#d1cbc4"
    }
   },
   {

@@ -67,6 +67,8 @@ export function resolveItem(entry, catalogById) {
     collides: it.collides !== false,
     movable: !!it.movable,
     flatpack: !!it.flatpack,
+    owned: !!it.owned, // alındı (katalog)
+    locked: !!entry.locked, // bu yerleşimde sabit (kilitli)
     onTop: !!it.onTop, // TV gibi: altındaki mobilyanın üstüne oturur (z otomatik)
     weight: it.weight ?? null, // kg
     maxTopLoad: it.maxTopLoad ?? null, // üst tablanın taşıyabileceği (kg)

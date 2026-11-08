@@ -114,6 +114,17 @@ button.danger {
   color: #78350f;
 }
 
+.badge.ok {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+.note.lock button {
+  margin-left: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
 .modes {
   display: flex;
   background: #2d3342;
@@ -786,6 +797,11 @@ details.demo summary {
 
 .card .tag {
   color: #92400e;
+}
+
+.card .tag.ok {
+  color: #15803d;
+  font-weight: 600;
 }
 
 .card-actions {

@@ -228,7 +228,14 @@ export class Panel {
     const issues = (this.result?.issues ?? []).filter((i) => i.items.includes(it.uid));
     const product = this.productBlock(it);
     el.innerHTML = `
-      <h3>${esc(brandPrefix(it))}${esc(it.name)}${it.assumed ? ' <span class="badge warn">örnek ölçü</span>' : it.sample ? ' <span class="badge warn">örnek</span>' : ''}</h3>
+      <h3>${esc(brandPrefix(it))}${esc(it.name)}${it.assumed ? ' <span class="badge warn">örnek ölçü</span>' : it.sample ? ' <span class="badge warn">örnek</span>' : ''}${it.owned ? ' <span class="badge ok">alındı</span>' : ''}</h3>
+      ${
+        it.locked
+          ? '<p class="note lock">🔒 Sabit: bu yerleşimde yeri kilitli (taşınmaz, döndürülmez, silinmez). <button data-a="lock">Kilidi aç</button></p>'
+          : it.owned
+            ? '<p class="note lock">Alındı. Yeri belliyse sabitleyebilirsin. <button data-a="lock">🔒 Sabitle</button></p>'
+            : ''
+      }
       ${product}
       <div class="row">
         <button data-a="r-90" title="Shift+R">⟲ 90°</button>
@@ -277,6 +284,7 @@ export class Panel {
       r15: () => this.rotate(15),
       r90: () => this.rotate(90),
       dup: () => this.store.duplicate(it.uid),
+      lock: () => this.store.update(it.uid, { locked: it.locked ? null : true }),
       del: () => this.store.remove(it.uid),
       reset: () => this.store.update(it.uid, { w: null, d: null, h: null, z: null, color: null, name: null }),
     };
@@ -336,7 +344,7 @@ export class Panel {
       <img class="thumb" alt="" data-thumb="${esc(c.id)}" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
       <div class="card-body">
         <div class="card-title">${brandPrefix(c) ? `<span class="brand">${esc(c.brand)}</span> ` : ''}${esc(c.name)}</div>
-        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${sizes ? `${sizes} ölçü · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${tl(price)} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}</div>
+        <div class="meta">${c.set ? `${c.set.length} parça · ` : ''}${sizes ? `${sizes} ölçü · ` : ''}${c.w} × ${c.d} × ${c.h} cm${price ? ` · ${c.variants ? "'den " : ''}${tl(price)} TL` : ''}${c.assumed ? ' · <span class="tag">örnek ölçü</span>' : c.sample ? ' · <span class="tag">örnek</span>' : ''}${c.owned ? ' · <span class="tag ok">alındı</span>' : ''}</div>
         ${
           swatches
             ? `<div class="swatches mini">${swatches.values

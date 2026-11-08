@@ -186,7 +186,8 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
     // boy seçeneği değeri h/w/d ile birlikte parts.potD / potH / canopyFrom verebilir (taç yumuşak kutu: geçişi daraltır)
     "variants": { "Yeşil / 80×150": { "price": 1950, "url": "https://…" } },  // seçenek adları " / " ile; url verilirse o açılır
     "assumed": true,                      // ölçü örnek/varsayım ("örnek ölçü" etiketi)
-    "sample": true                        // belirli bir ürün değil ama ölçü standart ("örnek" etiketi; ör. düz halılar)
+    "sample": true,                       // belirli bir ürün değil ama ölçü standart ("örnek" etiketi; ör. düz halılar)
+    "owned": true                         // alındı ("alındı" etiketi; Seçili sekmesinde "Sabitle" düğmesi)
   }
 ]}
 ```
@@ -206,6 +207,9 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
 { "id": "a-klasik", "name": "A – Klasik",
   "items": [ { "uid": "a1", "ref": "kanepe-3", "x": 200, "y": 210, "rot": 270 } ] }
 ```
+
+Yerleşim kaydında `"locked": true` → sabit mobilya (ör. alınmış TV sehpası): sürüklenmez, döndürülmez, ölçüsü
+değişmez, silinmez, "Yerine dene" ile değiştirilmez; Seçili sekmesinden kilidi açılır. Kopyası serbesttir.
 
 `x, y` mobilyanın taban **merkezi**. Bir yerleşimde katalog ölçüsünü ezmek için `w, d, h, z, color, name, use`
 eklenebilir; `"choice": {"Kumaş": "Sisli Yeşil"}` ürün seçeneğini, `"hidden": true` gizli olduğunu tutar. Katalogda olmayan bir kutu için `ref` yerine doğrudan `name, w, d, h` verilebilir.

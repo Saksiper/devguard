@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { convexOverlap, pointInPolygon, rectCorners } from '../src/core/geom.js';
 import { buildPlanModel, leafSector } from '../src/core/plan.js';
-import { resolveItem, useZones } from '../src/core/items.js';
+import { resolveItem, stackItems, useZones } from '../src/core/items.js';
 import { itemDistances, runChecks } from '../src/core/checks.js';
 import { validateLayout, validatePlan } from '../src/core/validate.js';
 
@@ -195,9 +195,10 @@ describe('demo verisi', () => {
   });
 
   it('A yerleşimi temiz, B bilerek konan giriş kapısı sorununu gösterir', () => {
-    const a = runChecks(model, load('a-klasik.json').items.map((e) => resolveItem(e, byId)));
+    // Uygulama ve check.mjs gibi: TV altındaki ünitenin üstüne oturtulur (stackItems).
+    const a = runChecks(model, stackItems(load('a-klasik.json').items.map((e) => resolveItem(e, byId))));
     expect(a.metrics.errors).toBe(0);
-    const b = runChecks(model, load('b-yemek-masali.json').items.map((e) => resolveItem(e, byId)));
+    const b = runChecks(model, stackItems(load('b-yemek-masali.json').items.map((e) => resolveItem(e, byId))));
     expect(b.issues.some((i) => i.kind === 'swing' && i.opening === 'K-giris')).toBe(true);
   });
 });
