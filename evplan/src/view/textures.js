@@ -175,6 +175,63 @@ export function woodGrain() {
 }
 
 /**
+ * Yatay lifli kaplama / laminat (gri tonlu, rengi malzeme verir): evdeki sabit mobilyalar için.
+ * kind: 'walnut' (antre panelleri: geniş, yumuşak ton bantları), 'zebrano' (mutfak: sık, belirgin koyu
+ * çizgiler), 'veneer' (kapı / kasa: ince düz lif). Doku 180 × 45 cm'yi kaplar ve iki yönde döşenebilir.
+ * userData: mean (doğrusal ortalama), meanSrgb (0–1, tuvalde çarpma için), size [180, 45].
+ */
+export function stripedVeneer(kind = 'veneer') {
+  return once(`striped|${kind}`, () => {
+    const W = 256;
+    const H = 512;
+    const P = { walnut: [0.1, 0.05, 0, 23], zebrano: [0.05, 0.05, 0.14, 31], veneer: [0.05, 0.035, 0, 37] }[kind] ?? [0.05, 0.035, 0, 37];
+    const [band, fine, stripe, seed] = P;
+    const r = rng(seed);
+    // Döngüsel yumuşatılmış satır gürültüsü (dikeyde kusursuz döşenir).
+    const smooth = (k) => {
+      const raw = Float32Array.from({ length: H }, () => r());
+      const out = new Float32Array(H);
+      for (let y = 0; y < H; y++) {
+        let a = 0;
+        for (let d = -k; d <= k; d++) a += raw[(y + d + H) % H];
+        out[y] = a / (2 * k + 1) - 0.5;
+      }
+      const m = Math.max(...out.map(Math.abs)) || 1;
+      return out.map((v) => v / m);
+    };
+    const b = smooth(28);
+    const f = smooth(1);
+    const sw = smooth(60); // çizgi aralığı hafif oynar
+    const row = new Float32Array(H);
+    for (let y = 0; y < H; y++) {
+      const z = stripe ? Math.max(0, Math.sin((y / H) * Math.PI * 2 * 38 + sw[y] * 5)) ** 3 : 0; // ~1,2 cm'de bir koyu çizgi
+      row[y] = 0.84 * (1 + band * b[y] + fine * f[y] - stripe * z);
+    }
+    const phase = smooth(40);
+    const [c, x] = canvas(W, H);
+    const img = x.createImageData(W, H);
+    let mean = 0;
+    let meanS = 0;
+    for (let y = 0; y < H; y++)
+      for (let px = 0; px < W; px++) {
+        const yy = (Math.round(y + 2.2 * Math.sin((px / W) * Math.PI * 2 + phase[y] * 6)) + H) % H; // hafif dalga, yatayda döşenir
+        const v = Math.max(0, Math.min(1, row[yy]));
+        const g = Math.round(v * 255);
+        const i = (y * W + px) * 4;
+        img.data[i] = img.data[i + 1] = img.data[i + 2] = g;
+        img.data[i + 3] = 255;
+        const sg = g / 255;
+        meanS += sg;
+        mean += sg <= 0.04045 ? sg / 12.92 : ((sg + 0.055) / 1.055) ** 2.4;
+      }
+    x.putImageData(img, 0, 0);
+    const t = tex(c);
+    t.userData = { mean: mean / (W * H), meanSrgb: meanS / (W * H), size: [180, 45] };
+    return t;
+  });
+}
+
+/**
  * Meşe kaplama (ör. IKEA TONSTAD, fırçalanmış meşe): düz biçilmiş kaplama yaprakları (11–16 cm), her yaprakta
  * kütüğün kesim düzlemine uzaklığı boy boyunca değişen halkalar → katedral damarlar; koyu geç odun bantları,
  * ince gözenek çizgileri, hafif ton dalgalanması. Gri tonlu (rengi malzeme verir); userData.mean = doğrusal

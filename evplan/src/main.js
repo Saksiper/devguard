@@ -115,6 +115,8 @@ async function boot() {
     } catch (e) {
       return fatal('Veri yüklenemedi', [e.message, `Veri seti: data/${set}/`]);
     }
+    // Evin gerçek kaplama renkleri (isteğe bağlı, plan.json'dan ayrı dosya).
+    plan.finishes ??= await getJSON(`${DATA}finishes.json`).catch(() => null);
     index.base = DATA;
   }
   await preloadRugMaps(catalog);

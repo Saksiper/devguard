@@ -203,6 +203,27 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
 `northAngle`: kuzeyin plandaki yönü (derece; 0 = planın sağı, 90 = aşağısı). İçe aktarıcı bunu modeldeki
 `coordinate_system` tarifinden ("+x = kuzey") çıkarır. Alan yoksa İstanbul ve "sağ = kuzey" varsayılır.
 
+### `finishes.json` (isteğe bağlı: evin gerçek kaplama renkleri)
+
+`data/<set>/finishes.json` varsa duvar, tavan, süpürgelik, kapı / kasa, zemin ve sabit mobilya (ankastre)
+renkleri buradan okunur; yoksa varsayılan renkler kullanılır. `plan.json`'dan ayrı durur, model yeniden içe
+aktarılınca kaybolmaz.
+
+```json
+{ "wall": { "color": "#d6c5b4" }, "ceiling": "#f7f5f1", "skirting": { "color": "#6e351c" },
+  "doorFrame": { "color": "#a97c5a" }, "door": { "color": "#a97c5a", "texture": "veneer" },
+  "entranceDoor": { "color": "#86583a", "texture": "walnut" }, "radiatorTube": 6.2,
+  "floors": { "parke": { "color": "#ac8459" }, "seramik": { "color": "#ddd5c6", "grout": "#b5ab9c" } },
+  "materials": { "cab": { "color": "#8f5d45", "texture": "zebrano", "handle": "inset" },
+                 "top": { "color": "#f1f1ef", "roughness": 0.3 } },
+  "rooms": { "antre": { "materials": { "cab": { "color": "#86583a", "texture": "walnut", "handle": "none", "doorWidth": 48 } } },
+             "mutfak": { "floor": { "color": "#e9e7e4", "grout": "#cfcdc8" } } } }
+```
+
+`materials` anahtarları içe aktarılan modeldeki malzeme adlarıdır (`cab`, `top`, `plinth`, `cream`, `glassCab`,
+`steel`…); `rooms.<oda>` aynı malzemeyi o odada farklı gösterir. `texture`: `walnut` | `zebrano` | `veneer`
+(yatay lifli kaplama); `handle`: `inset` (gömme çelik) | `none`; `roughness` / `metalness` yüzey parlaklığı.
+
 ### `layouts/*.json`
 
 ```json

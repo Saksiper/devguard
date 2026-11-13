@@ -29,7 +29,9 @@ const dir = path.join(data, set);
 const catalog = fs.existsSync(path.join(dir, 'furniture.json')) ? json(path.join(dir, 'furniture.json')) : json(path.join(data, 'furniture.json'));
 const idx = path.join(dir, 'layouts/index.json');
 const layouts = fs.existsSync(idx) ? json(idx).layouts.map((f) => ({ id: f.replace(/\.json$/, ''), ...json(path.join(dir, 'layouts', f)) })) : [];
-const payload = JSON.stringify({ plan: json(path.join(dir, 'plan.json')), catalog, layouts }).replace(/</g, '\\u003c');
+const plan = json(path.join(dir, 'plan.json'));
+if (!plan.finishes && fs.existsSync(path.join(dir, 'finishes.json'))) plan.finishes = json(path.join(dir, 'finishes.json')); // gerçek kaplama renkleri
+const payload = JSON.stringify({ plan, catalog, layouts }).replace(/</g, '\\u003c');
 
 fs.mkdirSync(outDir, { recursive: true });
 const page = `<title>${title}</title>

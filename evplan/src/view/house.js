@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { leafSector } from '../core/plan.js';
 import { pointInPolygon } from '../core/geom.js';
-import { ceramicTiles, oakPlanks, placed, radiatorFins, woodGrain } from './textures.js';
+import { ceramicTiles, oakPlanks, placed, radiatorFins, stripedVeneer, woodGrain } from './textures.js';
 
 export const CM = 0.01;
 export const v3 = (x, y, z = 0) => new THREE.Vector3(x * CM, z * CM, y * CM);
@@ -135,13 +135,35 @@ export function label(html, cls, pos) {
   return obj;
 }
 
+// ---- Evin gerçek kaplamaları (plan.finishes; data/<set>/finishes.json): renkler evin fotoğraflarından. ----
+const finColor = (v) => (v && typeof v === 'object' ? v.color : v) ?? null;
+/** Sabit mobilya malzemesinin kaplaması: önce odaya özel (finishes.rooms.<oda>.materials), sonra genel. */
+const finishOf = (F, room, key) => F.rooms?.[room?.id]?.materials?.[key] ?? F.materials?.[key] ?? null;
+const floorFinish = (F, r) => F.rooms?.[r.id]?.floor ?? F.floors?.[r.floor] ?? null;
+
+/** Yatay lifli kaplama malzemesi; doku gri tonlu, renk ortalaması fin.color olacak şekilde ölçeklenir. */
+function veneerMat(fin, wCm, hCm) {
+  const t = stripedVeneer(fin.texture).clone();
+  const [tw, th] = t.userData.size;
+  t.repeat.set(Math.max(1, Math.round(wCm / tw)), hCm / th);
+  t.needsUpdate = true;
+  return std(new THREE.Color(fin.color).multiplyScalar(1 / t.userData.mean), { map: t, roughness: fin.roughness ?? 0.5 });
+}
+
+/** Plan görünümündeki düz zemin rengi: kaplama rengi varsa onun açılmışı (okunurluk için). */
+function flatFloorColor(F, r) {
+  const c = finColor(floorFinish(F, r));
+  return c ? new THREE.Color(c).lerp(new THREE.Color(0xffffff), 0.35) : new THREE.Color(FLOOR_COLORS[r.floor] ?? FLOOR_COLORS.parke);
+}
+
 /** Odanın zemin malzemesi: parke (tahta uzun kenar boyunca), seramik (karo ölçüsü floorNote'tan, ör. "60×60"). */
-function floorMaterial(r) {
+function floorMaterial(r, F = {}) {
   const note = String(r.floorNote ?? '');
   const m = note.match(/(\d+(?:[.,]\d+)?)\s*[×x]\s*(\d+(?:[.,]\d+)?)/);
+  const fin = floorFinish(F, r);
   if (r.floor === 'seramik' || r.floor === 'dis') {
     const size = m ? Number(m[1].replace(',', '.')) : r.floor === 'dis' ? 33 : 60;
-    const t = r.floor === 'dis' ? ceramicTiles(size, '#c9c2b6', '#a69d90', 9) : ceramicTiles(size);
+    const t = r.floor === 'dis' ? ceramicTiles(size, fin?.color ?? '#c9c2b6', fin?.grout ?? '#a69d90', 9) : ceramicTiles(size, fin?.color ?? '#ebe9e4', fin?.grout ?? '#c9c4bb');
     return std(0xffffff, {
       map: placed(t.map, t.size),
       bumpMap: placed(t.bump, t.size),
@@ -152,18 +174,24 @@ function floorMaterial(r) {
   if (r.floor === 'parke' || !r.floor) {
     const t = oakPlanks();
     const along = r.size[0] >= r.size[1]; // tahtalar odanın uzun kenarı boyunca (varsayım)
-    return std(0xffffff, {
+    // Parke tonu: doku meşe (#bc9a74 tabanlı); kaplama rengi verilmişse ona oranlanır.
+    const tint = fin?.color ? new THREE.Color(fin.color).multiply(new THREE.Color(1 / 0.503, 1 / 0.323, 1 / 0.174)) : 0xffffff;
+    return std(tint, {
       map: placed(t.map, t.size, !along),
       bumpMap: placed(t.bump, t.size, !along),
       bumpScale: 0.8,
-      roughness: 0.5,
+      roughness: fin?.roughness ?? 0.5,
     });
   }
   return std(FLOOR_COLORS[r.floor] ?? FLOOR_COLORS.parke);
 }
 
-/** Ankastre dolabın ön yüzü: kapak bölmeleri, derzler ve kulplar dokuya çizilir (görsel varsayım). */
-function frontTexture(f, material) {
+/**
+ * Ankastre dolabın ön yüzü: kapak bölmeleri, derzler ve kulplar dokuya çizilir (görsel varsayım).
+ * fin (kaplama) verilirse renk dokuya işlenir (malzeme rengi beyaz kalır): fin.texture yatay lifli kaplama,
+ * fin.handle 'inset' (gömme yatay çelik kulp) | 'none'; 'glassCab' → alüminyum çerçeveli buzlu cam kapaklar.
+ */
+function frontTexture(f, material, fin = null) {
   const px = 3;
   const W = Math.min(1024, Math.round(f.w * px));
   const H = Math.min(1024, Math.round(f.h * px));
@@ -173,7 +201,39 @@ function frontTexture(f, material) {
   const x = c.getContext('2d');
   const sx = W / f.w;
   const sy = H / f.h;
-  if (material === 'cab') {
+  const tall = f.h > 150;
+  const n = tall && f.w < 75 ? 1 : Math.max(1, Math.round(f.w / (fin?.doorWidth ?? 60)));
+  const dw = f.w / n;
+  if (material === 'glassCab') {
+    x.fillStyle = fin?.frame ?? '#b9bcbf';
+    x.fillRect(0, 0, W, H);
+    const fw = 4.5;
+    for (let i = 0; i < n; i++) {
+      const g = x.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, fin?.color ?? '#d5d8cc');
+      g.addColorStop(1, '#c4c8bd');
+      x.fillStyle = g;
+      x.fillRect((i * dw + fw) * sx, fw * sy, (dw - 2 * fw) * sx, (f.h - 2 * fw) * sy);
+      x.fillStyle = 'rgba(60,62,66,0.55)';
+      x.fillRect(Math.round(i * dw * sx) - 1, 0, 2, H);
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 4;
+    return t;
+  }
+  if (fin?.texture) {
+    const v = stripedVeneer(fin.texture);
+    const k = 1 / v.userData.meanSrgb;
+    const rgb = [1, 3, 5].map((i) => Math.min(255, Math.round(parseInt(fin.color.slice(i, i + 2), 16) * k)));
+    x.fillStyle = `rgb(${rgb})`;
+    x.fillRect(0, 0, W, H);
+    x.globalCompositeOperation = 'multiply';
+    const tw = v.userData.size[0] * sx;
+    const th = v.userData.size[1] * sy;
+    for (let tx = 0; tx < W; tx += tw) for (let ty = 0; ty < H; ty += th) x.drawImage(v.image, tx, ty, tw, th);
+    x.globalCompositeOperation = 'source-over';
+  } else if (material === 'cab') {
     const g = woodGrain().image;
     const tw = 70 * sx;
     const th = 140 * sy;
@@ -182,24 +242,40 @@ function frontTexture(f, material) {
     x.fillStyle = '#ffffff';
     x.fillRect(0, 0, W, H);
   }
-  const tall = f.h > 150;
-  const n = tall && f.w < 75 ? 1 : Math.max(1, Math.round(f.w / 60));
-  const dw = f.w / n;
-  x.fillStyle = 'rgba(40,30,20,0.55)';
+  x.fillStyle = fin?.texture ? 'rgba(30,18,10,0.6)' : 'rgba(40,30,20,0.55)';
   for (let i = 0; i <= n; i++) x.fillRect(Math.round(i * dw * sx) - 1, 0, 2, H);
   x.fillRect(0, 0, W, 2);
   x.fillRect(0, H - 2, W, 2);
-  if (tall && f.h > 190) x.fillRect(0, Math.round(sy * (f.h - 200 + 140)) - 1, W, 2); // üst kapak ayrımı
+  // Tuvalin üst satırı dolabın üstüdür: yerden yükseklik hb → tuval y = (f.h − (hb − f.z)) · sy.
+  if (tall && f.h > 190) x.fillRect(0, Math.round(sy * (f.h - (140 - f.z))) - 1, W, 2); // üst kapak ayrımı (yerden 140 cm)
   // Kulplar: alt dolapta üstte, üst dolapta altta, boy dolapta ~100 cm'de; kapaklar çift çift açılır.
-  const hy = f.z >= 120 ? f.h - 10 : tall ? Math.max(8, 100 - f.z) : 8;
-  for (let i = 0; i < n; i++) {
-    const right = n === 1 ? true : i % 2 === 0;
-    const hx = (i + (right ? 1 : 0)) * dw + (right ? -4 : 4);
-    const top = (f.h - hy - 7) * sy;
-    x.fillStyle = 'rgba(45,45,48,0.95)';
-    x.fillRect(hx * sx - 2, top, 4, 14 * sy);
-    x.fillStyle = 'rgba(255,255,255,0.35)';
-    x.fillRect(hx * sx - 2, top, 1, 14 * sy);
+  // hy = kulp merkezinin dolabın üstünden uzaklığı.
+  const hy = f.z >= 120 ? f.h - 8 : tall ? f.h - Math.max(8, 100 - f.z) : 8;
+  if (fin?.handle === 'none') {
+    // kulpsuz (bas-aç) kapak
+  } else if (fin?.handle === 'inset') {
+    // Gömme yatay çelik kulp (≈16 × 4,5 cm), kapağın ortasında.
+    for (let i = 0; i < n; i++) {
+      const hw = Math.min(16, dw * 0.5);
+      const hx = ((i + 0.5) * dw - hw / 2) * sx;
+      const top = (hy - 2.25) * sy;
+      x.fillStyle = '#d3d6da';
+      x.fillRect(hx, top, hw * sx, 4.5 * sy);
+      x.fillStyle = '#6f757c';
+      x.fillRect(hx + 0.6 * sx, top + 0.6 * sy, (hw - 1.2) * sx, 2.4 * sy);
+      x.fillStyle = '#a9aeb4';
+      x.fillRect(hx + 0.6 * sx, top + 3 * sy, (hw - 1.2) * sx, 0.9 * sy);
+    }
+  } else {
+    for (let i = 0; i < n; i++) {
+      const right = n === 1 ? true : i % 2 === 0;
+      const hx = (i + (right ? 1 : 0)) * dw + (right ? -4 : 4);
+      const top = (hy - 7) * sy;
+      x.fillStyle = 'rgba(45,45,48,0.95)';
+      x.fillRect(hx * sx - 2, top, 4, 14 * sy);
+      x.fillStyle = 'rgba(255,255,255,0.35)';
+      x.fillRect(hx * sx - 2, top, 1, 14 * sy);
+    }
   }
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -222,14 +298,28 @@ export function buildHouse(model) {
   const fixtureLabels = new THREE.Group();
   root.add(walls, floors, ceilings, openings, fixtures, extras, planMarks, aboveMarks, roomLabels, fixtureLabels);
 
+  // Bu evin malzemeleri: varsayılanlar (MAT) + plan.finishes'taki gerçek kaplamalar.
+  const F = model.plan?.finishes ?? {};
+  const M = { ...MAT };
+  if (F.wall) M.wall = std(finColor(F.wall), { roughness: F.wall.roughness ?? 0.95 });
+  if (F.ceiling) M.ceiling = std(finColor(F.ceiling), { roughness: 0.95, side: THREE.DoubleSide });
+  M.beam = F.ceiling ? std(finColor(F.ceiling), { roughness: 0.95 }) : M.wall; // kiriş tavan boyasında
+  if (F.doorFrame) M.casing = std(finColor(F.doorFrame), { roughness: 0.5 });
+  M.skirting = F.skirting ? std(finColor(F.skirting), { roughness: 0.45 }) : M.casing;
+  if (F.door?.texture) M.door = veneerMat(F.door, 90, 205);
+  else if (F.door) M.door = std(finColor(F.door), { roughness: 0.5 });
+  if (F.entranceDoor?.texture) M.steelDoor = veneerMat(F.entranceDoor, 95, 205);
+  else if (F.entranceDoor) M.steelDoor = std(finColor(F.entranceDoor), { roughness: 0.5 });
+  if (F.windowFrame) M.frame = std(finColor(F.windowFrame), { roughness: 0.4 });
+
   const cuttables = [];
   const doorLeaves = []; // menteşeli kapı kanatları (dönen gruplar)
   const edges = []; // planda okunurluk için kenar çizgileri (gerçekçi görünümde gizli)
   const inRoom = (p) => model.rooms.find((r) => pointInPolygon(p, r.poly));
 
   for (const p of model.pieces) {
-    const mat = p.kind === 'parapet' ? MAT.parapet : MAT.wall;
-    const mesh = wallBox(p.wall, p.s0, p.s1, p.wall.oMin, p.wall.oMax, p.z0, p.z1, [mat, mat, MAT.wallTop, mat, mat, mat]);
+    const mat = p.kind === 'parapet' ? M.parapet : M.wall;
+    const mesh = wallBox(p.wall, p.s0, p.s1, p.wall.oMin, p.wall.oMax, p.z0, p.z1, [mat, mat, M.wallTop, mat, mat, mat]);
     mesh.userData.piece = p;
     walls.add(mesh);
     cuttables.push(mesh);
@@ -242,7 +332,7 @@ export function buildHouse(model) {
       ]) {
         const mid = wallPt(w, (p.s0 + p.s1) / 2, face + sg * 6);
         if (!inRoom(mid)) continue;
-        const sk = wallBox(w, p.s0, p.s1, face, face + sg * 1.2, 0, 8, MAT.casing);
+        const sk = wallBox(w, p.s0, p.s1, face, face + sg * 1.2, 0, 8, M.skirting);
         sk.receiveShadow = true;
         extras.add(sk);
       }
@@ -253,14 +343,14 @@ export function buildHouse(model) {
   for (const r of model.rooms) {
     const geo = new THREE.ShapeGeometry(shapeFromPoly(r.poly));
     geo.rotateX(-Math.PI / 2);
-    const flat = new THREE.MeshLambertMaterial({ color: FLOOR_COLORS[r.floor] ?? FLOOR_COLORS.parke });
+    const flat = new THREE.MeshLambertMaterial({ color: flatFloorColor(F, r) });
     const floor = new THREE.Mesh(geo, flat);
-    floor.userData = { room: r, flat, real: floorMaterial(r) };
+    floor.userData = { room: r, flat, real: floorMaterial(r, F) };
     floor.position.y = 0.001;
     floors.add(floor);
     realFloors.push(floor);
     if (r.ceiling !== false) {
-      const c = new THREE.Mesh(geo, MAT.ceiling);
+      const c = new THREE.Mesh(geo, M.ceiling);
       c.position.y = r.ceilingHeight * CM;
       ceilings.add(c);
     }
@@ -281,7 +371,7 @@ export function buildHouse(model) {
     const w = op.wallRef;
     const om = (w.oMin + w.oMax) / 2;
     if (op.type === 'window' || op.glazed) {
-      const glass = wallBox(w, op.s0, op.s1, om - 1, om + 1, op.sill, op.top, op.type === 'door' ? MAT.glassDoor : MAT.glass);
+      const glass = wallBox(w, op.s0, op.s1, om - 1, om + 1, op.sill, op.top, op.type === 'door' ? M.glassDoor : M.glass);
       glass.renderOrder = 2;
       openings.add(glass);
       cuttables.push(glass);
@@ -291,14 +381,14 @@ export function buildHouse(model) {
       const F = 6;
       const o0 = om - 3.5;
       const o1 = om + 3.5;
-      detail(wallBox(w, op.s0, op.s0 + F, o0, o1, op.sill, op.top, MAT.frame), op.sill, op.top);
-      detail(wallBox(w, op.s1 - F, op.s1, o0, o1, op.sill, op.top, MAT.frame), op.sill, op.top);
-      detail(wallBox(w, op.s0, op.s1, o0, o1, op.top - F, op.top, MAT.frame), op.top - F, op.top);
-      detail(wallBox(w, op.s0, op.s1, o0, o1, op.sill, op.sill + (op.type === 'door' ? 4 : F), MAT.frame), op.sill, op.sill + F);
+      detail(wallBox(w, op.s0, op.s0 + F, o0, o1, op.sill, op.top, M.frame), op.sill, op.top);
+      detail(wallBox(w, op.s1 - F, op.s1, o0, o1, op.sill, op.top, M.frame), op.sill, op.top);
+      detail(wallBox(w, op.s0, op.s1, o0, o1, op.top - F, op.top, M.frame), op.top - F, op.top);
+      detail(wallBox(w, op.s0, op.s1, o0, o1, op.sill, op.sill + (op.type === 'door' ? 4 : F), M.frame), op.sill, op.sill + F);
       const panels = Math.max(op.leaves.length, Math.round(op.width / 125), 1);
       for (let k = 1; k < panels; k++) {
         const s = op.s0 + (op.width / panels) * k;
-        detail(wallBox(w, s - F / 2 - 1, s + F / 2 + 1, o0, o1, op.sill, op.top, MAT.frame), op.sill, op.top);
+        detail(wallBox(w, s - F / 2 - 1, s + F / 2 + 1, o0, o1, op.sill, op.top, M.frame), op.sill, op.top);
       }
       if (op.sill > 20) {
         // İç denizlik (mermer, varsayım).
@@ -309,18 +399,18 @@ export function buildHouse(model) {
     } else if (op.type === 'door') {
       // Kapı kasası (açıklığın içi) ve iki yüzde pervaz (7 cm; varsayım).
       const K = 2;
-      detail(wallBox(w, op.s0, op.s0 + K, w.oMin - 1, w.oMax + 1, 0, op.top, MAT.casing), 0, op.top);
-      detail(wallBox(w, op.s1 - K, op.s1, w.oMin - 1, w.oMax + 1, 0, op.top, MAT.casing), 0, op.top);
-      detail(wallBox(w, op.s0, op.s1, w.oMin - 1, w.oMax + 1, op.top - K, op.top, MAT.casing), op.top - K, op.top);
+      detail(wallBox(w, op.s0, op.s0 + K, w.oMin - 1, w.oMax + 1, 0, op.top, M.casing), 0, op.top);
+      detail(wallBox(w, op.s1 - K, op.s1, w.oMin - 1, w.oMax + 1, 0, op.top, M.casing), 0, op.top);
+      detail(wallBox(w, op.s0, op.s1, w.oMin - 1, w.oMax + 1, op.top - K, op.top, M.casing), op.top - K, op.top);
       for (const [face, sg] of [
         [w.oMin, -1],
         [w.oMax, 1],
       ]) {
         if (!inRoom(wallPt(w, (op.s0 + op.s1) / 2, face + sg * 6))) continue;
         const o1 = face + sg * 1.5;
-        detail(wallBox(w, op.s0 - 7, op.s0, face, o1, 0, op.top + 7, MAT.casing), 0, op.top + 7);
-        detail(wallBox(w, op.s1, op.s1 + 7, face, o1, 0, op.top + 7, MAT.casing), 0, op.top + 7);
-        detail(wallBox(w, op.s0 - 7, op.s1 + 7, face, o1, op.top, op.top + 7, MAT.casing), op.top, op.top + 7);
+        detail(wallBox(w, op.s0 - 7, op.s0, face, o1, 0, op.top + 7, M.casing), 0, op.top + 7);
+        detail(wallBox(w, op.s1, op.s1 + 7, face, o1, 0, op.top + 7, M.casing), 0, op.top + 7);
+        detail(wallBox(w, op.s0 - 7, op.s1 + 7, face, o1, op.top, op.top + 7, M.casing), op.top, op.top + 7);
       }
     }
     for (const leaf of op.leaves) {
@@ -343,7 +433,7 @@ export function buildHouse(model) {
         pivot.rotation.y = -a;
         pivot.userData.z = [0, op.height];
         pivot.userData.door = { id: op.id, hinge: leaf.hinge, radius: leaf.radius, closed: -closedA, open: -openA, isOpen: !op.closed, target: -a };
-        const door = new THREE.Mesh(unitBox, op.glassLeaf ? MAT.frosted : op.leafMaterial === 'steel' ? MAT.steelDoor : MAT.door);
+        const door = new THREE.Mesh(unitBox, op.glassLeaf ? M.frosted : op.leafMaterial === 'steel' ? M.steelDoor : M.door);
         // Kanat yerel +x boyunca (menteşeden uca); yerel z kanadın iki yüzü.
         door.position.set((leaf.radius / 2) * CM, (op.height / 2) * CM, 0);
         door.scale.set(leaf.radius * CM, (op.height - 1) * CM, 0.04);
@@ -353,10 +443,10 @@ export function buildHouse(model) {
         planMarks.add(polyLine([leaf.hinge, end], 0.013, 0x374151, { closed: false }));
         // Kapı kolu (iki yüzde, yerden 105 cm).
         for (const sg of [-1, 1]) {
-          const lever = new THREE.Mesh(unitBox, MAT.handle);
+          const lever = new THREE.Mesh(unitBox, M.handle);
           lever.position.set((leaf.radius - 12) * CM, 105 * CM, 4 * sg * CM);
           lever.scale.set(0.12, 0.018, 0.018);
-          const rose = new THREE.Mesh(unitBox, MAT.handle);
+          const rose = new THREE.Mesh(unitBox, M.handle);
           rose.position.set((leaf.radius - 7) * CM, 105 * CM, 2.4 * sg * CM);
           rose.scale.set(0.05, 0.05, 0.008);
           for (const m of [lever, rose]) {
@@ -374,33 +464,48 @@ export function buildHouse(model) {
   const shadeGeo = new THREE.CylinderGeometry(0.3, 0.5, 1, 36, 1, true);
   for (const f of model.fixtures) {
     const key = f.material ?? f.type;
-    const color = f.color ? new THREE.Color(f.color) : (MATERIAL_COLORS[f.material] ?? FIXTURE_COLORS[f.type] ?? 0xd1d5db);
-    const clear = TRANSPARENT.has(f.type) || TRANSPARENT.has(f.material);
-    let mat = std(color, { transparent: clear, opacity: clear ? 0.5 : 1, ...(SURFACE[key] ?? SURFACE[f.type] ?? {}) });
+    const froom = inRoom([f.x, f.y]);
+    const fin = f.material ? finishOf(F, froom, f.material) : null; // evin gerçek kaplaması (varsa)
+    const color = f.color ? new THREE.Color(f.color) : fin?.color ? new THREE.Color(fin.color) : (MATERIAL_COLORS[f.material] ?? FIXTURE_COLORS[f.type] ?? 0xd1d5db);
+    const clear = (TRANSPARENT.has(f.type) || TRANSPARENT.has(f.material)) && !(fin && fin.opacity === 1);
+    const surf = { ...(SURFACE[key] ?? SURFACE[f.type] ?? {}) };
+    if (fin?.roughness !== undefined) surf.roughness = fin.roughness;
+    if (fin?.metalness !== undefined) surf.metalness = fin.metalness;
+    let mat = fin?.texture && !f.color ? veneerMat(fin, Math.max(f.w, f.d), f.h) : std(color, { transparent: clear, opacity: clear ? 0.5 : 1, ...surf });
     let geo = f.shape === 'cylinder' ? cylGeo : unitBox;
-    if (f.type === 'beam' || f.type === 'column') mat = MAT.wall;
+    if (f.type === 'beam') mat = M.beam;
+    if (f.type === 'column') mat = M.wall;
     if (f.type === 'radiator') {
-      const fins = placed(radiatorFins(), [2.5, 100]);
-      fins.repeat.set(f.w / 2.5, 1);
+      const tube = F.radiatorTube ?? 2.5; // dikey dilim aralığı (cm)
+      const fins = placed(radiatorFins(), [tube, 100]);
+      fins.repeat.set(f.w / tube, 1);
       mat = std(0xf6f6f4, { map: fins, bumpMap: fins, bumpScale: 2, roughness: 0.4 });
     }
     if (f.type === 'lamp') {
       geo = shadeGeo;
       mat = std(0xf3ead8, { roughness: 0.9, side: THREE.DoubleSide, emissive: 0xfff0d0, emissiveIntensity: 0.12 });
     }
-    if ((f.material === 'cab' || f.material === 'white') && f.d >= 20 && f.h >= 30 && !/panel|kaplama/i.test(f.name ?? '')) {
+    if ((f.material === 'cab' || f.material === 'white' || (f.material === 'glassCab' && fin)) && f.d >= 20 && f.h >= 30 && !/panel|kaplama/i.test(f.name ?? '')) {
       // Ön yüz: oda tarafına bakan yan (merkezle aynı odada kalan yön).
-      const room = inRoom([f.x, f.y]);
+      const room = froom;
       const a = (f.rot * Math.PI) / 180;
       const side = (sg) => {
         const off = f.d / 2 + 25;
         const p = [f.x - Math.sin(a) * off * sg, f.y + Math.cos(a) * off * sg];
         return room && inRoom(p) === room;
       };
-      const front = side(1) ? 4 : side(-1) ? 5 : -1;
+      // Duvar boyunca uzanan dar-derin dolap (ör. antre gardırobu: w 60, d 202): ön yüz yerel ±x.
+      const sideX = (sg) => {
+        const off = f.w / 2 + 25;
+        const p = [f.x + Math.cos(a) * off * sg, f.y + Math.sin(a) * off * sg];
+        return room && inRoom(p) === room;
+      };
+      const deep = f.d > f.w * 1.5;
+      const front = deep ? (sideX(1) ? 0 : sideX(-1) ? 1 : -1) : side(1) ? 4 : side(-1) ? 5 : -1;
       if (front >= 0) {
-        const body = f.material === 'cab' ? std(color, { map: placed(woodGrain(), [70, 140]), roughness: 0.6 }) : mat;
-        const face = std(color, { map: frontTexture(f, f.material), ...SURFACE[f.material] });
+        const baked = !!fin?.texture || f.material === 'glassCab'; // renk dokuya işlendi
+        const body = fin?.texture || f.material !== 'cab' ? mat : std(color, { map: placed(woodGrain(), [70, 140]), roughness: 0.6 });
+        const face = std(baked ? 0xffffff : color, { map: frontTexture(deep ? { ...f, w: f.d } : f, f.material, fin), ...surf });
         mat = [body, body, body, body, body, body];
         mat[front] = face;
       }
@@ -421,11 +526,11 @@ export function buildHouse(model) {
       // Ampul ve tavana kablo.
       const room = inRoom([f.x, f.y]);
       const ceil = room?.ceilingHeight ?? model.settings.ceilingHeight;
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.035, 16, 12), MAT.bulb);
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.035, 16, 12), M.bulb);
       bulb.position.copy(v3(f.x, f.y, f.z + f.h * 0.45));
       bulb.userData.z = [f.z, f.z + f.h];
       extras.add(bulb);
-      const cord = new THREE.Mesh(cylGeo, MAT.cord);
+      const cord = new THREE.Mesh(cylGeo, M.cord);
       cord.position.copy(v3(f.x, f.y, (f.z + f.h + ceil) / 2));
       cord.scale.set(0.008, Math.max(1, ceil - f.z - f.h) * CM, 0.008);
       cord.userData.z = [f.z + f.h, ceil];
