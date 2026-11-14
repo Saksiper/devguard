@@ -4,6 +4,7 @@ import { buildCabinets } from './cabinets.js';
 import { buildTv } from './tv.js';
 import { buildTambour } from './tambour.js';
 import { buildPlant } from './plant.js';
+import { buildConsole } from './console.js';
 import {
   buildBed,
   buildBentwood,
@@ -41,6 +42,7 @@ export const MODEL_BUILDERS = {
   bentwood: buildBentwood,
   plant: buildPlant,
   wireShelf: buildWireShelf,
+  console: buildConsole,
 };
 
 export function buildModel(it) {

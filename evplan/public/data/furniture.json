@@ -1121,6 +1121,301 @@
    }
   },
   {
+   "id": "dekopratik-asos",
+   "name": "Asos dresuar (oval cam)",
+   "brand": "Dekopratik",
+   "category": "Gerçek ürünler",
+   "group": "Dresuarlar",
+   "w": 80,
+   "d": 30,
+   "h": 80,
+   "color": "#87a07f",
+   "flatpack": true,
+   "url": "https://dekopratik.com.tr/asos-dresuar",
+   "source": "dekopratik.com.tr ürün sayfası (ölçü, malzeme, ayak renkleri, fiyat), 14.11.2026; kullanıcının Hepsiburada linki bot korumasıyla açılmadı, aynı ürün üreticinin sitesinden alındı. Ayak renkleri ürün fotoğraflarından.",
+   "material": "Gövde 15×15 mm metal kare profil; üst tabla ve alt raf 4 mm temperli (kırılmaz) cam, oval",
+   "notes": "Alt raf yerden 13 cm (üretici). Ayakların yeri ölçü çiziminden tahmini. Fiyat üreticinin sitesindeki; Hepsiburada fiyatı farklı olabilir (sayfa açılmadı).",
+   "options": [
+    {
+     "name": "Ayak rengi",
+     "part": "frame",
+     "values": [
+      {
+       "name": "Mint Yeşili",
+       "color": "#87a07f"
+      },
+      {
+       "name": "Gold",
+       "color": "#b8914f"
+      },
+      {
+       "name": "Siyah",
+       "color": "#1e1d1b"
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Ayak rengi": "Mint Yeşili"
+   },
+   "variants": {
+    "Mint Yeşili": {
+     "price": 2869.99,
+     "url": "https://dekopratik.com.tr/asos-dresuar?ayak-rengi=mint-yesili"
+    },
+    "Gold": {
+     "price": 2869.99,
+     "url": "https://dekopratik.com.tr/asos-dresuar?ayak-rengi=gold"
+    },
+    "Siyah": {
+     "price": 2659.99,
+     "url": "https://dekopratik.com.tr/asos-dresuar?ayak-rengi=siyah"
+    }
+   },
+   "use": {
+    "front": 40
+   },
+   "shape": {
+    "type": "console",
+    "style": "ovalGlass",
+    "profile": 1.5,
+    "glass": 0.4,
+    "lowShelf": 13
+   }
+  },
+  {
+   "id": "neostill-venedik",
+   "name": "Venedik dresuar / konsol",
+   "brand": "NEOstill",
+   "category": "Gerçek ürünler",
+   "group": "Dresuarlar",
+   "w": 90,
+   "d": 30,
+   "h": 80,
+   "color": "#7d5a44",
+   "price": 9860,
+   "flatpack": true,
+   "url": "https://www.hipicon.com/P/neostill-venedik-dresuar-konsol/229835",
+   "source": "hipicon.com ürün sayfası (ölçü 90 × 30 × 80, malzeme, fiyat) ve ölçü çizimi, 14.11.2026; ahşap rengi ürün fotoğraflarından",
+   "material": "Doğal masif ahşap raflar (ceviz tonu), yan ayaklar temperli cam",
+   "notes": "Alt raf yerden 38 cm, raflar arası 35 cm (ölçü çizimi). Raf ve cam kalınlığı fotoğraftan tahmini. Tek renk.",
+   "use": {
+    "front": 40
+   },
+   "shape": {
+    "type": "console",
+    "style": "glassSides",
+    "shelves": [
+     80,
+     38
+    ],
+    "shelfT": 3.6,
+    "glass": 1
+   }
+  },
+  {
+   "id": "oobje-bony",
+   "name": "Bony raf ünitesi / dresuar",
+   "brand": "Oobje",
+   "category": "Gerçek ürünler",
+   "group": "Dresuarlar",
+   "w": 71.5,
+   "d": 31.5,
+   "h": 81,
+   "color": "#868d81",
+   "flatpack": false,
+   "url": "https://oobje.com.tr/products/bony-raf-unitesi",
+   "source": "oobje.com.tr ürün verisi (ölçü, ağırlık, 12 renk × tekerlekli/tekerleksiz, fiyat), 14.11.2026; renkler her rengin ürün fotoğrafından",
+   "material": "Bükme sac metal ve boru, fırın boyalı; 17 kg; el yapımı (Rüya Akyol tasarımı)",
+   "notes": "Bar arabası ya da konsol. Tepsi ve alt kutunun yükseklikleri fotoğraftan tahmini. Tekerlek boyu 7,5 cm (üretici); tekerlekli modelin toplam yüksekliği sitede ayrıca yazmıyor, 81 cm kabul edildi: varsayım. Sipariş üzerine üretim (15 gün). Sitedeki indirimli fiyat.",
+   "options": [
+    {
+     "name": "Renk",
+     "part": "fabric",
+     "values": [
+      {
+       "name": "Yeşil",
+       "color": "#868d81"
+      },
+      {
+       "name": "Siyah",
+       "color": "#2a2a2a"
+      },
+      {
+       "name": "Gri",
+       "color": "#bebebd"
+      },
+      {
+       "name": "Turuncu",
+       "color": "#b36329"
+      },
+      {
+       "name": "Lacivert",
+       "color": "#253772"
+      },
+      {
+       "name": "Koyu Kahverengi",
+       "color": "#4f3a29"
+      },
+      {
+       "name": "Hardal",
+       "color": "#b5804a"
+      },
+      {
+       "name": "Mint",
+       "color": "#a9bf99"
+      },
+      {
+       "name": "Koyu Yeşil",
+       "color": "#454a39"
+      },
+      {
+       "name": "Kırmızı",
+       "color": "#8c1c1d"
+      },
+      {
+       "name": "Bej",
+       "color": "#d5c9b9"
+      },
+      {
+       "name": "Mürdüm",
+       "color": "#5a3d53"
+      }
+     ]
+    },
+    {
+     "name": "Model",
+     "values": [
+      {
+       "name": "Tekerleksiz",
+       "parts": {
+        "wheels": false
+       }
+      },
+      {
+       "name": "Tekerlekli",
+       "parts": {
+        "wheels": true
+       }
+      }
+     ]
+    }
+   ],
+   "defaultOptions": {
+    "Renk": "Yeşil",
+    "Model": "Tekerleksiz"
+   },
+   "variants": {
+    "Yeşil / Tekerleksiz": {
+     "id": 46392591876283,
+     "price": 17085.0
+    },
+    "Yeşil / Tekerlekli": {
+     "id": 46706816647355,
+     "price": 17510.0
+    },
+    "Siyah / Tekerleksiz": {
+     "id": 46392591909051,
+     "price": 17085.0
+    },
+    "Siyah / Tekerlekli": {
+     "id": 46706816680123,
+     "price": 17510.0
+    },
+    "Gri / Tekerleksiz": {
+     "id": 46392591843515,
+     "price": 17085.0
+    },
+    "Gri / Tekerlekli": {
+     "id": 46706816712891,
+     "price": 17510.0
+    },
+    "Turuncu / Tekerleksiz": {
+     "id": 46392591941819,
+     "price": 17085.0
+    },
+    "Turuncu / Tekerlekli": {
+     "id": 46706816745659,
+     "price": 17510.0
+    },
+    "Lacivert / Tekerleksiz": {
+     "id": 46392591974587,
+     "price": 17085.0
+    },
+    "Lacivert / Tekerlekli": {
+     "id": 46706816778427,
+     "price": 17510.0
+    },
+    "Koyu Kahverengi / Tekerleksiz": {
+     "id": 46392592007355,
+     "price": 17085.0
+    },
+    "Koyu Kahverengi / Tekerlekli": {
+     "id": 46706816811195,
+     "price": 17510.0
+    },
+    "Hardal / Tekerleksiz": {
+     "id": 46392592105659,
+     "price": 17085.0
+    },
+    "Hardal / Tekerlekli": {
+     "id": 46706816876731,
+     "price": 17510.0
+    },
+    "Mint / Tekerleksiz": {
+     "id": 46392592138427,
+     "price": 17085.0
+    },
+    "Mint / Tekerlekli": {
+     "id": 46706816909499,
+     "price": 17510.0
+    },
+    "Koyu Yeşil / Tekerleksiz": {
+     "id": 46392592171195,
+     "price": 17085.0
+    },
+    "Koyu Yeşil / Tekerlekli": {
+     "id": 46706816942267,
+     "price": 17510.0
+    },
+    "Kırmızı / Tekerleksiz": {
+     "id": 46392592072891,
+     "price": 17085.0
+    },
+    "Kırmızı / Tekerlekli": {
+     "id": 46706816975035,
+     "price": 17510.0
+    },
+    "Bej / Tekerleksiz": {
+     "id": 47394350334139,
+     "price": 17085.0
+    },
+    "Bej / Tekerlekli": {
+     "id": 47394350366907,
+     "price": 17510.0
+    },
+    "Mürdüm / Tekerleksiz": {
+     "id": 47706597818555,
+     "price": 17085.0
+    },
+    "Mürdüm / Tekerlekli": {
+     "id": 47706597851323,
+     "price": 17510.0
+    }
+   },
+   "use": {
+    "front": 40
+   },
+   "shape": {
+    "type": "console",
+    "style": "bony",
+    "trayY": 68,
+    "boxTop": 46,
+    "boxBottom": 9,
+    "lip": 13
+   }
+  },
+  {
    "id": "nun-lizbon",
    "name": "Lizbon Serisi halı",
    "brand": "Nun Halı",

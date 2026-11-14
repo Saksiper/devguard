@@ -174,6 +174,7 @@ birbirine değiyorsa köşe boşlukları otomatik kapatılır.
     "set": [["masa-id", 0, 0, 0], ["sandalye-id", -72, -62, 0]],  // takım: parçalar [ref, dx, dy, açı] tek adımda eklenir
     "shape": { "type": "sofaL", "wing": 91 },  // L köşe koltuk: taban iki kanat; köşe yönü seçeneği part "corner"
     // platform kanepe (Lazzoni Mony): { "type": "platformSofa", "seatHeight": 38, "backs": 2, "backWidth": 60, "arm": [44, 58, 16] }
+    // dresuar: { "type": "console", "style": "ovalGlass" | "glassSides" | "bony" } (Asos / Venedik / Bony; renk part "frame" ya da "fabric")
     // tel çerçeveli raf (IKEA BYAKORRE): { "type": "wireShelf", "shelves": [27, 64, 101, 138], "frames": [-35, 35] } + parts.edges
     "variantOptions": ["Kumaş", "Ayak"],  // mağaza varyantını belirleyen seçenekler (diğerleri yalnızca yerleşim)
     "options": [                          // seçenekler: renk örneği (color → part), ek parçalar (parts), ölçü (w/d/h)

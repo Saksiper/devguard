@@ -243,6 +243,19 @@ describe('gerçek ürünler', () => {
     expect(new Set(w.parts.edges)).toEqual(new Set(['#eeeeea']));
   });
 
+  it('Dresuarlar: Asos ayak rengi fiyatı ve linki, Venedik tek ürün, Bony 12 renk × tekerlek varyantı', () => {
+    expect(realCat.items.filter((c) => c.group === 'Dresuarlar').map((c) => c.id)).toEqual(['dekopratik-asos', 'neostill-venedik', 'oobje-bony']);
+    const a = resolveItem({ uid: 'a', ref: 'dekopratik-asos', x: 0, y: 0, choice: { 'Ayak rengi': 'Siyah' } }, byId);
+    expect([a.w, a.d, a.h, a.price, a.parts.frame]).toEqual([80, 30, 80, 2659.99, '#1e1d1b']);
+    expect(a.url).toMatch(/ayak-rengi=siyah$/);
+    const v = resolveItem({ uid: 'v', ref: 'neostill-venedik', x: 0, y: 0 }, byId);
+    expect([v.w, v.d, v.h, v.price]).toEqual([90, 30, 80, 9860]);
+    const b = resolveItem({ uid: 'b', ref: 'oobje-bony', x: 0, y: 0, choice: { Renk: 'Mürdüm', Model: 'Tekerlekli' } }, byId);
+    expect([b.w, b.d, b.h, b.color, b.price, b.parts.wheels]).toEqual([71.5, 31.5, 81, '#5a3d53', 17510, true]);
+    expect(b.url).toBe('https://oobje.com.tr/products/bony-raf-unitesi?variant=47706597851323');
+    expect(byId.get('oobje-bony').options[0].values).toHaveLength(12);
+  });
+
   it('Montis halılar: linkteki ölçü varsayılan, ölçüye göre fiyat ve link, desen haritası dosyası var', () => {
     const e = resolveItem({ uid: 'e', ref: 'montis-etiam-907011', x: 0, y: 0 }, byId);
     expect([e.w, e.d, e.h, e.price, e.collides]).toEqual([200, 290, 0.5, 14616, false]);
