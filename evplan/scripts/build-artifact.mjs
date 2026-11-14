@@ -31,6 +31,7 @@ const idx = path.join(dir, 'layouts/index.json');
 const layouts = fs.existsSync(idx) ? json(idx).layouts.map((f) => ({ id: f.replace(/\.json$/, ''), ...json(path.join(dir, 'layouts', f)) })) : [];
 const plan = json(path.join(dir, 'plan.json'));
 if (!plan.finishes && fs.existsSync(path.join(dir, 'finishes.json'))) plan.finishes = json(path.join(dir, 'finishes.json')); // gerçek kaplama renkleri
+if (plan.finishes) plan.finishes._base = `./data/${set}/`;
 const payload = JSON.stringify({ plan, catalog, layouts }).replace(/</g, '\\u003c');
 
 fs.mkdirSync(outDir, { recursive: true });
@@ -52,4 +53,10 @@ for (const m of maps) {
   fs.mkdirSync(path.dirname(path.join(outDir, 'data', m)), { recursive: true });
   fs.copyFileSync(path.join(data, m), path.join(outDir, 'data', m));
 }
-console.log(`${path.join(outDir, 'index.html')} (${(page.length / 1024).toFixed(0)} KB) + ${[...parts, ...maps.map((m) => `data/${m}`)].join(', ')}`);
+// Manzara arka planları (finishes.backdrops) veri setinin kendi klasöründe yayınlanır.
+const views = (plan.finishes?.backdrops ?? []).map((b) => `${set}/${b.image}`);
+for (const v of views) {
+  fs.mkdirSync(path.dirname(path.join(outDir, 'data', v)), { recursive: true });
+  fs.copyFileSync(path.join(data, v), path.join(outDir, 'data', v));
+}
+console.log(`${path.join(outDir, 'index.html')} (${(page.length / 1024).toFixed(0)} KB) + ${[...parts, ...[...maps, ...views].map((m) => `data/${m}`)].join(', ')}`);

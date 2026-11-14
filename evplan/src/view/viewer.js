@@ -206,6 +206,7 @@ export class Viewer extends EventTarget {
     this.house.fixtureLabels.visible = plan;
     this.furniture.labels.visible = plan && this.labelsOn;
     this.marker.visible = walk;
+    for (const b of this.house.backdrops) b.visible = walk; // pencereden manzara (yalnız yürürken)
     this.renderer.setClearColor(walk ? 0xdfe7ef : 0xe9e7e2);
     if (walk) this._updateWalkWorld();
     this._applyLighting();
@@ -260,8 +261,10 @@ export class Viewer extends EventTarget {
       this.daylight.set(this.sunTime);
       this.daylight.placeSun(this.center, this.extent);
       this.scene.environmentIntensity = this.mode === 'walk' ? 0.35 : 0.5;
+      this._dimBackdrops();
       return;
     }
+    this._dimBackdrops();
     this.hemi.color.setHex(0xffffff);
     this.hemi.groundColor.setHex(0xa8a29e);
     this.hemi.intensity = this.hq ? 1.7 : 2.4;
@@ -279,6 +282,9 @@ export class Viewer extends EventTarget {
   _loadDaylight() {
     this._daylightLoading ??= import('./daylight.js').then(({ Daylight }) => {
       this.daylight = new Daylight(this.scene, this.model, this.sun, this.hemi);
+      // Manzara varsa dış zemin fotoğrafın alt kenarına iner ve onun tonunu alır.
+      const bottoms = this.house.backdrops.map((b) => b.userData.backdrop.bottom);
+      if (bottoms.length) this.daylight.setGround(Math.min(...bottoms) * CM, this.model.plan.finishes?.ground?.color);
       this._applyLighting();
       this.dispatchEvent(new CustomEvent('lighting'));
     });
@@ -320,8 +326,15 @@ export class Viewer extends EventTarget {
     if (this.realLight) {
       this.daylight.set(this.sunTime);
       this.daylight.placeSun(this.center, this.extent);
+      this._dimBackdrops();
     }
     return this.daylight?.pos;
+  }
+
+  /** Manzara fotoğrafı gündüz çekildi: gerçek ışıkta saate göre kararır (gece çok loş). */
+  _dimBackdrops() {
+    const day = this.realLight ? (this.daylight.day ?? 1) : 1;
+    for (const b of this.house.backdrops) b.material.emissiveIntensity = 0.06 + 0.94 * day;
   }
 
   toggleCut() {

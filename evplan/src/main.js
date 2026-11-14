@@ -117,6 +117,7 @@ async function boot() {
     }
     // Evin gerçek kaplama renkleri (isteğe bağlı, plan.json'dan ayrı dosya).
     plan.finishes ??= await getJSON(`${DATA}finishes.json`).catch(() => null);
+    if (plan.finishes) plan.finishes._base ??= DATA; // manzara görseli gibi dosyalar veri klasörüne göre
     index.base = DATA;
   }
   await preloadRugMaps(catalog);

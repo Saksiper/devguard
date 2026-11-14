@@ -39,6 +39,7 @@ export class Daylight {
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -12;
     this.ground = ground;
+    this.groundColor = 0x8d9a7d;
     this.group.add(ground);
 
     // Pencereler: aynı duvardaki camlar tek alan ışığında birleşir; ışık oda tarafına bakar.
@@ -98,8 +99,14 @@ export class Daylight {
     this.hemi.groundColor.setHex(0x9a8f80);
     this.hemi.intensity = 0.15 + 0.65 * day;
     for (const l of this.lamps) l.intensity = (1 - day) * 3.5;
-    this.ground.material.color.setHex(0x8d9a7d).multiplyScalar(0.25 + 0.75 * day);
+    this.ground.material.color.set(this.groundColor).multiplyScalar(0.25 + 0.75 * day);
     return this.pos;
+  }
+
+  /** Dış zemin: seviye (m; manzara fotoğrafının alt kenarı) ve renk (fotoğrafın alt bandı). */
+  setGround(y, color) {
+    if (Number.isFinite(y)) this.ground.position.y = y;
+    if (color) this.groundColor = color;
   }
 
   /** Şu an doğrudan güneş alan odalar. */

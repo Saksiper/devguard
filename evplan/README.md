@@ -220,6 +220,23 @@ aktarılınca kaybolmaz.
              "mutfak": { "floor": { "color": "#e9e7e4", "grout": "#cfcdc8" } } } }
 ```
 
+İsteğe bağlı diğer alanlar:
+
+```json
+{ "cornice": { "color": "#f4f2ee", "size": 10 },            // kartonpiyer (tavan kuşağı)
+  "windowFrame": { "color": "#4a2c20" }, "window": { "frame": 6, "sash": 7 },  // doğrama rengi; açılan kanat çerçevesi (cm)
+  "railing": { "color": "#8e9193", "ledge": "#cfcdc8", "ledgeHeight": 12, "spacing": 11.6 },  // korkuluk duvarı yerine demir korkuluk
+  "lamp": "bulb",                                            // abajur yerine çıplak ampul
+  "ground": { "color": "#8c8b88" },
+  "backdrops": [ { "image": "manzara-salon.webp", "eye": [440, 640, 166], "dir": 0,
+                   "focal": 0.5642, "center": [0.5006, 0.5223], "aspect": 1.4872, "distance": 6000 } ] }
+```
+
+`backdrops`: pencereden çekilmiş manzara fotoğrafı (veri klasöründe; saydam kenarlı WebP/PNG). Yürürken, çekildiği
+noktadan (`eye`: x, y, göz yüksekliği cm) `dir` yönüne (plan derecesi, 0 = +x) bakınca aynı görünecek şekilde uzağa
+gerilir: `focal` = odak / görsel genişliği, `center` = ana nokta ve ufuk satırı (0–1). Fotoğraf önce "düz bakan
+kamera"ya çevrilmeli (dikeyler paralel). Gerçek ışıkta saate göre kararır; dış zemin fotoğrafın altına iner.
+
 `materials` anahtarları içe aktarılan modeldeki malzeme adlarıdır (`cab`, `top`, `plinth`, `cream`, `glassCab`,
 `steel`…); `rooms.<oda>` aynı malzemeyi o odada farklı gösterir. `texture`: `walnut` | `zebrano` | `veneer`
 (yatay lifli kaplama); `handle`: `inset` (gömme çelik) | `none`; `roughness` / `metalness` yüzey parlaklığı.

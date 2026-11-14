@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { leafSector } from '../core/plan.js';
 import { pointInPolygon } from '../core/geom.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { ceramicTiles, oakPlanks, placed, radiatorFins, stripedVeneer, woodGrain } from './textures.js';
 
 export const CM = 0.01;
@@ -148,6 +149,75 @@ function veneerMat(fin, wCm, hCm) {
   t.repeat.set(Math.max(1, Math.round(wCm / tw)), hCm / th);
   t.needsUpdate = true;
   return std(new THREE.Color(fin.color).multiplyScalar(1 / t.userData.mean), { map: t, roughness: fin.roughness ?? 0.5 });
+}
+
+/**
+ * Demir korkuluk (balkon): üstte küpeşte, altında ikinci kayıt, dikey çubuklar, alt kayıt ve dikmeler; tek birleşik
+ * geometri. R: { height, ledge (eşik yüksekliği), spacing (çubuk aralığı, cm) }. Ölçüler fotoğraftan tahmini.
+ */
+function railingMesh(w, s0, s1, R, mat) {
+  const om = (w.oMin + w.oMax) / 2;
+  const H = R.height;
+  const L = R.ledge;
+  const parts = [];
+  const add = (a, b, half, z0, z1) => {
+    const m = wallBox(w, a, b, om - half, om + half, z0, z1, mat);
+    m.updateMatrix();
+    parts.push(unitBox.clone().applyMatrix4(m.matrix));
+  };
+  add(s0, s1, 2.6, H - 3.5, H); // küpeşte
+  add(s0, s1, 1.4, H - 14, H - 11.5);
+  add(s0, s1, 1.4, L + 6, L + 8.5);
+  const n = Math.max(1, Math.round((s1 - s0) / (R.spacing ?? 11.6)));
+  for (let i = 1; i < n; i++) {
+    const c = s0 + ((s1 - s0) * i) / n;
+    add(c - 0.7, c + 0.7, 0.7, L + 8.5, H - 14);
+  }
+  const posts = Math.max(1, Math.round((s1 - s0) / 125));
+  for (let i = 0; i <= posts; i++) {
+    const c = Math.min(s1 - 2, Math.max(s0 + 2, s0 + ((s1 - s0) * i) / posts));
+    add(c - 2, c + 2, 2, L, H - 3.5);
+    add(c - 5, c + 5, 4, L, L + 1.2); // taban pulu
+  }
+  const mesh = new THREE.Mesh(mergeGeometries(parts), mat);
+  mesh.castShadow = mesh.receiveShadow = true;
+  mesh.userData.z = [L, H];
+  return mesh;
+}
+
+/**
+ * Manzara arka planı (finishes.backdrops): pencereden çekilip düzeltilmiş fotoğraf, çekildiği noktadan (eye)
+ * bakınca aynı görünecek şekilde uzağa (distance) dik bir düzleme gerilir. focal = odak / görsel genişliği,
+ * center = [ana nokta x, ufuk satırı] (0–1), dir = bakış yönü (plan derecesi; 0 = +x). Kendinden ışıklıdır
+ * (sahne ışığından etkilenmez); kenarları saydamlaşır, ardında gök ve dış zemin görünür.
+ */
+function backdropMesh(b, base) {
+  const D = b.distance ?? 6000;
+  const aspect = b.aspect ?? 1.5;
+  const W = D / b.focal;
+  const H = W / aspect;
+  const tex = new THREE.TextureLoader().load((base ?? './') + b.image);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x000000, map: tex, emissive: 0xffffff, emissiveMap: tex, roughness: 1, envMapIntensity: 0,
+    transparent: true, depthWrite: false, fog: false, toneMapped: false,
+  });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(W * CM, H * CM), mat);
+  const a = ((b.dir ?? 0) * Math.PI) / 180;
+  const [ex, ey, ez] = b.eye;
+  const [cu, cv] = b.center ?? [0.5, 0.5];
+  // Düzlemin merkezi: bakış ekseninden (0,5 − cu)·W sağa, (cv − 0,5)·H yukarı kaymış.
+  const right = [-Math.sin(a), Math.cos(a)];
+  const px = ex + Math.cos(a) * D + right[0] * (0.5 - cu) * W;
+  const py = ey + Math.sin(a) * D + right[1] * (0.5 - cu) * W;
+  const top = ez + cv * H;
+  mesh.position.copy(v3(px, py, top - H / 2));
+  mesh.rotation.y = -Math.PI / 2 - a;
+  mesh.userData.backdrop = { bottom: top - H };
+  mesh.visible = false; // yalnız yürürken (viewer açar)
+  mesh.renderOrder = -1;
+  return mesh;
 }
 
 /** Plan görünümündeki düz zemin rengi: kaplama rengi varsa onun açılmışı (okunurluk için). */
@@ -303,7 +373,11 @@ export function buildHouse(model) {
   const M = { ...MAT };
   if (F.wall) M.wall = std(finColor(F.wall), { roughness: F.wall.roughness ?? 0.95 });
   if (F.ceiling) M.ceiling = std(finColor(F.ceiling), { roughness: 0.95, side: THREE.DoubleSide });
-  M.beam = F.ceiling ? std(finColor(F.ceiling), { roughness: 0.95 }) : M.wall; // kiriş tavan boyasında
+  M.beam = F.beam ? std(finColor(F.beam), { roughness: 0.95 }) : M.wall; // cam üstü kiriş duvar renginde (salon fotoğrafı)
+  M.cornice = std(finColor(F.cornice) ?? 0xf6f4f0, { roughness: 0.9 });
+  const RAIL = F.railing ? { height: 105, ledge: F.railing.ledgeHeight ?? 12, spacing: F.railing.spacing } : null;
+  M.rail = std(finColor(F.railing) ?? 0x8e9193, { roughness: 0.45, metalness: 0.6 });
+  M.ledge = std(F.railing?.ledge ?? 0xcfcdc8, { roughness: 0.4 });
   if (F.doorFrame) M.casing = std(finColor(F.doorFrame), { roughness: 0.5 });
   M.skirting = F.skirting ? std(finColor(F.skirting), { roughness: 0.45 }) : M.casing;
   if (F.door?.texture) M.door = veneerMat(F.door, 90, 205);
@@ -318,11 +392,28 @@ export function buildHouse(model) {
   const inRoom = (p) => model.rooms.find((r) => pointInPolygon(p, r.poly));
 
   for (const p of model.pieces) {
-    const mat = p.kind === 'parapet' ? M.parapet : M.wall;
-    const mesh = wallBox(p.wall, p.s0, p.s1, p.wall.oMin, p.wall.oMax, p.z0, p.z1, [mat, mat, M.wallTop, mat, mat, mat]);
+    const railed = p.kind === 'parapet' && RAIL; // demir korkuluk: duvar yerine alçak eşik + çubuklar
+    const mat = railed ? M.ledge : p.kind === 'parapet' ? M.parapet : M.wall;
+    const mesh = wallBox(p.wall, p.s0, p.s1, p.wall.oMin, p.wall.oMax, p.z0, railed ? RAIL.ledge : p.z1, [mat, mat, railed ? mat : M.wallTop, mat, mat, mat]);
     mesh.userData.piece = p;
     walls.add(mesh);
     cuttables.push(mesh);
+    if (railed) extras.add(railingMesh(p.wall, p.s0, p.s1, { ...RAIL, height: p.z1 }, M.rail));
+    // Kartonpiyer: tavana ulaşan duvar parçalarının oda yüzünde iki kademeli beyaz kuşak.
+    if (F.cornice && p.kind !== 'parapet') {
+      const w = p.wall;
+      const size = F.cornice.size ?? 10;
+      for (const [face, sg] of [
+        [w.oMin, -1],
+        [w.oMax, 1],
+      ]) {
+        const room = inRoom(wallPt(w, (p.s0 + p.s1) / 2, face + sg * 6));
+        if (!room || room.ceiling === false || p.z1 < room.ceilingHeight - 2) continue;
+        const c = room.ceilingHeight;
+        extras.add(wallBox(w, p.s0, p.s1, face, face + sg * size, c - size * 0.45, c, M.cornice));
+        extras.add(wallBox(w, p.s0, p.s1, face, face + sg * size * 0.45, c - size, c - size * 0.45, M.cornice));
+      }
+    }
     // Süpürgelik: zemine inen parçanın oda tarafındaki yüzlerinde (8 cm × 1,2 cm, varsayım).
     if (p.z0 === 0 && p.kind !== 'parapet') {
       const w = p.wall;
@@ -377,8 +468,10 @@ export function buildHouse(model) {
       cuttables.push(glass);
       const line = polyLine([wallPt(w, op.s0, om), wallPt(w, op.s1, om)], 1.3, 0x2563eb, { closed: false });
       aboveMarks.add(line); // yalnızca planda (3D'de doğrama zaten görünür)
-      // PVC doğrama: 6 cm kasa, kanatlar arası kayıt (ölçüler varsayım).
-      const F = 6;
+      // Doğrama: kasa (varsayılan 6 cm), kanatlar arası kayıt; finishes.window.sash > 0 ise açılan kanatlara
+      // ayrı kanat çerçevesi (camı daraltır; salon fotoğrafındaki kalın koyu doğrama).
+      const F = model.plan?.finishes?.window?.frame ?? 6;
+      const SASH = model.plan?.finishes?.window?.sash ?? 0;
       const o0 = om - 3.5;
       const o1 = om + 3.5;
       detail(wallBox(w, op.s0, op.s0 + F, o0, o1, op.sill, op.top, M.frame), op.sill, op.top);
@@ -389,6 +482,21 @@ export function buildHouse(model) {
       for (let k = 1; k < panels; k++) {
         const s = op.s0 + (op.width / panels) * k;
         detail(wallBox(w, s - F / 2 - 1, s + F / 2 + 1, o0, o1, op.sill, op.top, M.frame), op.sill, op.top);
+      }
+      if (SASH && op.type === 'door') {
+        const pw = op.width / panels;
+        const zb = op.sill + 4;
+        const zt = op.top - F;
+        for (let k = 0; k < panels; k++) {
+          const a = op.s0 + pw * k + (k === 0 ? F : F / 2 + 1);
+          const b = op.s0 + pw * (k + 1) - (k === panels - 1 ? F : F / 2 + 1);
+          const q0 = o0 - 0.8;
+          const q1 = o1 + 0.8;
+          detail(wallBox(w, a, a + SASH, q0, q1, zb, zt, M.frame), zb, zt);
+          detail(wallBox(w, b - SASH, b, q0, q1, zb, zt, M.frame), zb, zt);
+          detail(wallBox(w, a, b, q0, q1, zt - SASH, zt, M.frame), zt - SASH, zt);
+          detail(wallBox(w, a, b, q0, q1, zb, zb + SASH, M.frame), zb, zb + SASH);
+        }
       }
       if (op.sill > 20) {
         // İç denizlik (mermer, varsayım).
@@ -481,9 +589,10 @@ export function buildHouse(model) {
       fins.repeat.set(f.w / tube, 1);
       mat = std(0xf6f6f4, { map: fins, bumpMap: fins, bumpScale: 2, roughness: 0.4 });
     }
+    const bareBulb = f.type === 'lamp' && F.lamp === 'bulb'; // abajursuz: siyah duy + ampul (evdeki gibi)
     if (f.type === 'lamp') {
-      geo = shadeGeo;
-      mat = std(0xf3ead8, { roughness: 0.9, side: THREE.DoubleSide, emissive: 0xfff0d0, emissiveIntensity: 0.12 });
+      geo = bareBulb ? cylGeo : shadeGeo;
+      mat = bareBulb ? M.cord : std(0xf3ead8, { roughness: 0.9, side: THREE.DoubleSide, emissive: 0xfff0d0, emissiveIntensity: 0.12 });
     }
     if ((f.material === 'cab' || f.material === 'white' || (f.material === 'glassCab' && fin)) && f.d >= 20 && f.h >= 30 && !/panel|kaplama/i.test(f.name ?? '')) {
       // Ön yüz: oda tarafına bakan yan (merkezle aynı odada kalan yön).
@@ -513,6 +622,10 @@ export function buildHouse(model) {
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.copy(v3(f.x, f.y, f.z + f.h / 2));
     mesh.scale.set(f.w * CM, Math.max(f.h, 0.3) * CM, f.d * CM);
+    if (bareBulb) {
+      mesh.scale.set(0.045, 0.07, 0.045); // duy
+      mesh.position.copy(v3(f.x, f.y, f.z + f.h - 3.5));
+    }
     mesh.rotation.y = (-f.rot * Math.PI) / 180;
     mesh.userData.fixture = f;
     mesh.userData.z = [f.z, f.z + f.h];
@@ -526,8 +639,8 @@ export function buildHouse(model) {
       // Ampul ve tavana kablo.
       const room = inRoom([f.x, f.y]);
       const ceil = room?.ceilingHeight ?? model.settings.ceilingHeight;
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.035, 16, 12), M.bulb);
-      bulb.position.copy(v3(f.x, f.y, f.z + f.h * 0.45));
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(bareBulb ? 0.045 : 0.035, 16, 12), M.bulb);
+      bulb.position.copy(v3(f.x, f.y, bareBulb ? f.z + f.h - 11 : f.z + f.h * 0.45));
       bulb.userData.z = [f.z, f.z + f.h];
       extras.add(bulb);
       const cord = new THREE.Mesh(cylGeo, M.cord);
@@ -544,7 +657,11 @@ export function buildHouse(model) {
     if (f.z >= 120) aboveMarks.add(polyLine(f.poly, 1.25, 0x6b7280, { dashed: true }));
   }
 
-  return { root, walls, floors, ceilings, openings, fixtures, extras, planMarks, aboveMarks, roomLabels, fixtureLabels, cuttables, edges, realFloors, doorLeaves };
+  // Manzara arka planları (yalnız yürürken görünür; viewer yönetir).
+  const backdrops = (F.backdrops ?? []).map((b) => backdropMesh(b, F._base));
+  for (const b of backdrops) root.add(b);
+
+  return { root, walls, floors, ceilings, openings, fixtures, extras, planMarks, aboveMarks, roomLabels, fixtureLabels, cuttables, edges, realFloors, doorLeaves, backdrops };
 }
 
 /** Gerçekçi görünüm (3D / yürü): dokulu zemin, kenar çizgisi yok. Plan: düz renk + kenar çizgileri. */
