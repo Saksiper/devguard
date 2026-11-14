@@ -181,6 +181,21 @@ describe('kontroller', () => {
   });
 });
 
+describe('duvar türü', () => {
+  it('2 m altı duvar korkuluk (parapet), tavanı genelden alçak odanın duvarı yine duvar', () => {
+    const m = buildPlanModel({
+      meta: { name: 't' },
+      settings: { ceilingHeight: 274 },
+      walls: [
+        { id: 'a', from: [0, 0], to: [300, 0], thickness: 10, height: 260 },
+        { id: 'k', from: [300, 0], to: [300, 300], thickness: 5, height: 105 },
+      ],
+      rooms: [],
+    });
+    expect(m.walls.map((w) => w.kind)).toEqual(['wall', 'parapet']);
+  });
+});
+
 describe('demo verisi', () => {
   const dir = path.resolve(__dirname, '../public/data/demo');
   const plan = JSON.parse(fs.readFileSync(path.join(dir, 'plan.json'), 'utf8'));

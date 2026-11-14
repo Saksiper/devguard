@@ -149,7 +149,8 @@ export function buildPlanModel(plan) {
       oMin,
       oMax,
       height: src.height ?? ceiling,
-      kind: src.kind ?? (src.height && src.height < ceiling ? 'parapet' : 'wall'),
+      // Alçak duvar (korkuluk, parapet): 2 m'den kısa. Tavanı genelden alçak odaların duvarları (ör. antre 260 cm) duvardır.
+      kind: src.kind ?? (src.height && src.height < Math.min(ceiling, 200) ? 'parapet' : 'wall'),
     };
   });
   for (const w of walls) {
@@ -162,9 +163,13 @@ export function buildPlanModel(plan) {
   for (const src of plan.openings ?? []) {
     const w = wallById.get(src.wall);
     if (!w) continue;
-    const isDoor = src.type === 'door';
+    // Denizlikli (yerden 40 cm'den yüksek) açılan cam kanadı yürünen bir kapı değil, pencere kanadıdır:
+    // geçiş yolu aranmaz, içinden yürünmez, kanadının önü pencere kanadı gibi (uyarı) denetlenir.
+    const raisedSash = src.type === 'door' && (src.sill ?? 0) > 40;
+    const isDoor = src.type === 'door' && !raisedSash;
     const op = {
       ...src,
+      ...(raisedSash ? { type: 'window', sash: true } : {}),
       sill: src.sill ?? (isDoor ? 0 : 90),
       height: src.height ?? (isDoor ? defaults.doorHeight : 150),
     };

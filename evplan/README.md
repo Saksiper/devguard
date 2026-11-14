@@ -237,7 +237,7 @@ noktadan (`eye`: x, y, göz yüksekliği cm) `dir` yönüne (plan derecesi, 0 = 
 gerilir: `focal` = odak / görsel genişliği, `center` = ana nokta ve ufuk satırı (0–1). Fotoğraf önce "düz bakan
 kamera"ya çevrilmeli (dikeyler paralel). Gerçek ışıkta saate göre kararır; dış zemin fotoğrafın altına iner.
 
-`materials` anahtarları içe aktarılan modeldeki malzeme adlarıdır (`cab`, `top`, `plinth`, `cream`, `glassCab`,
+`fixtures.<id>` tek bir sabit mobilyanın kaplamasını verir (ör. koridor dolabı mutfakla aynı renk). `materials` anahtarları içe aktarılan modeldeki malzeme adlarıdır (`cab`, `top`, `plinth`, `cream`, `glassCab`,
 `steel`…); `rooms.<oda>` aynı malzemeyi o odada farklı gösterir. `texture`: `walnut` | `zebrano` | `veneer`
 (yatay lifli kaplama); `handle`: `inset` (gömme çelik) | `none`; `roughness` / `metalness` yüzey parlaklığı.
 

@@ -483,9 +483,9 @@ export function buildHouse(model) {
         const s = op.s0 + (op.width / panels) * k;
         detail(wallBox(w, s - F / 2 - 1, s + F / 2 + 1, o0, o1, op.sill, op.top, M.frame), op.sill, op.top);
       }
-      if (SASH && op.type === 'door') {
+      if (SASH && (op.type === 'door' || op.sash)) {
         const pw = op.width / panels;
-        const zb = op.sill + 4;
+        const zb = op.sill + (op.type === 'door' ? 4 : F);
         const zt = op.top - F;
         for (let k = 0; k < panels; k++) {
           const a = op.s0 + pw * k + (k === 0 ? F : F / 2 + 1);
@@ -573,7 +573,8 @@ export function buildHouse(model) {
   for (const f of model.fixtures) {
     const key = f.material ?? f.type;
     const froom = inRoom([f.x, f.y]);
-    const fin = f.material ? finishOf(F, froom, f.material) : null; // evin gerçek kaplaması (varsa)
+    // Evin gerçek kaplaması: önce bu sabite özel (finishes.fixtures.<id>), sonra oda / genel malzeme.
+    const fin = F.fixtures?.[f.id] ?? (f.material ? finishOf(F, froom, f.material) : null);
     const color = f.color ? new THREE.Color(f.color) : fin?.color ? new THREE.Color(fin.color) : (MATERIAL_COLORS[f.material] ?? FIXTURE_COLORS[f.type] ?? 0xd1d5db);
     const clear = (TRANSPARENT.has(f.type) || TRANSPARENT.has(f.material)) && !(fin && fin.opacity === 1);
     const surf = { ...(SURFACE[key] ?? SURFACE[f.type] ?? {}) };
@@ -582,6 +583,7 @@ export function buildHouse(model) {
     let mat = fin?.texture && !f.color ? veneerMat(fin, Math.max(f.w, f.d), f.h) : std(color, { transparent: clear, opacity: clear ? 0.5 : 1, ...surf });
     let geo = f.shape === 'cylinder' ? cylGeo : unitBox;
     if (f.type === 'beam') mat = M.beam;
+    if (f.material === 'wallTop') mat = [M.wall, M.wall, M.wallTop, M.wall, M.wall, M.wall]; // kalın duvar / kolon: duvar gibi
     if (f.type === 'column') mat = M.wall;
     if (f.type === 'radiator') {
       const tube = F.radiatorTube ?? 2.5; // dikey dilim aralığı (cm)
